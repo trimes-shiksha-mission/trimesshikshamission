@@ -2,7 +2,6 @@ import { NextPage } from 'next'
 import dynamic from 'next/dynamic'
 import { useState } from 'react'
 import 'react-quill/dist/quill.snow.css'
-import { fetchJson } from '../lib/fetchJson'
 const ReactQuill = dynamic(() => import('react-quill'), { ssr: false })
 
 const Admin: NextPage = () => {
@@ -19,18 +18,7 @@ const Admin: NextPage = () => {
       <button
         type="submit"
         className="p-2 bg-blue-600 text-white px-4 rounded-lg mt-4"
-        onClick={async () => {
-          if (!editorialContent) return
-          await fetchJson('/api/editorial', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-              editorialContent
-            })
-          })
-        }}
+        onClick={async () => {}}
       >
         Save
       </button>

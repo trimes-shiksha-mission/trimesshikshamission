@@ -1,21 +1,4 @@
-import type { GetServerSideProps, NextPage } from 'next'
-import { fetchJson } from '../lib/fetchJson'
-
-export const getServerSideProps: GetServerSideProps = async () => {
-  const editorials: any = await fetchJson(
-    'http://localhost:3000/api/editorial',
-    {
-      method: 'GET'
-    }
-  )
-  console.log(editorials)
-
-  return {
-    props: {
-      editorial: editorials?.editorial[0] || null
-    }
-  }
-}
+import type { NextPage } from 'next'
 
 const Home: NextPage<{ editorial: any }> = ({ editorial }) => {
   return (
