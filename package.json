@@ -1,0 +1,22 @@
+{
+  "name": "@trimes-shiksha/monorepo",
+  "version": "1.0.0",
+  "private": true,
+  "author": "Jayesh Kugsiya",
+  "scripts": {
+    "app": "cd packages/app && npm run dev",
+    "api": "cd packages/api && npm run devStart",
+    "entity": "cd packages/entity && npm run watch"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jkugsiya/trimes-shiksha-mission.git"
+  },
+  "bugs": {
+    "url": "https://github.com/jkugsiya/trimes-shiksha-mission/issues"
+  },
+  "homepage": "https://github.com/jkugsiya/trimes-shiksha-mission#readme",
+  "workspaces": [
+    "./packages/*"
+  ]
+}

@@ -1,0 +1,32 @@
+{
+  "name": "@trimes-shiksha/app",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "devDependencies": {
+    "@types/node": "17.0.23",
+    "@types/react": "17.0.2",
+    "@types/react-dom": "17.0.2",
+    "autoprefixer": "^10.4.4",
+    "eslint": "8.12.0",
+    "eslint-config-next": "12.1.4",
+    "postcss": "^8.4.12",
+    "tailwindcss": "^3.0.23",
+    "typescript": "4.6.3"
+  },
+  "dependencies": {
+    "@typegoose/typegoose": "^9.7.1",
+    "mongoose": "^6.2.9",
+    "next": "12.1.4",
+    "react": "17.0.2",
+    "react-dom": "17.0.2",
+    "react-quill": "^1.3.5",
+    "slate": "^0.77.0",
+    "slate-react": "^0.77.0"
+  }
+}
