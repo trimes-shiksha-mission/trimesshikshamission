@@ -1,4 +1,4 @@
-import { Hello } from '@trimes-shiksha/entity'
+import { Hello, VerifiedPhone } from '@trimes-shiksha/entity'
 import { DataSource } from 'typeorm'
 import {
   DB_POSTGRES_DATABASE,
@@ -18,7 +18,7 @@ export const dataSource = new DataSource({
   password: DB_POSTGRES_PASSWORD,
   database: DB_POSTGRES_DATABASE,
   synchronize: DB_POSTGRES_SYNCHRONIZE,
-  entities: [Hello],
+  entities: [Hello, VerifiedPhone],
   maxQueryExecutionTime: 2500,
   relationLoadStrategy: 'query',
   url: DB_POSTGRES_URI,

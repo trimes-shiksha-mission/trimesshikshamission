@@ -8,6 +8,7 @@ import { buildSchema } from 'type-graphql'
 import { CORS_ORIGIN, NODE_ENV, PORT } from './config'
 import { dataSource } from './dataSource'
 import { HelloResolver } from './graphql/resolvers/HelloResolver'
+import { VerifiedPhoneResolver } from './graphql/resolvers/VerifiedPhoneResolver'
 
 const main = async () => {
   console.log('Starting server up...')
@@ -15,7 +16,7 @@ const main = async () => {
   console.log('Connected to DB...')
 
   const schema = await buildSchema({
-    resolvers: [HelloResolver]
+    resolvers: [HelloResolver, VerifiedPhoneResolver]
   })
   console.log('Graphql Schema build complete...')
 

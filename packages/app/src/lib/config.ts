@@ -1,0 +1,4 @@
+export const NEXT_PUBLIC_GRAPHQL_API_URL =
+  process.env.NEXT_PUBLIC_GRAPHQL_API_URL || 'http://localhost:4000/graphql'
+export const NEXT_PUBLIC_AUTH_STATE_KEY =
+  process.env.NEXT_PUBLIC_AUTH_STATE_KEY || 'trimes-auth-state-key'
