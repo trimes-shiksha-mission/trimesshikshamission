@@ -1,3 +1,0 @@
-mutation verifyNumber($otp: Float!, $number: Float!) {
-  verifyNumber(otp: $otp, number: $number)
-}

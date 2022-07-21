@@ -1,22 +1,25 @@
 {
-  "name": "@trimes-shiksha/monorepo",
+  "name": "trimes-shiksha-mission",
+  "author": "Jayesh Kugsiya",
   "version": "1.0.0",
   "private": true,
-  "author": "Jayesh Kugsiya",
   "scripts": {
-    "app": "cd packages/app && npm run dev",
-    "api": "cd packages/api && npm run devStart",
-    "entity": "cd packages/entity && npm run watch"
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/jkugsiya/trimes-shiksha-mission.git"
+  "dependencies": {
+    "next": "12.2.2",
+    "react": "18.2.0",
+    "react-dom": "18.2.0"
   },
-  "bugs": {
-    "url": "https://github.com/jkugsiya/trimes-shiksha-mission/issues"
-  },
-  "homepage": "https://github.com/jkugsiya/trimes-shiksha-mission#readme",
-  "workspaces": [
-    "./packages/*"
-  ]
+  "devDependencies": {
+    "@types/node": "18.0.6",
+    "@types/react": "18.0.15",
+    "@types/react-dom": "18.0.6",
+    "eslint": "8.20.0",
+    "eslint-config-next": "12.2.2",
+    "typescript": "4.7.4"
+  }
 }

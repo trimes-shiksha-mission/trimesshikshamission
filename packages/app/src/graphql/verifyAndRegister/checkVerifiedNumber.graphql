@@ -1,3 +1,0 @@
-query checkVerifiedNumber($number: Float!) {
-  checkVerifiedNumber(number: $number)
-}
