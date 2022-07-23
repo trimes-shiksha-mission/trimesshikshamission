@@ -11,10 +11,32 @@ datasource db {
 }
 
 model User {
+  id              String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name            String
+  email           String   @unique
+  password        String
+  roleId          String   @db.Uuid
+  role            Role     @relation(fields: [roleId], references: [id])
+  isMarried       Boolean
+  headId          String?  @db.Uuid
+  head            User?    @relation("head", fields: [headId], references: [id])
+  members         User[]   @relation("head")
+  showInMatrimony Boolean?
+  birthday        DateTime
+  gender          String
+  contact         String   @unique
+  occupation      String
+  qualification   String
+  isVerified      Boolean  @default(false)
+  gautra          String
+  createdAt       DateTime @default(now()) @db.Timestamptz()
+  updatedAt       DateTime @default(now()) @updatedAt @db.Timestamptz()
+}
+
+model Role {
   id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  name      String
-  email     String
-  password  String
+  name      String   @unique
   createdAt DateTime @default(now()) @db.Timestamptz()
   updatedAt DateTime @default(now()) @updatedAt @db.Timestamptz()
+  User      User[]
 }
