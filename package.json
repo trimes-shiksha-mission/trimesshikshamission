@@ -7,7 +7,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "admin": "cd packages/trimes-admin && npm run dev",
-    "frontend": "cd packages/trimes && npm run dev"
+    "front": "cd packages/trimes && npm run dev"
   },
   "repository": {
     "type": "git",
