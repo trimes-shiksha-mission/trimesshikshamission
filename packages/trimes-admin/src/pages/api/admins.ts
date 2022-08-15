@@ -41,5 +41,48 @@ export default async function AdminHandler(
       console.error(error)
       throw new Error('Some error occured!')
     }
+  } else if (req.method === 'PATCH') {
+    try {
+      const { id, name, password, email } = req.body
+
+      if (!id || !name || !email) {
+        throw new Error('Missing fields')
+      }
+      let hashedPassword = undefined
+      if (password) {
+        hashedPassword = await hash(password, 10)
+      }
+      await prismaClient.admin.update({
+        where: {
+          id
+        },
+        data: {
+          name,
+          ...(hashedPassword && { password: hashedPassword }),
+          email
+        }
+      })
+
+      res.status(200).json({ message: 'Updated' })
+    } catch (error) {
+      console.error(error)
+      throw new Error('Some error occured!')
+    }
+  } else if (req.method === 'DELETE') {
+    try {
+      const { id } = req.body
+      if (!id) {
+        throw new Error('Missing fields')
+      }
+      await prismaClient.admin.delete({
+        where: {
+          id: id
+        }
+      })
+      res.status(200).json({ message: 'Deleted' })
+    } catch (error) {
+      console.error(error)
+      throw new Error('Some error occured!')
+    }
   }
 }

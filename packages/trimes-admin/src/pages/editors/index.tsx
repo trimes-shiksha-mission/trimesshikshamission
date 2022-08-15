@@ -11,7 +11,7 @@ import {
 } from 'antd'
 import { NextPage } from 'next'
 import { useState } from 'react'
-import { useQuery } from 'react-query'
+import { useMutation, useQuery } from 'react-query'
 
 const Editors: NextPage = () => {
   const [addEditorModal, setAddEditorModal] = useState(false)
@@ -23,6 +23,39 @@ const Editors: NextPage = () => {
   } = useQuery('editors', () => fetch('/api/editors').then(res => res.json()))
   const { data: areas, isLoading: isLoadingAreas } = useQuery('areas', () =>
     fetch('/api/areas').then(res => res.json())
+  )
+  const { mutateAsync: deleteEditor, isLoading: deleteLoading } = useMutation(
+    async id => {
+      return await fetch('/api/editors', {
+        method: 'DELETE',
+        body: JSON.stringify({ id }),
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      })
+    }
+  )
+  const { mutateAsync: addEditor, isLoading: addLoading } = useMutation(
+    async data => {
+      return await fetch('/api/editors', {
+        method: 'POST',
+        body: JSON.stringify(data),
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      })
+    }
+  )
+  const { mutateAsync: editEditor, isLoading: editLoading } = useMutation(
+    async data => {
+      return await fetch('/api/editors', {
+        method: 'PATCH',
+        body: JSON.stringify(data),
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      })
+    }
   )
   const [resetPassword, setResetPassword] = useState(false)
 
@@ -55,13 +88,22 @@ const Editors: NextPage = () => {
               title: 'Actions',
               render: (_, record) => (
                 <Space>
-                  <EditOutlined
+                  <Button
                     onClick={() => {
-                      console.log(record)
                       setEditEditorModal(record.id)
                     }}
-                  />
-                  <DeleteOutlined />
+                  >
+                    <EditOutlined />
+                  </Button>
+                  <Button
+                    onClick={async () => {
+                      await deleteEditor(record.id)
+                      await refetch()
+                    }}
+                    loading={deleteLoading}
+                  >
+                    <DeleteOutlined />
+                  </Button>
                 </Space>
               )
             }
@@ -70,6 +112,7 @@ const Editors: NextPage = () => {
             ...editor,
             sr: i + 1
           }))}
+          rowKey={'sr'}
         />
       )}
 
@@ -91,26 +134,13 @@ const Editors: NextPage = () => {
           }
           onFinish={async (values: any) => {
             if (editEditorModal !== '') {
-              await fetch('/api/editors', {
-                method: 'PATCH',
-                headers: {
-                  'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ id: editEditorModal, ...values })
-              })
-              await refetch()
+              await editEditor({ id: editEditorModal, ...values })
               setEditEditorModal('')
             } else {
-              await fetch('/api/editors', {
-                method: 'POST',
-                headers: {
-                  'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(values)
-              })
-              await refetch()
+              await addEditor(values)
               setAddEditorModal(false)
             }
+            await refetch()
           }}
         >
           <Form.Item
@@ -159,7 +189,11 @@ const Editors: NextPage = () => {
             </Form.Item>
           )}
           <Form.Item>
-            <Button type="primary" htmlType="submit">
+            <Button
+              type="primary"
+              htmlType="submit"
+              loading={addLoading || editLoading}
+            >
               {addEditorModal ? 'Add' : 'Update'}
             </Button>
           </Form.Item>

@@ -73,5 +73,21 @@ export default async function EditorsHandler(
       console.error(error)
       throw new Error('Some error occured!')
     }
+  } else if (req.method === 'DELETE') {
+    try {
+      const { id } = req.body
+      if (!id) {
+        throw new Error('Missing fields')
+      }
+      await prismaClient.admin.delete({
+        where: {
+          id: id
+        }
+      })
+      res.status(200).json({ message: 'Deleted' })
+    } catch (error) {
+      console.error(error)
+      throw new Error('Some error occured!')
+    }
   }
 }

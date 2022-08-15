@@ -2,15 +2,47 @@ import { DeleteOutlined, EditOutlined } from '@ant-design/icons'
 import { Button, Checkbox, Form, Input, Modal, Space, Table } from 'antd'
 import { NextPage } from 'next'
 import { useState } from 'react'
-import { useQuery } from 'react-query'
+import { useMutation, useQuery } from 'react-query'
 
 const Admins: NextPage = () => {
   const [addAdminModal, setAddAdminModal] = useState(false)
   const [editAdminModal, setEditAdminModal] = useState('')
-  const { data: admins, isLoading } = useQuery('admins', () =>
-    fetch('/api/admins').then(res => res.json())
-  )
+  const {
+    data: admins,
+    isLoading,
+    refetch
+  } = useQuery('admins', () => fetch('/api/admins').then(res => res.json()))
   const [resetPassword, setResetPassword] = useState(false)
+  const { mutateAsync: deleteAdmin, isLoading: deleteLoading } = useMutation(
+    async id =>
+      await fetch('/api/admins', {
+        method: 'DELETE',
+        body: JSON.stringify({ id }),
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      })
+  )
+  const { mutateAsync: addAdmin, isLoading: addLoading } = useMutation(
+    async admin =>
+      await fetch('/api/admins', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(admin)
+      })
+  )
+  const { mutateAsync: editAdmin, isLoading: editLoading } = useMutation(
+    async admin =>
+      await fetch('/api/admins', {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(admin)
+      })
+  )
 
   return (
     <>
@@ -37,13 +69,22 @@ const Admins: NextPage = () => {
               title: 'Actions',
               render: (_, record) => (
                 <Space>
-                  <EditOutlined
+                  <Button
                     onClick={() => {
-                      console.log(record)
                       setEditAdminModal(record.id)
                     }}
-                  />
-                  <DeleteOutlined />
+                  >
+                    <EditOutlined />
+                  </Button>
+                  <Button
+                    onClick={async () => {
+                      await deleteAdmin(record.id)
+                      await refetch()
+                    }}
+                    loading={deleteLoading}
+                  >
+                    <DeleteOutlined />
+                  </Button>
                 </Space>
               )
             }
@@ -52,6 +93,7 @@ const Admins: NextPage = () => {
             ...admin,
             sr: i + 1
           }))}
+          rowKey={'sr'}
         />
       )}
 
@@ -72,14 +114,14 @@ const Admins: NextPage = () => {
               : {}
           }
           onFinish={async (values: any) => {
-            await fetch('/api/admins', {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json'
-              },
-              body: JSON.stringify(values)
-            })
-            setAddAdminModal(false)
+            if (editAdminModal !== '') {
+              await editAdmin({ id: editAdminModal, ...values })
+              setEditAdminModal('')
+            } else {
+              await addAdmin(values)
+              setAddAdminModal(false)
+            }
+            await refetch()
           }}
         >
           <Form.Item
@@ -114,7 +156,11 @@ const Admins: NextPage = () => {
             </Form.Item>
           )}
           <Form.Item>
-            <Button type="primary" htmlType="submit">
+            <Button
+              type="primary"
+              htmlType="submit"
+              loading={addLoading || editLoading}
+            >
               {addAdminModal ? 'Add' : 'Update'}
             </Button>
           </Form.Item>
