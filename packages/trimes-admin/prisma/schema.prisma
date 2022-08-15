@@ -25,6 +25,8 @@ model Admin {
   area      Area?    @relation(fields: [areaId], references: [id])
   createdAt DateTime @default(now()) @db.Timestamptz()
   updatedAt DateTime @default(now()) @updatedAt @db.Timestamptz()
+
+  @@unique([email, role])
 }
 
 model Area {

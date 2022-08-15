@@ -1,7 +1,8 @@
 import type { NextPage } from 'next'
+import { ProtectedRoute } from '../components/ProtectedRoute'
 
 const Home: NextPage = () => {
-  return <div>hello world</div>
+  return <ProtectedRoute>hello world</ProtectedRoute>
 }
 
 export default Home

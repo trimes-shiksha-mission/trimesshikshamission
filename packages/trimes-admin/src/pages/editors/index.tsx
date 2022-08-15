@@ -12,6 +12,7 @@ import {
 import { NextPage } from 'next'
 import { useState } from 'react'
 import { useMutation, useQuery } from 'react-query'
+import { ProtectedRoute } from '../../components/ProtectedRoute'
 
 const Editors: NextPage = () => {
   const [addEditorModal, setAddEditorModal] = useState(false)
@@ -20,9 +21,22 @@ const Editors: NextPage = () => {
     data: editors,
     isLoading,
     refetch
-  } = useQuery('editors', () => fetch('/api/editors').then(res => res.json()))
-  const { data: areas, isLoading: isLoadingAreas } = useQuery('areas', () =>
-    fetch('/api/areas').then(res => res.json())
+  } = useQuery('editors', async () => {
+    const res = await fetch('/api/editors')
+    const data = await res.json()
+    if (data.error) {
+      return []
+    }
+    return data
+  })
+  const { data: areas, isLoading: isLoadingAreas } = useQuery(
+    'areas',
+    async () => {
+      const res = await fetch('/api/areas')
+      const data = await res.json()
+      if (data.error) return []
+      return data
+    }
   )
   const { mutateAsync: deleteEditor, isLoading: deleteLoading } = useMutation(
     async id => {
@@ -60,7 +74,7 @@ const Editors: NextPage = () => {
   const [resetPassword, setResetPassword] = useState(false)
 
   return (
-    <>
+    <ProtectedRoute>
       <h3>Editors</h3>
       <Button onClick={() => setAddEditorModal(true)}>Add Editor</Button>
       {isLoading ? (
@@ -199,7 +213,7 @@ const Editors: NextPage = () => {
           </Form.Item>
         </Form>
       </Modal>
-    </>
+    </ProtectedRoute>
   )
 }
 

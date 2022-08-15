@@ -3,6 +3,7 @@ import { Button, Checkbox, Form, Input, Modal, Space, Table } from 'antd'
 import { NextPage } from 'next'
 import { useState } from 'react'
 import { useMutation, useQuery } from 'react-query'
+import { ProtectedRoute } from '../../components/ProtectedRoute'
 
 const Admins: NextPage = () => {
   const [addAdminModal, setAddAdminModal] = useState(false)
@@ -11,7 +12,14 @@ const Admins: NextPage = () => {
     data: admins,
     isLoading,
     refetch
-  } = useQuery('admins', () => fetch('/api/admins').then(res => res.json()))
+  } = useQuery('admins', async () => {
+    const res = await fetch('/api/admins')
+    const data = await res.json()
+    if (data.error) {
+      return []
+    }
+    return data
+  })
   const [resetPassword, setResetPassword] = useState(false)
   const { mutateAsync: deleteAdmin, isLoading: deleteLoading } = useMutation(
     async id =>
@@ -45,7 +53,7 @@ const Admins: NextPage = () => {
   )
 
   return (
-    <>
+    <ProtectedRoute>
       <h3>Admins</h3>
       <Button onClick={() => setAddAdminModal(true)}>Add Admin</Button>
       {isLoading ? (
@@ -166,7 +174,7 @@ const Admins: NextPage = () => {
           </Form.Item>
         </Form>
       </Modal>
-    </>
+    </ProtectedRoute>
   )
 }
 

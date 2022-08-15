@@ -1,11 +1,15 @@
 import { hash } from 'bcrypt'
+import { withIronSessionApiRoute } from 'iron-session/next'
 import { NextApiRequest, NextApiResponse } from 'next'
 import { prismaClient } from '../../lib/prisma'
+import { sessionOptions } from '../../lib/session'
 
-export default async function EditorsHandler(
-  req: NextApiRequest,
-  res: NextApiResponse
-) {
+async function EditorsHandler(req: NextApiRequest, res: NextApiResponse) {
+  if (req.session.user === undefined) {
+    return res
+      .status(401)
+      .json({ message: 'Unauthorized', error: 'Unauthorized access!' })
+  }
   if (req.method === 'POST') {
     try {
       const { email, password, name, areaId } = req.body
@@ -40,7 +44,11 @@ export default async function EditorsHandler(
       })
       res
         .status(200)
-        .json(editors.map(editor => ({ ...editor, password: undefined })))
+        .json(
+          editors
+            .map(editor => ({ ...editor, password: undefined }))
+            .filter(editor => editor.id !== req.session.user?.id)
+        )
     } catch (error) {
       console.error(error)
       throw new Error('Some error occured!')
@@ -91,3 +99,5 @@ export default async function EditorsHandler(
     }
   }
 }
+
+export default withIronSessionApiRoute(EditorsHandler, sessionOptions)

@@ -1,10 +1,14 @@
+import { withIronSessionApiRoute } from 'iron-session/next'
 import { NextApiRequest, NextApiResponse } from 'next'
 import { prismaClient } from '../../lib/prisma'
+import { sessionOptions } from '../../lib/session'
 
-export default async function AreasHandler(
-  req: NextApiRequest,
-  res: NextApiResponse
-) {
+async function AreasHandler(req: NextApiRequest, res: NextApiResponse) {
+  if (req.session.user === undefined) {
+    return res
+      .status(401)
+      .json({ message: 'Unauthorized', error: 'Unauthorized access' })
+  }
   if (req.method === 'POST') {
     const { name } = req.body
     try {
@@ -31,3 +35,5 @@ export default async function AreasHandler(
     }
   }
 }
+
+export default withIronSessionApiRoute(AreasHandler, sessionOptions)

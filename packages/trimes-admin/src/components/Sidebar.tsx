@@ -1,12 +1,30 @@
 import { Layout, Menu } from 'antd'
 import Link from 'next/link'
 import { FC, useState } from 'react'
+import useUser from '../lib/useUser'
 
 export const Sidebar: FC = () => {
   const [collapsed, setCollapsed] = useState(false)
   const [selectedKeys, setSelectedKeys] = useState(['1'])
   const handleSidebarChange = (e: any) => setSelectedKeys([e.key])
-
+  const { user } = useUser()
+  const routes = [
+    user?.role === 'ADMIN' &&
+      ({
+        ...{
+          type: undefined as any,
+          label: <Link href="/admins">Admins</Link>,
+          key: '1-1',
+          onClick: handleSidebarChange
+        }
+      } as any),
+    {
+      type: undefined as any,
+      label: <Link href="/editors">Editors</Link>,
+      key: '1-2',
+      onClick: handleSidebarChange
+    }
+  ]
   return (
     <Layout.Sider
       collapsible
@@ -29,20 +47,7 @@ export const Sidebar: FC = () => {
             type: undefined as any,
             label: 'Admin Users',
             onClick: handleSidebarChange,
-            children: [
-              {
-                type: undefined as any,
-                label: <Link href="/admins">Admins</Link>,
-                key: '1-1',
-                onClick: handleSidebarChange
-              },
-              {
-                type: undefined as any,
-                label: <Link href="/editors">Editors</Link>,
-                key: '1-2',
-                onClick: handleSidebarChange
-              }
-            ]
+            children: routes
           }
         ]}
       />
