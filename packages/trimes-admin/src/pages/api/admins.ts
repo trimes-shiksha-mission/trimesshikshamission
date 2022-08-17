@@ -22,7 +22,9 @@ async function AdminHandler(req: NextApiRequest, res: NextApiResponse) {
           email,
           name,
           password: hashedPassword,
-          role: 'ADMIN'
+          role: 'ADMIN',
+          createdById: req.session.user.id,
+          updatedById: req.session.user.id
         }
       })
 
@@ -36,6 +38,10 @@ async function AdminHandler(req: NextApiRequest, res: NextApiResponse) {
       const admins = await prismaClient.admin.findMany({
         where: {
           role: 'ADMIN'
+        },
+        include: {
+          createdBy: true,
+          updatedBy: true
         }
       })
       res
@@ -67,7 +73,8 @@ async function AdminHandler(req: NextApiRequest, res: NextApiResponse) {
         data: {
           name,
           ...(hashedPassword && { password: hashedPassword }),
-          email
+          email,
+          updatedById: req.session.user.id
         }
       })
 

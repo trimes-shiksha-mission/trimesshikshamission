@@ -8,8 +8,8 @@ export const Sidebar: FC = () => {
   const [selectedKeys, setSelectedKeys] = useState(['1'])
   const handleSidebarChange = (e: any) => setSelectedKeys([e.key])
   const { user } = useUser()
-  const routes = [
-    user?.role === 'ADMIN' &&
+  const adminRoutes = [
+    (user?.role === 'ADMIN' || user?.role === 'SUPERUSER') &&
       ({
         ...{
           type: undefined as any,
@@ -47,8 +47,25 @@ export const Sidebar: FC = () => {
             type: undefined as any,
             label: 'Admin Users',
             onClick: handleSidebarChange,
-            children: routes
-          }
+            children: adminRoutes
+          },
+          ...((user?.role === 'SUPERUSER' && [
+            {
+              key: '2',
+              type: undefined as any,
+              label: 'SUPER ADMIN',
+              onClick: handleSidebarChange,
+              children: [
+                {
+                  type: undefined as any,
+                  label: <Link href="/editorial">Editorial</Link>,
+                  key: '2-1',
+                  onClick: handleSidebarChange
+                }
+              ]
+            }
+          ]) ||
+            [])
         ]}
       />
     </Layout.Sider>

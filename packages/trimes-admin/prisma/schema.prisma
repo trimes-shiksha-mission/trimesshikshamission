@@ -13,18 +13,25 @@ datasource db {
 enum Role {
   ADMIN
   EDITOR
+  SUPERUSER
 }
 
 model Admin {
-  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  name      String
-  email     String
-  password  String
-  role      Role
-  areaId    String?  @db.Uuid
-  area      Area?    @relation(fields: [areaId], references: [id])
-  createdAt DateTime @default(now()) @db.Timestamptz()
-  updatedAt DateTime @default(now()) @updatedAt @db.Timestamptz()
+  id            String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name          String
+  email         String
+  password      String
+  role          Role
+  areaId        String?  @db.Uuid
+  area          Area?    @relation(fields: [areaId], references: [id])
+  createdAt     DateTime @default(now()) @db.Timestamptz()
+  updatedAt     DateTime @default(now()) @updatedAt @db.Timestamptz()
+  createdById   String?  @db.Uuid
+  createdBy     Admin?   @relation(name: "createdBy", fields: [createdById], references: [id])
+  createdAdmins Admin[]  @relation(name: "createdBy")
+  updatedById   String?  @db.Uuid
+  updatedBy     Admin?   @relation(name: "updatedBy", fields: [updatedById], references: [id])
+  updatedAdmins Admin[]  @relation(name: "updatedBy")
 
   @@unique([email, role])
 }
@@ -35,4 +42,11 @@ model Area {
   createdAt DateTime @default(now()) @db.Timestamptz()
   updatedAt DateTime @default(now()) @updatedAt @db.Timestamptz()
   Admin     Admin[]
+}
+
+model Editorial {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  title     String
+  body      String
+  createdAt DateTime @default(now()) @db.Timestamptz()
 }

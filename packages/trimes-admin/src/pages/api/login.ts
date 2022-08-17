@@ -6,7 +6,6 @@ import { sessionOptions, User } from '../../lib/session'
 
 async function loginRoute(req: NextApiRequest, res: NextApiResponse) {
   const { email, password, role } = await req.body
-  console.log({ email, password, role })
   if (!email || !password || !role) {
     return res.status(400).json({
       message: 'Please provide correct details'
@@ -16,7 +15,7 @@ async function loginRoute(req: NextApiRequest, res: NextApiResponse) {
   try {
     const user = await prismaClient.admin.findFirst({
       where: {
-        email,
+        email: email.toLowerCase(),
         role
       }
     })

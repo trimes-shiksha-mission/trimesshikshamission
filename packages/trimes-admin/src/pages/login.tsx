@@ -1,3 +1,4 @@
+import { Role } from '@prisma/client'
 import { Button, Form, Input, Select } from 'antd'
 import { useState } from 'react'
 import { useMutation } from 'react-query'
@@ -48,7 +49,7 @@ export default function Login() {
           layout="vertical"
           onFinish={async values => {
             try {
-              await login(values)
+              await login({ ...values, role: values.role as Role })
               mutateUser(loginData as any)
             } catch (error) {
               if (error instanceof FetchError) {
@@ -82,6 +83,7 @@ export default function Login() {
             <Select>
               <Select.Option value="ADMIN">Admin</Select.Option>
               <Select.Option value="EDITOR">Editor</Select.Option>
+              <Select.Option value="SUPERUSER">Super Admin</Select.Option>
             </Select>
           </Form.Item>
           <Form.Item>

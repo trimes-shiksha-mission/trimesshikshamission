@@ -53,7 +53,7 @@ const Admins: NextPage = () => {
   )
 
   return (
-    <ProtectedRoute>
+    <ProtectedRoute role="ADMIN">
       <h3>Admins</h3>
       <Button onClick={() => setAddAdminModal(true)}>Add Admin</Button>
       {isLoading ? (
@@ -72,6 +72,14 @@ const Admins: NextPage = () => {
             {
               title: 'Email',
               dataIndex: 'email'
+            },
+            {
+              title: 'Created By',
+              render: (_, row) => row.createdBy?.name || 'N/A'
+            },
+            {
+              title: 'Updated By',
+              render: (_, row) => row.updatedBy?.name || 'N/A'
             },
             {
               title: 'Actions',

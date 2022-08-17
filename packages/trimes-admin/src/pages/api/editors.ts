@@ -23,7 +23,9 @@ async function EditorsHandler(req: NextApiRequest, res: NextApiResponse) {
           name,
           password: hashedPassword,
           role: 'EDITOR',
-          areaId
+          areaId,
+          createdById: req.session.user.id,
+          updatedById: req.session.user.id
         }
       })
 
@@ -72,7 +74,8 @@ async function EditorsHandler(req: NextApiRequest, res: NextApiResponse) {
           name,
           areaId,
           ...(hashedPassword && { password: hashedPassword }),
-          email
+          email,
+          updatedById: req.session.user.id
         }
       })
 
