@@ -10,6 +10,31 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model User {
+  id              String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name            String
+  email           String   @unique
+  password        String
+  isMarried       Boolean
+  headId          String?  @db.Uuid
+  head            User?    @relation("head", fields: [headId], references: [id])
+  members         User[]   @relation("head")
+  showInMatrimony Boolean?
+  birthday        DateTime
+  gender          String
+  contact         String   @unique
+  occupation      String
+  qualification   String
+  isVerified      Boolean  @default(false)
+  gautra          String
+  createdById     String?  @db.Uuid
+  createdBy       Admin?   @relation("createdBy", fields: [createdById], references: [id])
+  updatedById     String?  @db.Uuid
+  updatedBy       Admin?   @relation("updatedBy", fields: [updatedById], references: [id])
+  createdAt       DateTime @default(now()) @db.Timestamptz()
+  updatedAt       DateTime @default(now()) @updatedAt @db.Timestamptz()
+}
+
 enum Role {
   ADMIN
   EDITOR
@@ -34,6 +59,8 @@ model Admin {
   updatedAdmins  Admin[]  @relation(name: "updatedBy")
   createdSchools School[] @relation(name: "createdBy")
   updatedSchools School[] @relation(name: "updatedBy")
+  createdUsers   User[]   @relation(name: "createdBy")
+  updatedUsers   User[]   @relation(name: "updatedBy")
 
   @@unique([email, role])
 }

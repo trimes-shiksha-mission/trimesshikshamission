@@ -15,8 +15,6 @@ model User {
   name            String
   email           String   @unique
   password        String
-  roleId          String   @db.Uuid
-  role            Role     @relation(fields: [roleId], references: [id])
   isMarried       Boolean
   headId          String?  @db.Uuid
   head            User?    @relation("head", fields: [headId], references: [id])
@@ -29,14 +27,69 @@ model User {
   qualification   String
   isVerified      Boolean  @default(false)
   gautra          String
+  createdById     String?  @db.Uuid
+  createdBy       Admin?   @relation("createdBy", fields: [createdById], references: [id])
+  updatedById     String?  @db.Uuid
+  updatedBy       Admin?   @relation("updatedBy", fields: [updatedById], references: [id])
   createdAt       DateTime @default(now()) @db.Timestamptz()
   updatedAt       DateTime @default(now()) @updatedAt @db.Timestamptz()
 }
 
-model Role {
+enum Role {
+  ADMIN
+  EDITOR
+  SUPERUSER
+}
+
+model Admin {
+  id             String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name           String
+  email          String
+  password       String
+  role           Role
+  areaId         String?  @db.Uuid
+  area           Area?    @relation(fields: [areaId], references: [id])
+  createdAt      DateTime @default(now()) @db.Timestamptz()
+  updatedAt      DateTime @default(now()) @updatedAt @db.Timestamptz()
+  createdById    String?  @db.Uuid
+  createdBy      Admin?   @relation(name: "createdBy", fields: [createdById], references: [id])
+  createdAdmins  Admin[]  @relation(name: "createdBy")
+  updatedById    String?  @db.Uuid
+  updatedBy      Admin?   @relation(name: "updatedBy", fields: [updatedById], references: [id])
+  updatedAdmins  Admin[]  @relation(name: "updatedBy")
+  createdSchools School[] @relation(name: "createdBy")
+  updatedSchools School[] @relation(name: "updatedBy")
+  createdUsers   User[]   @relation(name: "createdBy")
+  updatedUsers   User[]   @relation(name: "updatedBy")
+
+  @@unique([email, role])
+}
+
+model Area {
   id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  name      String   @unique
+  name      String
   createdAt DateTime @default(now()) @db.Timestamptz()
   updatedAt DateTime @default(now()) @updatedAt @db.Timestamptz()
-  User      User[]
+  Admin     Admin[]
+}
+
+model Editorial {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  title     String
+  body      String
+  createdAt DateTime @default(now()) @db.Timestamptz()
+}
+
+model School {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name        String
+  address     String
+  createdById String   @db.Uuid
+  createdBy   Admin    @relation("createdBy", fields: [createdById], references: [id])
+  updatedById String   @db.Uuid
+  updatedBy   Admin    @relation("updatedBy", fields: [updatedById], references: [id])
+  createdAt   DateTime @default(now()) @db.Timestamptz()
+  updatedAt   DateTime @default(now()) @updatedAt @db.Timestamptz()
+
+  @@unique([name, address])
 }
