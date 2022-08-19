@@ -1,5 +1,5 @@
-import { DeleteOutlined, InboxOutlined } from '@ant-design/icons'
-import { Button, Form, Input, message, Modal, Row, Table, Upload } from 'antd'
+import { DeleteOutlined } from '@ant-design/icons'
+import { Button, Form, Input, message, Modal, Row, Table } from 'antd'
 import { NextPage } from 'next'
 import { useState } from 'react'
 import { useMutation, useQuery } from 'react-query'
@@ -54,9 +54,7 @@ const Editorial: NextPage = () => {
   return (
     <ProtectedRoute role="SUPERUSER">
       <Row>
-        <Button onClick={() => setAddEditorialModal(true)}>
-          Add Editorial
-        </Button>
+        <Button onClick={() => setAddEditorialModal(true)}>Add New</Button>
       </Row>
 
       <Table
@@ -113,20 +111,6 @@ const Editorial: NextPage = () => {
           </Form.Item>
           <Form.Item label="Body:" name="body">
             <Input.TextArea rows={10} />
-          </Form.Item>
-          <Form.Item label="Images:" name="images">
-            <Upload.Dragger>
-              <p className="ant-upload-drag-icon">
-                <InboxOutlined />
-              </p>
-              <p className="ant-upload-text">
-                Click or drag file to this area to upload
-              </p>
-              <p className="ant-upload-hint">
-                Support for a single or bulk upload. Strictly prohibit from
-                uploading company data or other band files
-              </p>
-            </Upload.Dragger>
           </Form.Item>
           <Form.Item>
             <Button

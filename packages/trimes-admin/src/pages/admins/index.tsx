@@ -53,7 +53,7 @@ const Admins: NextPage = () => {
   )
 
   return (
-    <ProtectedRoute role="ADMIN">
+    <ProtectedRoute role={['ADMIN', 'SUPERUSER']}>
       <h3>Admins</h3>
       <Button onClick={() => setAddAdminModal(true)}>Add Admin</Button>
       {isLoading ? (

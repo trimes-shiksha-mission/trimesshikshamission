@@ -58,8 +58,25 @@ export const Sidebar: FC = () => {
               children: [
                 {
                   type: undefined as any,
-                  label: <Link href="/editorial">Editorial</Link>,
+                  label: <Link href="/editorial">Mann ki Baat</Link>,
                   key: '2-1',
+                  onClick: handleSidebarChange
+                }
+              ]
+            }
+          ]) ||
+            []),
+          ...(((user?.role === 'ADMIN' || user?.role === 'SUPERUSER') && [
+            {
+              key: '3',
+              type: undefined as any,
+              label: 'Vidhya Pracharini',
+              onClick: handleSidebarChange,
+              children: [
+                {
+                  type: undefined as any,
+                  label: <Link href="/schools">Schools</Link>,
+                  key: '3-1',
                   onClick: handleSidebarChange
                 }
               ]

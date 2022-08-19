@@ -17,21 +17,23 @@ enum Role {
 }
 
 model Admin {
-  id            String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  name          String
-  email         String
-  password      String
-  role          Role
-  areaId        String?  @db.Uuid
-  area          Area?    @relation(fields: [areaId], references: [id])
-  createdAt     DateTime @default(now()) @db.Timestamptz()
-  updatedAt     DateTime @default(now()) @updatedAt @db.Timestamptz()
-  createdById   String?  @db.Uuid
-  createdBy     Admin?   @relation(name: "createdBy", fields: [createdById], references: [id])
-  createdAdmins Admin[]  @relation(name: "createdBy")
-  updatedById   String?  @db.Uuid
-  updatedBy     Admin?   @relation(name: "updatedBy", fields: [updatedById], references: [id])
-  updatedAdmins Admin[]  @relation(name: "updatedBy")
+  id             String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name           String
+  email          String
+  password       String
+  role           Role
+  areaId         String?  @db.Uuid
+  area           Area?    @relation(fields: [areaId], references: [id])
+  createdAt      DateTime @default(now()) @db.Timestamptz()
+  updatedAt      DateTime @default(now()) @updatedAt @db.Timestamptz()
+  createdById    String?  @db.Uuid
+  createdBy      Admin?   @relation(name: "createdBy", fields: [createdById], references: [id])
+  createdAdmins  Admin[]  @relation(name: "createdBy")
+  updatedById    String?  @db.Uuid
+  updatedBy      Admin?   @relation(name: "updatedBy", fields: [updatedById], references: [id])
+  updatedAdmins  Admin[]  @relation(name: "updatedBy")
+  createdSchools School[] @relation(name: "createdBy")
+  updatedSchools School[] @relation(name: "updatedBy")
 
   @@unique([email, role])
 }
@@ -49,4 +51,18 @@ model Editorial {
   title     String
   body      String
   createdAt DateTime @default(now()) @db.Timestamptz()
+}
+
+model School {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name        String
+  address     String
+  createdById String   @db.Uuid
+  createdBy   Admin    @relation("createdBy", fields: [createdById], references: [id])
+  updatedById String   @db.Uuid
+  updatedBy   Admin    @relation("updatedBy", fields: [updatedById], references: [id])
+  createdAt   DateTime @default(now()) @db.Timestamptz()
+  updatedAt   DateTime @default(now()) @updatedAt @db.Timestamptz()
+
+  @@unique([name, address])
 }
