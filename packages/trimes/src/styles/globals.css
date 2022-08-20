@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 .jobs{
-  background-image: url('https://picsum.photos/id/1018/1000')
+  background-image: url('../../public/wallpaper.jpg')
 }
 .glassmorphism{
   backdrop-filter: blur(20px);
