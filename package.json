@@ -21,5 +21,8 @@
   "homepage": "https://github.com/trimes-shiksha-mission/trimesshikshamission#readme",
   "workspaces": [
     "packages/*"
-  ]
+  ],
+  "dependencies": {
+    "react-paginate": "^8.1.3"
+  }
 }
