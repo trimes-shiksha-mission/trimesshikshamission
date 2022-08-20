@@ -6,7 +6,7 @@ module.exports = {
       none: 'none',
       blur: 'blur(20px)'
     },
-    extend: {}
+    extend: {},
   },
   plugins: [require('tailwindcss-filters')]
 }

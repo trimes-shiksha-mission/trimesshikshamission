@@ -8,6 +8,7 @@ import '../styles/globals.css'
 function MyApp({ Component, pageProps: { session, ...pageProps } }: AppProps) {
   const queryClient = new QueryClient()
   return (
+<<<<<<< HEAD
     <SessionProvider session={session}>
       <QueryClientProvider client={queryClient}>
         <Header />
@@ -16,6 +17,16 @@ function MyApp({ Component, pageProps: { session, ...pageProps } }: AppProps) {
         </div>
       </QueryClientProvider>
     </SessionProvider>
+=======
+    <>
+      <Header />
+      <div className="pt-20">
+        <Component {...pageProps} />
+      </div>
+      <Script src="/chatra.js" />
+      <Footer />
+    </>
+>>>>>>> 0ddb84ca768bd9ee1795794af2f92ce5eea28cad
   )
 }
 
