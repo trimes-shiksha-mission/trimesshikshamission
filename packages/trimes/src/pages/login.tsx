@@ -1,8 +1,14 @@
 import { NextPage } from 'next'
+import { signIn, useSession } from 'next-auth/react'
 import Link from 'next/link'
 
-
 const Login: NextPage = () => {
+  const { data: session } = useSession()
+
+  if (session) {
+    window.location.href = '/'
+    return <>Already signed in</>
+  }
   return (
     <>
       <div className="flex items-center justify-center min-h-screen bg-gray-100">
@@ -11,12 +17,21 @@ const Login: NextPage = () => {
           <h3 className="text-2xl font-bold text-center">
             Login into your Trimes Account
           </h3>
-          <form action="">
+          <form
+            onSubmit={async e => {
+              e.preventDefault()
+              await signIn('credentials', {
+                contact: e.currentTarget.contact.value,
+                password: e.currentTarget.password.value
+              })
+            }}
+          >
             <div className="mt-4">
               <div className="mt-4">
                 <label className="block">Phone Number</label>
                 <input
                   type="text"
+                  name="contact"
                   placeholder="Number"
                   className="w-full px-4 py-2 mt-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-blue-600"
                 />
@@ -25,11 +40,12 @@ const Login: NextPage = () => {
                 <label className="block">Password</label>
                 <input
                   type="password"
+                  name="password"
                   placeholder="Password"
                   className="w-full px-4 py-2 mt-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-blue-600"
                 />
               </div>
-             
+
               <span className="text-xs text-red-400 hidden">
                 Password must be same!
               </span>
@@ -39,11 +55,9 @@ const Login: NextPage = () => {
                 </button>
               </div>
               <div className="mt-6 text-grey-dark">
-                Dont't have an account? 
+                Dont&apos;t have an account?
                 <Link href="/register">
-                <a className="text-blue-600 hover:underline">
-                  Register Here
-                </a>
+                  <a className="text-blue-600 hover:underline">Register Here</a>
                 </Link>
               </div>
             </div>
@@ -53,4 +67,4 @@ const Login: NextPage = () => {
     </>
   )
 }
-export default Login;
+export default Login
