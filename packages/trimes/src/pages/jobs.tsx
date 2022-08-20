@@ -1,6 +1,6 @@
 import { NextPage } from 'next'
 import Link from 'next/link'
-import { Footer } from '../components/Footer'
+
 
 const Matrimonial: NextPage = () => {
   return (
@@ -17,7 +17,6 @@ const Matrimonial: NextPage = () => {
           </div>
         </div>
       </div>
-      <Footer></Footer>
     </>
   )
 }
