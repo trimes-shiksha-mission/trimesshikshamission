@@ -7,7 +7,7 @@ import { useState } from 'react'
 import { useMutation, useQuery } from 'react-query'
 import { ProtectedRoute } from '../components/ProtectedRoute'
 
-const Student: NextPage = () => {
+const Samagri: NextPage = () => {
   const [newsModal, setNewsModal] = useState(false)
   const [files, setFiles] = useState<File[]>([])
   const { mutateAsync: createNews, isLoading: createNewsLoading } = useMutation(
@@ -15,7 +15,7 @@ const Student: NextPage = () => {
       const formData = new FormData()
       formData.append('title', samagriData.title)
       formData.append('body', samagriData.body)
-      formData.append('type', 'news')
+      formData.append('type', 'SAMAGRI')
       for (let i = 0; i < files.length; i++) {
         formData.append('files', files[i], files[i].name)
       }
@@ -156,4 +156,4 @@ const Student: NextPage = () => {
     </ProtectedRoute>
   )
 }
-export default Student
+export default Samagri

@@ -15,7 +15,7 @@ const Gyanganga: NextPage = () => {
       const formData = new FormData()
       formData.append('title', gyangangaData.title)
       formData.append('body', gyangangaData.body)
-      formData.append('type', 'news')
+      formData.append('type', 'GYANGANGA')
       for (let i = 0; i < files.length; i++) {
         formData.append('files', files[i], files[i].name)
       }
