@@ -13,21 +13,6 @@ export const Header: FC = () => {
   const [phoneMenuOpen, setPhoneMenuOpen] = useState(false)
   const router = useRouter()
   const currRoute = router.route
-  // const dark = currRoute === '/' ? false : true
-  const [scroll, setScroll] = useState(false)
-  useEffect(() => {
-    const handleScroll = () => {
-      if (window.scrollY > 40) {
-        setScroll(true)
-      } else {
-        setScroll(false)
-      }
-    }
-    window.addEventListener('scroll', handleScroll)
-    return () => {
-      window.removeEventListener('scroll', handleScroll)
-    }
-  }, [])
 
   useEffect(() => {
     router.events.on('routeChangeComplete', () => {
@@ -39,35 +24,35 @@ export const Header: FC = () => {
     <>
       <header
         id="header"
-        className={`w-full block fixed z-50 animated transition-all duration-300 sm:px-8 bg-white backdrop-filter backdrop-blur-md ${
-          scroll ? 'text-black' : 'text-white'
-        }bg-transparent`}
+        className={`w-full block fixed z-50 animated transition-all duration-300 sm:px-8 bg-white backdrop-filter backdrop-blur-md text-black bg-transparent`}
       >
         <nav>
           <div className="flex justify-between items-center animated py-1 animate-fadeInDown ">
             <Link href="/" passHref>
-              <a className="ml-2 lg:ml-4 w-32">
-                <Image
-                  src="/logo.png"
-                  alt=""
-                  // layout="responsive"
-                  height={50}
-                  width={50}
-                />
+              <a className="ml-2 lg:ml-4py-2 flex items-center text-base sm:text-xl ">
+                <div className="w-16 mr-3">
+                  <Image
+                    src="/logo.png"
+                    alt=""
+                    layout="responsive"
+                    height={1}
+                    width={1}
+                  />
+                </div>
+                <span className="font-semibold tracking-wide">
+                  Trimes Shiksha Mission
+                </span>
               </a>
             </Link>
             <CgMenuRightAlt
               className={`${phoneMenuOpen ? 'invisible' : 'visible'}
-              ${
-                scroll ? 'text-black' : 'text-white'
-              } text-black  md:hidden mr-4`}
+              text-black  lg:hidden mr-4`}
               size={32}
               onClick={() => setPhoneMenuOpen(true)}
             />
-            <ul className="hidden md:flex items-center justify-center lg:mr-8">
+            <ul className="hidden lg:flex items-center justify-center lg:mr-8">
               <li
-                className={`opacity-95 relative cursor-pointer py-2 text-base font-medium mx-4 hover:text-primary transition-all duration-200
-                ${scroll ? 'text-black' : 'text-white'}`}
+                className={`opacity-95 relative cursor-pointer py-2 text-base font-medium mx-4 hover:text-primary transition-all duration-200 text-black`}
               >
                 <Link href="/" passHref>
                   <a>HOME</a>
@@ -75,8 +60,7 @@ export const Header: FC = () => {
                 {checkRoute(currRoute, '/')}
               </li>
               <li
-                className={`opacity-95 relative cursor-pointer py-2 text-base font-medium mx-4 text-black hover:text-primary transition-all duration-200
-                ${scroll ? 'text-black' : 'text-white'}`}
+                className={`opacity-95 relative cursor-pointer py-2 text-base font-medium mx-4  hover:text-primary transition-all duration-200 text-black`}
               >
                 <Link href="/matrimonial" passHref>
                   <a>MATRIMONIAL</a>
@@ -88,8 +72,7 @@ export const Header: FC = () => {
                 )}
               </li>
               <li
-                className={`opacity-95 relative cursor-pointer py-2 text-base font-medium mx-4 text-black hover:text-primary transition-all duration-200
-                ${scroll ? 'text-black' : 'text-white'}`}
+                className={`opacity-95 relative cursor-pointer py-2 text-base font-medium mx-4 text-black hover:text-primary transition-all duration-200`}
               >
                 <Link href="/news" passHref>
                   <a>NEWS</a>
@@ -101,8 +84,7 @@ export const Header: FC = () => {
                 )}
               </li>
               <li
-                className={`opacity-95 relative cursor-pointer py-2 text-base font-medium mx-4 text-black hover:text-primary transition-all duration-200
-                ${scroll ? 'text-black' : 'text-white'}`}
+                className={`opacity-95 relative cursor-pointer py-2 text-base font-medium mx-4 text-black hover:text-primary transition-all duration-200`}
               >
                 <Link href="/ec" passHref>
                   <a>CHOKHLE</a>
@@ -114,8 +96,7 @@ export const Header: FC = () => {
                 )}
               </li>
               <li
-                className={`opacity-95 relative cursor-pointer py-2 text-base font-medium mx-4 text-black hover:text-primary transition-all duration-200
-                ${scroll ? 'text-black' : 'text-white'}`}
+                className={`opacity-95 relative cursor-pointer py-2 text-base font-medium mx-4 text-black hover:text-primary transition-all duration-200`}
               >
                 <Link href="/samagri" passHref>
                   <a>SAMAGRI</a>
@@ -127,9 +108,7 @@ export const Header: FC = () => {
                 )}
               </li>
               <li
-                className={`opacity-95 relative cursor-pointer py-2 text-base font-medium mx-4 text-black hover:text-primary transition-all duration-200${
-                  scroll ? 'text-black' : 'text-white'
-                }`}
+                className={`opacity-95 relative cursor-pointer py-2 text-base font-medium mx-4 text-black hover:text-primary transition-all duration-200`}
               >
                 <Link href="/gyanganga" passHref>
                   <a>GYAN GANGA</a>
@@ -141,11 +120,10 @@ export const Header: FC = () => {
                 )}
               </li>
               <li
-                className={`opacity-95 relative cursor-pointer py-2 text-base font-medium mx-4 text-black hover:text-primary transition-all duration-200
-                ${scroll ? 'text-black' : 'text-white'}`}
+                className={`opacity-95 relative cursor-pointer py-2 text-base font-medium mx-4 text-black hover:text-primary transition-all duration-200`}
               >
                 <Link href="/students" passHref>
-                  <a>STUDNETS CORNER</a>
+                  <a>STUDENTS CORNER</a>
                 </Link>
                 {checkRoute(currRoute, '/students') && (
                   <div
@@ -154,8 +132,7 @@ export const Header: FC = () => {
                 )}
               </li>
               <li
-                className={`opacity-95 relative cursor-pointer py-2 text-base font-medium mx-4 text-black hover:text-primary transition-all duration-200
-                ${scroll ? 'text-black' : 'text-white'}`}
+                className={`opacity-95 relative cursor-pointer py-2 text-base font-medium mx-4 text-black hover:text-primary transition-all duration-200  `}
               >
                 <Link href="/jobs" passHref>
                   <a>JOBS PORTAL</a>
@@ -172,7 +149,7 @@ export const Header: FC = () => {
         <AnimatePresence>
           {phoneMenuOpen && (
             <motion.div
-              className="md:hidden absolute top-0 left-0 w-screen h-screen bg-white py-2 px-4 flex flex-col items-end"
+              className="lg:hidden absolute top-0 left-0 w-screen h-screen bg-white py-2 px-4 flex flex-col items-end"
               initial={{
                 x: '100%',
                 opacity: 0
