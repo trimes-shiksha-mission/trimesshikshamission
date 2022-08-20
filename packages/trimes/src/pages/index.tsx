@@ -32,11 +32,11 @@ const Home: NextPage<{ editorial: Editorial }> = ({ editorial }) => {
     <>
       {editorial && (
         <div className="px-48 flex space-x-12">
-          <div>
+          <div className="w-1/4">
             <h2 className="text-3xl font-semibold italic">मन की बात</h2>
             <span>{editorial.createdAt.toLocaleString()}</span>
           </div>
-          <div>
+          <div className="w-full">
             <h3 className="text-xl font-semibold">{editorial.title}</h3>
             <p
               className="mt-2"

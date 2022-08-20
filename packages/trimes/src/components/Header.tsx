@@ -123,7 +123,7 @@ export const Header: FC = () => {
                 className={`opacity-95 relative cursor-pointer py-2 text-base font-medium mx-4 text-black hover:text-primary transition-all duration-200`}
               >
                 <Link href="/students" passHref>
-                  <a>STUDNETS CORNER</a>
+                  <a>STUDENTS CORNER</a>
                 </Link>
                 {checkRoute(currRoute, '/students') && (
                   <div
