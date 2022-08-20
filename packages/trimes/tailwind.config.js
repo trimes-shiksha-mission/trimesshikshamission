@@ -2,7 +2,11 @@
 module.exports = {
   content: ['./src/pages/**/*.{ts,tsx}', '/.src/components/**/*.{ts,tsx}'],
   theme: {
+    backdropFilter: {
+      none: 'none',
+      blur: 'blur(20px)'
+    },
     extend: {}
   },
-  plugins: []
+  plugins: [require('tailwindcss-filters')]
 }
