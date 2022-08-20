@@ -11,7 +11,7 @@ export const ProtectedRoute: FC<{ children: any; role?: Role[] }> = ({
   })
   useEffect(() => {
     if (!user) return
-    if (role && !role.includes(user.role as Role)) {
+    if (role?.length && !role.includes(user.role as Role)) {
       window.location.href = '/'
     }
   }, [role, user])

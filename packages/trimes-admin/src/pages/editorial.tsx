@@ -36,7 +36,7 @@ const Editorial: NextPage = () => {
   const { mutateAsync: deleteEditorial, isLoading: deleteEditorialLoading } =
     useMutation(async id => {
       try {
-        const res = await fetch('/api/editorial', {
+        await fetch('/api/editorial', {
           method: 'DELETE',
           body: JSON.stringify({ id }),
           headers: {
@@ -52,7 +52,7 @@ const Editorial: NextPage = () => {
   const [addEditorialModal, setAddEditorialModal] = useState(false)
 
   return (
-    <ProtectedRoute role="SUPERUSER">
+    <ProtectedRoute role={['SUPERUSER']}>
       <Row>
         <Button onClick={() => setAddEditorialModal(true)}>Add New</Button>
       </Row>

@@ -82,7 +82,12 @@ export const Sidebar: FC = () => {
               ]
             }
           ]) ||
-            [])
+            []),
+          {
+            key: '4',
+            label: <Link href="/news">News</Link>,
+            onClick: handleSidebarChange
+          }
         ]}
       />
     </Layout.Sider>

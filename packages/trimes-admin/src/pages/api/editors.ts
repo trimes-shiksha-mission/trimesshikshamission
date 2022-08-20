@@ -11,6 +11,11 @@ async function EditorsHandler(req: NextApiRequest, res: NextApiResponse) {
       .json({ message: 'Unauthorized', error: 'Unauthorized access!' })
   }
   if (req.method === 'POST') {
+    if (!['ADMIN', 'SUPERADMIN'].includes(req.session.user.role || '')) {
+      return res
+        .status(401)
+        .json({ message: 'Unauthorized', error: 'Unauthorized access!' })
+    }
     try {
       const { email, password, name, areaId } = req.body
       if (!email || !password || !name || !areaId) {
