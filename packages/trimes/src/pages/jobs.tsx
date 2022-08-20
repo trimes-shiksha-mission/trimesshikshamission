@@ -10,7 +10,7 @@ const Matrimonial: NextPage = () => {
             <div className="text-7xl">This Section will be live soon :)</div>
             <div className="text-center mt-10">
               <Link href="/">
-                <a className="text-2xl text-sky-500 font-medium">Go to Home</a>
+                <a className="text-4xl text-sky-700 font-medium">Go to Home</a>
               </Link>
             </div>
           </div>
