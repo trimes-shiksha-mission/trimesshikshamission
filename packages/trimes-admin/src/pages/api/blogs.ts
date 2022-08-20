@@ -32,13 +32,13 @@ async function BlogHandler(req: NextApiRequest, res: NextApiResponse) {
   }
 
   if (req.method === 'GET') {
-    const { type } = req.query
+    const type = req.query.type as string
     if (!type) {
       return res.status(400).json({ message: 'Missing type' })
     }
     const blogs = await prismaClient.blog.findMany({
       where: {
-        type: 'NEWS'
+        type
       },
       include: {
         createdBy: {
