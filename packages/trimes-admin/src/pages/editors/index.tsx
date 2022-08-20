@@ -13,6 +13,7 @@ import { NextPage } from 'next'
 import { useState } from 'react'
 import { useMutation, useQuery } from 'react-query'
 import { ProtectedRoute } from '../../components/ProtectedRoute'
+import useUser from '../../lib/useUser'
 
 const Editors: NextPage = () => {
   const [addEditorModal, setAddEditorModal] = useState(false)
@@ -73,10 +74,14 @@ const Editors: NextPage = () => {
   )
   const [resetPassword, setResetPassword] = useState(false)
 
+  const { user } = useUser()
+
   return (
     <ProtectedRoute>
       <h3>Editors</h3>
-      <Button onClick={() => setAddEditorModal(true)}>Add Editor</Button>
+      {user?.role !== 'EDITOR' && (
+        <Button onClick={() => setAddEditorModal(true)}>Add Editor</Button>
+      )}
       {isLoading ? (
         <span>Loading...</span>
       ) : (
