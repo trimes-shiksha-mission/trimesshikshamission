@@ -39,9 +39,20 @@ async function AdminHandler(req: NextApiRequest, res: NextApiResponse) {
         where: {
           role: 'ADMIN'
         },
+        orderBy: {
+          createdAt: 'desc'
+        },
         include: {
-          createdBy: true,
-          updatedBy: true
+          createdBy: {
+            select: {
+              name: true
+            }
+          },
+          updatedBy: {
+            select: {
+              name: true
+            }
+          }
         }
       })
       res

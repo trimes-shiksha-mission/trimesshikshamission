@@ -4,11 +4,6 @@ import { prismaClient } from '../../lib/prisma'
 import { sessionOptions } from '../../lib/session'
 
 async function AreasHandler(req: NextApiRequest, res: NextApiResponse) {
-  if (req.session.user === undefined) {
-    return res
-      .status(401)
-      .json({ message: 'Unauthorized', error: 'Unauthorized access' })
-  }
   if (req.method === 'POST') {
     const { name } = req.body
     try {

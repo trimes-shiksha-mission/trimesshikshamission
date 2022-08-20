@@ -28,9 +28,9 @@ model User {
   isVerified      Boolean  @default(false)
   gautra          String
   createdById     String?  @db.Uuid
-  createdBy       Admin?   @relation("createdBy", fields: [createdById], references: [id])
+  createdBy       Admin?   @relation("createdByUsers", fields: [createdById], references: [id])
   updatedById     String?  @db.Uuid
-  updatedBy       Admin?   @relation("updatedBy", fields: [updatedById], references: [id])
+  updatedBy       Admin?   @relation("updatedByUsers", fields: [updatedById], references: [id])
   createdAt       DateTime @default(now()) @db.Timestamptz()
   updatedAt       DateTime @default(now()) @updatedAt @db.Timestamptz()
 }
@@ -57,10 +57,10 @@ model Admin {
   updatedById    String?  @db.Uuid
   updatedBy      Admin?   @relation(name: "updatedBy", fields: [updatedById], references: [id])
   updatedAdmins  Admin[]  @relation(name: "updatedBy")
-  createdSchools School[] @relation(name: "createdBy")
-  updatedSchools School[] @relation(name: "updatedBy")
-  createdUsers   User[]   @relation(name: "createdBy")
-  updatedUsers   User[]   @relation(name: "updatedBy")
+  createdSchools School[] @relation(name: "createdBySchools")
+  updatedSchools School[] @relation(name: "updatedBySchools")
+  createdUsers   User[]   @relation(name: "createdByUsers")
+  updatedUsers   User[]   @relation(name: "updatedByUsers")
 
   @@unique([email, role])
 }
@@ -85,9 +85,9 @@ model School {
   name        String
   address     String
   createdById String   @db.Uuid
-  createdBy   Admin    @relation("createdBy", fields: [createdById], references: [id])
+  createdBy   Admin    @relation("createdBySchools", fields: [createdById], references: [id])
   updatedById String   @db.Uuid
-  updatedBy   Admin    @relation("updatedBy", fields: [updatedById], references: [id])
+  updatedBy   Admin    @relation("updatedBySchools", fields: [updatedById], references: [id])
   createdAt   DateTime @default(now()) @db.Timestamptz()
   updatedAt   DateTime @default(now()) @updatedAt @db.Timestamptz()
 

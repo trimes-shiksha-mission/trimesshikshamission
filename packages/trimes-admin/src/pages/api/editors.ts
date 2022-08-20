@@ -41,7 +41,17 @@ async function EditorsHandler(req: NextApiRequest, res: NextApiResponse) {
           role: 'EDITOR'
         },
         include: {
-          area: true
+          area: true,
+          createdBy: {
+            select: {
+              name: true
+            }
+          },
+          updatedBy: {
+            select: {
+              name: true
+            }
+          }
         }
       })
       res

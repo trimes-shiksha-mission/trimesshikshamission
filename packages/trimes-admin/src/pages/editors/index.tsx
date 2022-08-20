@@ -99,6 +99,14 @@ const Editors: NextPage = () => {
               render: (_, record) => record.area?.name
             },
             {
+              title: 'Created By',
+              render: (_, record) => record.createdBy?.name
+            },
+            {
+              title: 'Updated By',
+              render: (_, record) => record.updatedBy?.name
+            },
+            {
               title: 'Actions',
               render: (_, record) => (
                 <Space>
