@@ -73,7 +73,11 @@ export const Header: FC = () => {
                   <a>HOME</a>
                 </Link>
                 {checkRoute(currRoute, '/') 
-               c
+                && (
+                  <div
+                    className={`bg-black w-full h-[2px] absolute mt-1`}
+                  ></div>
+                )
                 }
               </li>
               <li
