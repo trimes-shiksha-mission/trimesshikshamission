@@ -90,8 +90,11 @@ export const Footer: FC = () => {
         </div>
       </div>
       <div className="bg-secondary w-full px-8 py-1 text-base flex flex-col sm:flex-row justify-between text-white bg-[#808080]">
-        <span>Copyright &copy; 2022 Trimes Shiksha Mission</span>
-        <span>Terms of Use | Privacy Policy</span>
+        <span>Copyright &copy; 2022 TRIMES SHIKSHA MISSION. ALL RIGHTS RESERVED</span>
+        <span>
+          <Link href="/terms">TERMS OF USE</Link> |
+          <Link href="/privacy"> PRIVACY POLICY</Link>
+        </span>
       </div>
     </div>
   )
