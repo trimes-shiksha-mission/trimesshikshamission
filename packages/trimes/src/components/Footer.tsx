@@ -9,7 +9,7 @@ import Link from 'next/link'
 export const Footer: FC = () => {
   return (
     <div className="mt-10">
-      <div className="w-full p-8 grid md:grid-cols-3 gap-4 md:px-28 bg-primary text-white bg-[#3d4045]">
+      <div className="w-full p-8 grid md:grid-cols-3 gap-3 md:px-28 bg-primary text-white bg-[#3d4045]">
         <div>
           <h5 className="text-base">CONTACT</h5>
           <div className="mt-3 text-[0.8rem]">

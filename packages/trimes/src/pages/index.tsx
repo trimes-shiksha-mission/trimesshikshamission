@@ -70,6 +70,37 @@ const Home: NextPage<{ editorial: Editorial }> = ({ editorial }) => {
           </SwiperSlide>
         ))}
       </Swiper>
+
+      <div className="w-full grid md:grid-cols-4 gap-4 px-10 m-10">
+        <div className="bg-[#f94301]">
+          <div className="text-3xl">TrimesShikshaMission.org</div>
+          <div className="mt-4">
+            Trimes Shiksha Mission is a small initiative in the direction of
+            realizing a very materializing and comprehensive thinking. The
+            mission is to provide a platform for the youth of the country to get
+            the right direction in their lives.
+          </div>
+        </div>
+        <div className="">
+          <div className="text-xl">Matrimonial</div>
+          <div className="">
+            Helping Trivedi Meware Brahamins to cherish the meaning of Happy
+            Marriage and help them to find their better half.
+          </div>
+        </div>
+        <div className="">
+          <div className="text-xl">Find/Post Jobs</div>
+          <div className="">
+            We Help community members to Find or Post Jobs.
+          </div>
+        </div>
+        <div className="">
+          <div className="text-xl">News</div>
+          <div className="">
+            We help community members to get updated with the latest events and achievements etc. of the community.
+          </div>
+        </div>
+      </div>
     </>
   )
 }
