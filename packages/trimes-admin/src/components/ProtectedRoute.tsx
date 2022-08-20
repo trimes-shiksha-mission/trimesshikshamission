@@ -2,7 +2,7 @@ import { Role } from '@prisma/client'
 import { FC, useEffect } from 'react'
 import useUser from '../lib/useUser'
 
-export const ProtectedRoute: FC<{ children: any; role?: Role }> = ({
+export const ProtectedRoute: FC<{ children: any; role?: Role[] }> = ({
   children,
   role
 }) => {
@@ -11,7 +11,7 @@ export const ProtectedRoute: FC<{ children: any; role?: Role }> = ({
   })
   useEffect(() => {
     if (!user) return
-    if (role && user.role !== role) {
+    if (role && !role.includes(user.role as Role)) {
       window.location.href = '/'
     }
   }, [role, user])
