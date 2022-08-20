@@ -112,10 +112,10 @@ const Student: NextPage = () => {
           }}
           layout={'vertical'}
         >
-          <Form.Item label="Title" name="title">
+          <Form.Item label="Title" name="title" rules = {[{required: true,message: "Title is required"}]}>
             <Input type="text" />
           </Form.Item>
-          <Form.Item label="Content" name="body">
+          <Form.Item label="Content" name="body" rules = {[{required: true,message:"Content is required"}]}>
             <Input.TextArea />
           </Form.Item>
 
