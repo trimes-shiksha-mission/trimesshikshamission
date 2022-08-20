@@ -39,14 +39,14 @@ const Student: NextPage = () => {
   )
 
   const { data: news, refetch } = useQuery('news', async () => {
-    const data = await fetch('/api/blogs?type=NEWS', {
+    const data = await fetch('/api/blogs?type=STUDENT', {
       method: 'GET'
     })
     return await data.json()
   })
   return (
     <ProtectedRoute>
-      <h1>News</h1>
+      <h1>Student Portal</h1>
       <Button
         onClick={() => {
           setNewsModal(true)

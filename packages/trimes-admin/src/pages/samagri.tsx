@@ -39,14 +39,14 @@ const Samagri: NextPage = () => {
   )
 
   const { data: news, refetch } = useQuery('news', async () => {
-    const data = await fetch('/api/blogs?type=NEWS', {
+    const data = await fetch('/api/blogs?type=SAMAGRI', {
       method: 'GET'
     })
     return await data.json()
   })
   return (
     <ProtectedRoute>
-      <h1>News</h1>
+      <h1>Samagri</h1>
       <Button
         onClick={() => {
           setNewsModal(true)
