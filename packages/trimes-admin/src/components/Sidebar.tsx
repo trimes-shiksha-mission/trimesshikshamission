@@ -87,7 +87,23 @@ export const Sidebar: FC = () => {
             key: '4',
             label: <Link href="/news">News</Link>,
             onClick: handleSidebarChange
+          },
+          {
+            key: '5',
+            label: <Link href="/student">Student Portal</Link>,
+            onClick: handleSidebarChange
+          },
+          {
+            key: '6',
+            label: <Link href="/gyanganga">Gyan Ganga Manch</Link>,
+            onClick: handleSidebarChange
+          },
+          {
+            key: '7',
+            label: <Link href="/samagri">Samagri</Link>,
+            onClick: handleSidebarChange
           }
+
         ]}
       />
     </Layout.Sider>

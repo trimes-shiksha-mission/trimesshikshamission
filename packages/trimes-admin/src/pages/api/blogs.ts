@@ -32,13 +32,13 @@ async function BlogHandler(req: NextApiRequest, res: NextApiResponse) {
   }
 
   if (req.method === 'GET') {
-    const { type } = req.query
+    const type = req.query.type as string
     if (!type) {
       return res.status(400).json({ message: 'Missing type' })
     }
     const blogs = await prismaClient.blog.findMany({
       where: {
-        type: 'NEWS'
+        type
       },
       include: {
         createdBy: {
@@ -53,37 +53,42 @@ async function BlogHandler(req: NextApiRequest, res: NextApiResponse) {
     })
     return res.status(200).json(blogs)
   } else if (req.method === 'POST') {
-    const { body, files } = await parseForm(req)
-    const { title, body: blogBody } = body
-    if (!title || !body)
-      return res.status(400).json({ message: 'Invalid request' })
-    const fileUrls: string[] = []
-    for (let i = 0; i < files.files.length; i++) {
-      const file = files.files[i]
+    try {
+      const { body, files } = await parseForm(req)
+      const { title, body: blogBody, type } = body
+      if (!title || !body || !type)
+        return res.status(400).json({ message: 'Invalid request' })
+      const fileUrls: string[] = []
+      for (let i = 0; i < files.files.length; i++) {
+        const file = files.files[i]
 
-      const path = `${Date.now()}-news-${file.originalFilename}`
-      const fileData = await readFile(file.path)
-      const url = await supabaseClient.storage
-        .from(bucket)
-        .upload(path, fileData, {
-          contentType: file.headers['content-type']
-        })
-      if (url.data?.Key) {
-        fileUrls.push(url.data.Key)
+        const path = `${Date.now()}-news-${file.originalFilename}`
+        const fileData = await readFile(file.path)
+        const url = await supabaseClient.storage
+          .from(bucket)
+          .upload(path, fileData, {
+            contentType: file.headers['content-type']
+          })
+        if (url.data?.Key) {
+          fileUrls.push(url.data.Key)
+        }
       }
+      await prismaClient.blog.create({
+        data: {
+          body: blogBody[0],
+          title: title[0],
+          type: type[0],
+          createdById: req.session.user.id,
+          images: fileUrls.map(
+            url => supabaseBucketURL + '/storage/v1/object/public/' + url
+          )
+        }
+      })
+      return res.status(200).json({ message: 'OK' })
+    } catch (error) {
+      console.error(error)
+      throw new Error('Some error occurred')
     }
-    await prismaClient.blog.create({
-      data: {
-        body: blogBody[0],
-        title: title[0],
-        type: 'NEWS',
-        createdById: req.session.user.id,
-        images: fileUrls.map(
-          url => supabaseBucketURL + '/storage/v1/object/public/' + url
-        )
-      }
-    })
-    return res.status(200).json({ message: 'OK' })
   } else if (req.method === 'DELETE') {
     const id = req.query.id as string
     if (!id) {

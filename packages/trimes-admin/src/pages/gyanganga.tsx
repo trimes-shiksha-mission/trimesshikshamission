@@ -7,15 +7,15 @@ import { useState } from 'react'
 import { useMutation, useQuery } from 'react-query'
 import { ProtectedRoute } from '../components/ProtectedRoute'
 
-const News: NextPage = () => {
+const Gyanganga: NextPage = () => {
   const [newsModal, setNewsModal] = useState(false)
   const [files, setFiles] = useState<File[]>([])
   const { mutateAsync: createNews, isLoading: createNewsLoading } = useMutation(
-    async (newsData: any) => {
+    async (gyangangaData: any) => {
       const formData = new FormData()
-      formData.append('title', newsData.title)
-      formData.append('body', newsData.body)
-      formData.append('type', 'NEWS')
+      formData.append('title', gyangangaData.title)
+      formData.append('body', gyangangaData.body)
+      formData.append('type', 'GYANGANGA')
       for (let i = 0; i < files.length; i++) {
         formData.append('files', files[i], files[i].name)
       }
@@ -25,7 +25,7 @@ const News: NextPage = () => {
         body: formData
       })
       setFiles([])
-      message.success('News added successfully')
+      message.success('Gyanganga data added successfully')
     }
   )
 
@@ -34,19 +34,19 @@ const News: NextPage = () => {
       await fetch(`/api/blogs?id=${id}`, {
         method: 'DELETE'
       })
-      message.success('News deleted successfully')
+      message.success('Gyanganga data deleted successfully')
     }
   )
 
   const { data: news, refetch } = useQuery('news', async () => {
-    const data = await fetch('/api/blogs?type=NEWS', {
+    const data = await fetch('/api/blogs?type=GYANGANGA', {
       method: 'GET'
     })
     return await data.json()
   })
   return (
     <ProtectedRoute>
-      <h1>News</h1>
+      <h1>Gyan Ganga Manch</h1>
       <Button
         onClick={() => {
           setNewsModal(true)
@@ -156,4 +156,4 @@ const News: NextPage = () => {
     </ProtectedRoute>
   )
 }
-export default News
+export default Gyanganga
