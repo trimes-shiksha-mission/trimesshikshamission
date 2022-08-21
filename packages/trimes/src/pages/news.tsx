@@ -25,7 +25,10 @@ const News: NextPage<{ news: Blog[] }> = ({ news }) => {
   return (
     <>
       {news.map(n => (
-        <div className="max-w-sm lg:max-w-full lg:flex mt-6 ml-6 mr-6 md:ml-2 lg:ml-12 lg:mr-12 mb-2">
+        <div
+          key={n.id}
+          className="max-w-sm lg:max-w-full lg:flex mt-6 ml-6 mr-6 md:ml-2 lg:ml-12 lg:mr-12 mb-2"
+        >
           <div
             className="h-auto lg:w-48 flex-none bg-cover rounded-t-lg lg:rounded-t-none lg:rounded-l text-center overflow-hidden"
             title="news"
@@ -47,9 +50,7 @@ const News: NextPage<{ news: Blog[] }> = ({ news }) => {
               <div className="text-gray-900 font-bold text-xl mb-2">
                 {n.title}
               </div>
-              <p className="text-gray-700 text-base">
-                {n.body}
-              </p>
+              <p className="text-gray-700 text-base">{n.body}</p>
             </div>
             <div className="flex items-center">
               <div className="text-sm">
