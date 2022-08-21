@@ -11,7 +11,6 @@ export const getServerSideProps = async () => {
     orderBy: { createdAt: 'desc' }
   })
 
-  console.log(editorial)
   if (!editorial)
     return {
       props: {}
@@ -71,7 +70,7 @@ const Home: NextPage<{ editorial: Editorial }> = ({ editorial }) => {
         ))}
       </Swiper>
 
-      <div className="w-full grid md:grid-cols-4 gap-4 px-10 m-10">
+      <div className="w-full grid md:grid-cols-4 gap-4 px-10 ">
         <div className="bg-[#f94301]">
           <div className="text-3xl">TrimesShikshaMission.org</div>
           <div className="mt-4">
@@ -97,7 +96,8 @@ const Home: NextPage<{ editorial: Editorial }> = ({ editorial }) => {
         <div className="">
           <div className="text-xl">News</div>
           <div className="">
-            We help community members to get updated with the latest events and achievements etc. of the community.
+            We help community members to get updated with the latest events and
+            achievements etc. of the community.
           </div>
         </div>
       </div>

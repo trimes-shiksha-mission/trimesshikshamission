@@ -22,5 +22,24 @@ export default async function UserHandler(
       res.status(500).json(e)
       console.error(e)
     }
+  } else if (req.method === 'GET') {
+    try {
+      const userId = req.query.id as string
+      console.log(userId)
+      const user = await prismaClient.user.findFirst({
+        where: {
+          id: userId
+        }
+      })
+      console.log(user)
+      if (!user) return res.status(404).json({ message: 'User not found' })
+      res.status(200).json({
+        ...user,
+        password: undefined
+      })
+    } catch (e) {
+      res.status(500).json(e)
+      console.error(e)
+    }
   }
 }
