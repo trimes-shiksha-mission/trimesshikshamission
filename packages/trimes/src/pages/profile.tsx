@@ -36,63 +36,109 @@ const Profile: NextPage = () => {
     <>
       <div className="container mx-auto my-60">
         <div>
-
-            <div className="bg-white relative shadow rounded-lg w-5/6 md:w-4/6  lg:w-3/6 xl:w-2/6 mx-auto">
-                <div className="flex justify-center">
-                        <img src="" alt="" className="rounded-full mx-auto absolute -top-20 w-32 h-32 shadow-md border-4 border-white transition duration-200 transform hover:scale-110"/>
-                </div>
-                
-                <div className="mt-16">
-                    <h1 className="font-bold text-center text-3xl text-gray-900">{user.name}</h1>
-                    <p className="text-center text-sm text-gray-400 font-medium">{user.birthday}</p>
-                    <p>
-                        <span>
-                            
-                        </span>
-                    </p>
-                    <div className="my-5 px-6">
-                        <a href="#" className="text-gray-200 block rounded-lg text-center font-medium leading-6 px-6 py-3 bg-gray-900 hover:bg-black hover:text-white">Connect with <span className="font-bold">{user.email}</span></a>
-                    </div>
-                    <div className="w-full">
-                        <h3 className="font-medium text-gray-900 text-left px-6">Information</h3>
-                        <div className="mt-5 w-full flex flex-col items-center overflow-hidden text-sm">
-                            <a href="" className="w-full border-t border-gray-100 text-gray-600 py-4 pl-6 pr-3 w-full block hover:bg-gray-100 transition duration-150">
-                                
-                                    <span className="text-gray-500 text-bold">Phone Number: </span>
-                                    {user.contact}
-                            </a>
-
-                            <a href="#" className="w-full border-t border-gray-100 text-gray-600 py-4 pl-6 pr-3 w-full block hover:bg-gray-100 transition duration-150">
-                                
-                                    Added new profile picture
-                                    <span className="text-gray-500 text-xs">42 min ago</span>
-                            </a>
-
-                            <a href="#" className="w-full border-t border-gray-100 text-gray-600 py-4 pl-6 pr-3 w-full block hover:bg-gray-100 transition duration-150">
-                                
-                                Posted new article in <span className="font-bold">#Web Dev</span>
-                                <span className="text-gray-500 text-xs">49 min ago</span>
-                            </a>
-
-                            <a href="#" className="w-full border-t border-gray-100 text-gray-600 py-4 pl-6 pr-3 w-full block hover:bg-gray-100 transition duration-150">
-                                
-                                Edited website settings
-                                <span className="text-gray-500 text-xs">1 day ago</span>
-                            </a>
-
-                            <a href="#" className="w-full border-t border-gray-100 text-gray-600 py-4 pl-6 pr-3 w-full block hover:bg-gray-100 transition duration-150 overflow-hidden">
-                                
-                                Added new rank
-                                <span className="text-gray-500 text-xs">5 days ago</span>
-                            </a>
-                            
-                        </div>
-                    </div>
-                </div>
+          <div className="bg-white relative shadow rounded-lg w-5/6 md:w-4/6  lg:w-3/6 xl:w-2/6 mx-auto">
+            <div className="flex justify-center">
+             
             </div>
 
+            <div className="mt-16">
+              <h1 className="font-bold text-center text-3xl text-gray-900">
+                {user?.name}
+              </h1>
+              <p className="text-center text-sm text-gray-400 font-medium">
+                {user?.birthday}
+              </p>
+              <p>
+                <span></span>
+              </p>
+              <div className="my-5 px-6">
+                <a
+                  href="#"
+                  className="text-gray-200 block rounded-lg text-center font-medium leading-6 px-6 py-3 bg-gray-900 hover:bg-black hover:text-white"
+                >
+                  Connect with <span className="font-bold">{user?.email}</span>
+                </a>
+              </div>
+              <div className="w-full">
+                <h3 className="font-medium text-gray-900 text-left px-6">
+                  Information
+                </h3>
+                <div className="mt-5 w-full flex flex-col items-center overflow-hidden text-sm">
+                  <a
+                    href=""
+                    className="w-full border-t border-gray-100 text-gray-600 py-4 pl-6 pr-3 w-full block hover:bg-gray-100 transition duration-150"
+                  >
+                    <span className="text-gray-500 text-bold">
+                      Phone Number:{' '}
+                    </span>
+                    {user?.contact}
+                  </a>
+
+                  <a
+                    href=""
+                    className="w-full border-t border-gray-100 text-gray-600 py-4 pl-6 pr-3 w-full block hover:bg-gray-100 transition duration-150"
+                  >
+                    <span className="text-gray-500 text-bold">Gender: </span>
+                    {user?.gender}
+                  </a>
+
+                  <a
+                    href=""
+                    className="w-full border-t border-gray-100 text-gray-600 py-4 pl-6 pr-3 w-full block hover:bg-gray-100 transition duration-150"
+                  >
+                    <span className="text-gray-500 text-bold">Gautra: </span>
+                    {user?.gautra}
+                  </a>
+
+                  <a
+                    href=""
+                    className="w-full border-t border-gray-100 text-gray-600 py-4 pl-6 pr-3 w-full block hover:bg-gray-100 transition duration-150"
+                  >
+                    <span className="text-gray-500 text-bold">
+                      Marital Status:{' '}
+                    </span>
+                    {user?.maritalStatus}
+                  </a>
+
+                  <a
+                    href="#"
+                    className="w-full border-t border-gray-100 text-gray-600 py-4 pl-6 pr-3 w-full block hover:bg-gray-100 transition duration-150 overflow-hidden"
+                  >
+                    <span className="text-gray-500 text-bold">Address: </span>
+                    {user?.address}
+                  </a>
+
+                  <a
+                    href="#"
+                    className="w-full border-t border-gray-100 text-gray-600 py-4 pl-6 pr-3 w-full block hover:bg-gray-100 transition duration-150 overflow-hidden"
+                  >
+                    <span className="text-gray-500 text-bold">
+                      Native Town:{' '}
+                    </span>
+                    {user?.nativeTown}
+                  </a>
+                  <a
+                    href="#"
+                    className="w-full border-t border-gray-100 text-gray-600 py-4 pl-6 pr-3 w-full block hover:bg-gray-100 transition duration-150 overflow-hidden"
+                  >
+                    <span className="text-gray-500 text-bold">
+                      Occupation:{' '}
+                    </span>
+                    {user?.occupation}
+                  </a>
+                  <a
+                    href="#"
+                    className="w-full border-t border-gray-100 text-gray-600 py-4 pl-6 pr-3 w-full block hover:bg-gray-100 transition duration-150 overflow-hidden"
+                  >
+                    <span className="text-gray-500 text-bold">Qualification: </span>
+                    {user?.qualification}
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
-    </div>
+      </div>
     </>
   )
 }
