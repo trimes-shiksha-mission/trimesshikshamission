@@ -1,100 +1,68 @@
+import { Blog } from '@prisma/client'
 import { NextPage } from 'next'
-import ReactPaginate from 'react-paginate'
+import { prismaClient } from '../lib/prisma'
 
-const Matrimonial: NextPage = () => {
+export const getServerSideProps = async () => {
+  const gyanganga = await prismaClient.blog.findMany({
+    where: { type: 'GYANGANGA' }
+  })
+
+  if (!gyanganga.length) {
+    return {
+      props: {}
+    }
+  }
+  return {
+    props: {
+      gyanganga: gyanganga.map(n => ({
+        ...n,
+        createdAt: new Date(n.createdAt).toLocaleString()
+      }))
+    }
+  }
+}
+
+const Gyanganga: NextPage<{ gyanganga: Blog[] }> = ({ gyanganga }) => {
+  console.log(gyanganga)
   return (
     <>
-      <div className=" text-black text-7xl mb-12">
-        This is the GyanGanga page!
-      </div>
-      <div className="max-w-sm lg:max-w-full lg:flex  ml-6 mr-6 md:ml-2 lg:ml-12 lg:mr-12 mb-10">
-        <div
-          className="h-auto lg:w-48 flex-none bg-cover rounded-t-lg lg:rounded-t-none lg:rounded-l text-center overflow-hidden"
-          title="news"
-        >
-          <img src="https://mdbootstrap.com/img/Photos/Slides/img%20(15).jpg" />
-        </div>
-        <div className="border-r border-b border-l border-gray-400 lg:border-l-0 lg:border-t lg:border-gray-400 bg-white rounded-b-lg lg:rounded-b-none lg:rounded-r-lg p-4  flex flex-col justify-between leading-normal ">
-          <div className="mb-8">
-            <p className="text-sm text-gray-600 flex items-center">
-              <svg
-                className="fill-current text-gray-500 w-3 h-3 mr-2"
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 20 20"
-              >
-                <path d="M4 8V6a6 6 0 1 1 12 0v2h1a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2v-8c0-1.1.9-2 2-2h1zm5 6.73V17h2v-2.27a2 2 0 1 0-2 0zM7 6v2h6V6a3 3 0 0 0-6 0z" />
-              </svg>
-              Members only
-            </p>
-            <div className="text-gray-900 font-bold text-xl mb-2">Heading</div>
-            <p className="text-gray-700 text-base">
-              Content: Lorem ipsum dolor sit amet, consectetur adipisicing elit.
-              Voluptatibus quia, nulla! Maiores et perferendis eaque,
-              exercitationem praesentium nihil. Lorem ipsum dolor sit amet
-              consectetur adipisicing elit. Nam iusto dolor magni ullam deleniti
-              ipsum labore commodi nesciunt distinctio reprehenderit sint eius
-              neque molestias unde saepe, nihil quo, libero et? Lorem ipsum,
-              dolor sit amet consectetur adipisicing elit. Consequatur, nostrum
-              delectus non dicta nemo reiciendis quod architecto quae,
-              reprehenderit adipisci culpa, tenetur eaque odio minus asperiores
-              molestiae fugit ab libero!
-            </p>
+      {gyanganga.map(n => (
+        <div className="max-w-sm lg:max-w-full lg:flex mt-6 ml-6 mr-6 md:ml-2 lg:ml-12 lg:mr-12 mb-2">
+          <div
+            className="h-auto lg:w-48 flex-none bg-cover rounded-t-lg lg:rounded-t-none lg:rounded-l text-center overflow-hidden"
+            title="news"
+          >
+            <img src={n.images[0]} />
           </div>
-          <div className="flex items-center">
-            <div className="text-sm">
-              <p className="text-gray-900 leading-none">
-                Editor Name / Admin Name
+          <div className="border-r border-b border-l border-gray-400 lg:border-l-0 lg:border-t lg:border-gray-400 bg-white rounded-b-lg lg:rounded-b-none lg:rounded-r-lg p-4  flex flex-col justify-between leading-normal ">
+            <div className="mb-8">
+              <p className="text-sm text-gray-600 flex items-center">
+                <svg
+                  className="fill-current text-gray-500 w-3 h-3 mr-2"
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 20 20"
+                >
+                  <path d="M4 8V6a6 6 0 1 1 12 0v2h1a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2v-8c0-1.1.9-2 2-2h1zm5 6.73V17h2v-2.27a2 2 0 1 0-2 0zM7 6v2h6V6a3 3 0 0 0-6 0z" />
+                </svg>
+                Members only
               </p>
-              <p className="text-gray-600">Date: Aug 18 2022</p>
+              <div className="text-gray-900 font-bold text-xl mb-2">
+                {n.title}
+              </div>
+              <p className="text-gray-700 text-base">{n.body}</p>
+            </div>
+            <div className="flex items-center">
+              <div className="text-sm">
+                <p className="text-gray-900 leading-none">
+                  Editor Name / Admin Name
+                </p>
+                <p className="text-gray-600">{n.createdAt.toLocaleString()}</p>
+              </div>
             </div>
           </div>
         </div>
-      </div>
-
-      <div className="max-w-sm lg:max-w-full lg:flex  ml-6 mr-6 md:ml-2 lg:ml-12 lg:mr-12 mb-2">
-        <div
-          className="h-auto lg:w-48 flex-none bg-cover rounded-t-lg lg:rounded-t-none lg:rounded-l text-center overflow-hidden"
-          title="news"
-        >
-          <img src="https://mdbootstrap.com/img/Photos/Slides/img%20(15).jpg" />
-        </div>
-        <div className="border-r border-b border-l border-gray-400 lg:border-l-0 lg:border-t lg:border-gray-400 bg-white rounded-b-lg lg:rounded-b-none lg:rounded-r-lg p-4  flex flex-col justify-between leading-normal ">
-          <div className="mb-8">
-            <p className="text-sm text-gray-600 flex items-center">
-              <svg
-                className="fill-current text-gray-500 w-3 h-3 mr-2"
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 20 20"
-              >
-                <path d="M4 8V6a6 6 0 1 1 12 0v2h1a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2v-8c0-1.1.9-2 2-2h1zm5 6.73V17h2v-2.27a2 2 0 1 0-2 0zM7 6v2h6V6a3 3 0 0 0-6 0z" />
-              </svg>
-              Members only
-            </p>
-            <div className="text-gray-900 font-bold text-xl mb-2">Heading</div>
-            <p className="text-gray-700 text-base">
-              Content: Lorem ipsum dolor sit amet, consectetur adipisicing elit.
-              Voluptatibus quia, nulla! Maiores et perferendis eaque,
-              exercitationem praesentium nihil. Lorem ipsum dolor sit amet
-              consectetur adipisicing elit. Nam iusto dolor magni ullam deleniti
-              ipsum labore commodi nesciunt distinctio reprehenderit sint eius
-              neque molestias unde saepe, nihil quo, libero et? Lorem ipsum,
-              dolor sit amet consectetur adipisicing elit. Consequatur, nostrum
-              delectus non dicta nemo reiciendis quod architecto quae,
-              reprehenderit adipisci culpa, tenetur eaque odio minus asperiores
-              molestiae fugit ab libero!
-            </p>
-          </div>
-          <div className="flex items-center">
-            <div className="text-sm">
-              <p className="text-gray-900 leading-none">
-                Editor Name / Admin Name
-              </p>
-              <p className="text-gray-600">Date: Aug 18 2022</p>
-            </div>
-          </div>
-        </div>
-      </div>
+      ))}
     </>
   )
 }
-export default Matrimonial
+export default Gyanganga

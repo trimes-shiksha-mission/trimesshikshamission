@@ -2,7 +2,7 @@ import { NextPage } from 'next'
 import Link from 'next/link'
 
 
-const Matrimonial: NextPage = () => {
+const Jobs: NextPage = () => {
   return (
     <>
       <div className="min-h-screen bg-gray-100 py-6 flex flex-col justify-center sm:py-12 jobs">
@@ -20,4 +20,4 @@ const Matrimonial: NextPage = () => {
     </>
   )
 }
-export default Matrimonial
+export default Jobs
