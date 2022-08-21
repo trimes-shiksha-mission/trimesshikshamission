@@ -12,7 +12,7 @@ export const getServerSideProps = async () => {
   }
   return {
     props: {
-      news: news.map(n => ({
+      news: news?.map(n => ({
         ...n,
         createdAt: new Date(n.createdAt).toLocaleString()
       }))

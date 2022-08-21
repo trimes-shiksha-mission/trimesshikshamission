@@ -31,7 +31,7 @@ const Register: NextPage = () => {
   return isverified ? (
     <>
       <div className="flex items-center justify-center py-8 bg-gray-100">
-        <div className="px-8 py-6 mx-4 mt-4 text-left bg-white shadow-lg w-1/2 rounded-lg">
+        <div className="px-8 py-6 mx-4 mt-4 text-left bg-white shadow-lg md:w-1/2 rounded-lg">
           <div className="flex justify-center"></div>
           <h3 className="text-2xl font-bold text-center">
             Join our Trimes Family
@@ -63,7 +63,7 @@ const Register: NextPage = () => {
               })
             }}
           >
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid md:grid-cols-2 gap-4">
               <div>
                 <label className="block">
                   Name<span className="text-red-600">*</span>

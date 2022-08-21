@@ -143,6 +143,18 @@ export const Header: FC = () => {
                   ></div>
                 )}
               </li>
+              <li
+                className={`opacity-95 relative cursor-pointer py-2 text-base font-medium mx-4 text-black hover:text-primary transition-all duration-200  `}
+              >
+                <Link href="/register" passHref>
+                  <a>REGISTER</a>
+                </Link>
+                {checkRoute(currRoute, '/register') && (
+                  <div
+                    className={`bg-black w-full h-[2px] absolute mt-1`}
+                  ></div>
+                )}
+              </li>
             </ul>
           </div>
         </nav>
@@ -314,6 +326,24 @@ export const Header: FC = () => {
                       }}
                     >
                       JOBS
+                    </a>
+                  </Link>
+                </li>
+                <li
+                  className={`relative text-2xl w-full font-bold px-4 text-center py-4 animated hover:text-primary ${
+                    checkRoute(currRoute, '/register')
+                      ? 'text-primary'
+                      : 'text-gray-800'
+                  }`}
+                >
+                  <Link href={'/register'} passHref>
+                    <a
+                      className="nav-link-item-mobile"
+                      onClick={() => {
+                        setPhoneMenuOpen(false)
+                      }}
+                    >
+                      REGISTER
                     </a>
                   </Link>
                 </li>

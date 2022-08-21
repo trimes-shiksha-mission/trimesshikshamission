@@ -24,12 +24,17 @@ const Profile: NextPage = () => {
   console.log(user, session)
   if (!session?.userId) {
     // router?.push('/login')
-    return <>
-    Please Login to Website
-    <Link href='/login'>
-       Login
-    </Link>
-    </>
+    return (
+      <>
+        <div className="w-full text-center text-3xl mb-96 mt-20">
+          Please
+          <Link href="/login">
+            <a className="text-sky-500 text-bold"> Login </a>
+          </Link>
+          to Website
+        </div>
+      </>
+    )
   }
   console.log({'world':user})
   return (

@@ -24,7 +24,7 @@ const Students: NextPage<{ students: Blog[] }> = ({ students }) => {
   console.log(students)
   return (
     <>
-      {students.map(n => (
+      {students?.map(n => (
         <div className="max-w-sm lg:max-w-full lg:flex mt-6 ml-6 mr-6 md:ml-2 lg:ml-12 lg:mr-12 mb-2">
           <div
             className="h-auto lg:w-48 flex-none bg-cover rounded-t-lg lg:rounded-t-none lg:rounded-l text-center overflow-hidden"

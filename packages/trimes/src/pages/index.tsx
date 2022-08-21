@@ -70,9 +70,9 @@ const Home: NextPage<{ editorial: Editorial }> = ({ editorial }) => {
         ))}
       </Swiper>
 
-      <div className="w-full grid md:grid-cols-4 gap-4 px-10 ">
-        <div className="bg-[#f94301]">
-          <div className="text-3xl">TrimesShikshaMission.org</div>
+      <div className="w-full grid md:grid-cols-4 gap-4 px-10 mt-10 ">
+        <div className="bg-[#f94301] px-2 rounded-lg">
+          <div className="text-sm lg:text-2xl">TrimesShikshaMission.org</div>
           <div className="mt-4">
             Trimes Shiksha Mission is a small initiative in the direction of
             realizing a very materializing and comprehensive thinking. The
@@ -80,7 +80,7 @@ const Home: NextPage<{ editorial: Editorial }> = ({ editorial }) => {
             the right direction in their lives.
           </div>
         </div>
-        <div className="">
+        <div className="px-2">
           <div className="text-xl">Matrimonial</div>
           <div className="">
             Helping Trivedi Meware Brahamins to cherish the meaning of Happy
