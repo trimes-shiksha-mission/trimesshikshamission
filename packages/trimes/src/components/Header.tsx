@@ -20,7 +20,6 @@ export const Header: FC = () => {
       setPhoneMenuOpen(false)
     })
   }, [router])
-  console.log(session)
 
   return (
     <>
@@ -148,10 +147,18 @@ export const Header: FC = () => {
               <li
                 className={`opacity-95 relative cursor-pointer py-2 text-base font-medium mx-4 text-black hover:text-primary transition-all duration-200  `}
               >
-                <Link href="/register" passHref>
-                  <a>REGISTER</a>
+                <Link
+                  href={session?.user?.id ? '/profile' : '/register'}
+                  passHref
+                >
+                  <a>
+                    {session?.user?.id ? session.user?.name : 'Register/Login'}
+                  </a>
                 </Link>
-                {checkRoute(currRoute, '/register') && (
+                {checkRoute(
+                  currRoute,
+                  session?.user?.id ? '/profile' : '/register'
+                ) && (
                   <div
                     className={`bg-black w-full h-[2px] absolute mt-1`}
                   ></div>
@@ -335,14 +342,14 @@ export const Header: FC = () => {
                   className={`relative text-2xl w-full font-bold px-4 text-center py-4 animated hover:text-primary ${
                     checkRoute(
                       currRoute,
-                      session?.userId ? '/profile' : '/register'
+                      session?.user?.id ? '/profile' : '/register'
                     )
                       ? 'text-primary'
                       : 'text-gray-800'
                   }`}
                 >
                   <Link
-                    href={session?.userId ? '/profile' : '/register'}
+                    href={session?.user?.id ? '/profile' : '/register'}
                     passHref
                   >
                     <a
@@ -351,7 +358,7 @@ export const Header: FC = () => {
                         setPhoneMenuOpen(false)
                       }}
                     >
-                      {session?.userId ? session.user?.name : 'REGISTER'}
+                      {session?.user?.id ? session.user?.name : 'REGISTER'}
                     </a>
                   </Link>
                 </li>

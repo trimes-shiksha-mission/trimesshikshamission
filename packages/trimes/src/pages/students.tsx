@@ -1,9 +1,12 @@
 import { Blog } from '@prisma/client'
 import { NextPage } from 'next'
+import { ProtectedRoute } from '../components/ProtectedRoute'
 import { prismaClient } from '../lib/prisma'
 
 export const getServerSideProps = async () => {
-  const students = await prismaClient.blog.findMany({ where: { type: 'STUDENT' } })
+  const students = await prismaClient.blog.findMany({
+    where: { type: 'STUDENT' }
+  })
 
   if (!students.length) {
     return {
@@ -21,9 +24,8 @@ export const getServerSideProps = async () => {
 }
 
 const Students: NextPage<{ students: Blog[] }> = ({ students }) => {
-  console.log(students)
   return (
-    <>
+    <ProtectedRoute>
       {students?.map(n => (
         <div
           key={n.id}
@@ -63,7 +65,7 @@ const Students: NextPage<{ students: Blog[] }> = ({ students }) => {
           </div>
         </div>
       ))}
-    </>
+    </ProtectedRoute>
   )
 }
 export default Students

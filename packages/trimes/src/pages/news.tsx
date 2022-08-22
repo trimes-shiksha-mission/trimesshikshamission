@@ -1,5 +1,6 @@
 import { Blog } from '@prisma/client'
 import { NextPage } from 'next'
+import { ProtectedRoute } from '../components/ProtectedRoute'
 import { prismaClient } from '../lib/prisma'
 
 export const getServerSideProps = async () => {
@@ -21,9 +22,8 @@ export const getServerSideProps = async () => {
 }
 
 const News: NextPage<{ news: Blog[] }> = ({ news }) => {
-  console.log(news)
   return (
-    <>
+    <ProtectedRoute>
       {news.map(n => (
         <div
           key={n.id}
@@ -63,7 +63,7 @@ const News: NextPage<{ news: Blog[] }> = ({ news }) => {
           </div>
         </div>
       ))}
-    </>
+    </ProtectedRoute>
   )
 }
 export default News

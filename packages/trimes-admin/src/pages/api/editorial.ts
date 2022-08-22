@@ -14,7 +14,6 @@ async function EditorialHandler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method === 'POST') {
     try {
       const { title, body } = req.body
-      console.log({ title, body })
       const editorial = await prismaClient.editorial.create({
         data: {
           title,

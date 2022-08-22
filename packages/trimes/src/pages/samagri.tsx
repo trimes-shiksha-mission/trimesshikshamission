@@ -23,10 +23,11 @@ export const getServerSideProps = async () => {
 }
 
 const Samagri: NextPage<{ samagri: Blog[] }> = ({ samagri }) => {
-  console.log(samagri)
   return (
     <>
-      <div className="mb-96 mt-20 w-full text-center text-bold text-4xl">This is samagri page</div>
+      <div className="mb-96 mt-20 w-full text-center text-bold text-4xl">
+        This is samagri page
+      </div>
       {samagri?.map(n => (
         <div
           key={n.id}

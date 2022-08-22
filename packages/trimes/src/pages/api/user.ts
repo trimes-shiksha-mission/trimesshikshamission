@@ -8,13 +8,22 @@ export default async function UserHandler(
 ) {
   if (req.method === 'POST') {
     const values = req.body
-    const hashedPassword = await bcrypt.hash(values.password, 10)
+    let hashedPassword = ''
+    if (values.password) {
+      hashedPassword = await bcrypt.hash(values.password, 10)
+    } else if (!values.headId) {
+      return res.status(400).json({
+        error: 'You must provide a headId'
+      })
+    }
     try {
+      Object.keys(values).forEach(k => !values[k] && delete values[k])
+
       const user = await prismaClient.user.create({
         data: {
           ...values,
           birthday: new Date(values.birthday),
-          password: hashedPassword
+          ...(hashedPassword && { password: hashedPassword })
         }
       })
       res.status(200).json(user)
@@ -25,13 +34,11 @@ export default async function UserHandler(
   } else if (req.method === 'GET') {
     try {
       const userId = req.query.id as string
-      console.log(userId)
       const user = await prismaClient.user.findFirst({
         where: {
           id: userId
         }
       })
-      console.log(user)
       if (!user) return res.status(404).json({ message: 'User not found' })
       res.status(200).json({
         ...user,

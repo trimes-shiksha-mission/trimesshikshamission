@@ -1,5 +1,6 @@
 import { Blog } from '@prisma/client'
 import { NextPage } from 'next'
+import { ProtectedRoute } from '../components/ProtectedRoute'
 import { prismaClient } from '../lib/prisma'
 
 export const getServerSideProps = async () => {
@@ -23,11 +24,13 @@ export const getServerSideProps = async () => {
 }
 
 const Gyanganga: NextPage<{ gyanganga: Blog[] }> = ({ gyanganga }) => {
-  console.log(gyanganga)
   return (
-    <>
+    <ProtectedRoute>
       {gyanganga?.map(n => (
-        <div key={n.id} className="max-w-sm lg:max-w-full lg:flex mt-6 ml-6 mr-6 md:ml-2 lg:ml-12 lg:mr-12 mb-2">
+        <div
+          key={n.id}
+          className="max-w-sm lg:max-w-full lg:flex mt-6 ml-6 mr-6 md:ml-2 lg:ml-12 lg:mr-12 mb-2"
+        >
           <div
             className="h-auto lg:w-48 flex-none bg-cover rounded-t-lg lg:rounded-t-none lg:rounded-l text-center overflow-hidden"
             title="news"
@@ -62,7 +65,7 @@ const Gyanganga: NextPage<{ gyanganga: Blog[] }> = ({ gyanganga }) => {
           </div>
         </div>
       ))}
-    </>
+    </ProtectedRoute>
   )
 }
 export default Gyanganga

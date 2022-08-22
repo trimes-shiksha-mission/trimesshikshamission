@@ -1,3 +1,4 @@
+import { User } from '@prisma/client'
 import bcrypt from 'bcrypt'
 import NextAuth from 'next-auth'
 import CredentialsProvider from 'next-auth/providers/credentials'
@@ -28,7 +29,7 @@ export default NextAuth({
           return null
         }
         // console.log(credentials)
-        const foundUser = await prismaClient.user.findFirst({
+        const foundUser: User | null = await prismaClient.user.findFirst({
           where: {
             contact: credentials.contact
           }
@@ -39,7 +40,6 @@ export default NextAuth({
             foundUser.password || ''
           )
           if (isValid) {
-            console.log(foundUser)
             return { ...foundUser, password: undefined }
           }
         }
@@ -51,12 +51,16 @@ export default NextAuth({
     signIn: '/login'
   },
   callbacks: {
-    async session({ session, user, token }) {
-      console.log({ token })
-      // session.user = {
-      //   id: user
-      // }
-      session.userId = token.sub
+    async jwt({ user, token }) {
+      if (user) {
+        token.user = user
+      }
+      return token
+    },
+    async session({ session, token }) {
+      if (token.user) {
+        session.user = token.user as any
+      }
       return session
     }
   }
