@@ -28,18 +28,19 @@ export default NextAuth({
           return null
         }
         // console.log(credentials)
-        const user = await prismaClient.user.findFirst({
+        const foundUser = await prismaClient.user.findFirst({
           where: {
             contact: credentials.contact
           }
         })
-        if (user) {
+        if (foundUser) {
           const isValid = await bcrypt.compare(
             credentials.password,
-            user.password || ''
+            foundUser.password || ''
           )
           if (isValid) {
-            return { ...user, password: undefined }
+            console.log(foundUser)
+            return { ...foundUser, password: undefined }
           }
         }
         return null
@@ -52,7 +53,9 @@ export default NextAuth({
   callbacks: {
     async session({ session, user, token }) {
       console.log({ token })
-      session.user = user
+      // session.user = {
+      //   id: user
+      // }
       session.userId = token.sub
       return session
     }

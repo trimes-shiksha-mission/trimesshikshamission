@@ -1,4 +1,5 @@
 import { AnimatePresence, motion } from 'framer-motion'
+import { useSession } from 'next-auth/react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
@@ -13,12 +14,13 @@ export const Header: FC = () => {
   const [phoneMenuOpen, setPhoneMenuOpen] = useState(false)
   const router = useRouter()
   const currRoute = router.route
-
+  const { data: session } = useSession()
   useEffect(() => {
     router.events.on('routeChangeComplete', () => {
       setPhoneMenuOpen(false)
     })
   }, [router])
+  console.log(session)
 
   return (
     <>
@@ -331,19 +333,25 @@ export const Header: FC = () => {
                 </li>
                 <li
                   className={`relative text-2xl w-full font-bold px-4 text-center py-4 animated hover:text-primary ${
-                    checkRoute(currRoute, '/register')
+                    checkRoute(
+                      currRoute,
+                      session?.userId ? '/profile' : '/register'
+                    )
                       ? 'text-primary'
                       : 'text-gray-800'
                   }`}
                 >
-                  <Link href={'/register'} passHref>
+                  <Link
+                    href={session?.userId ? '/profile' : '/register'}
+                    passHref
+                  >
                     <a
                       className="nav-link-item-mobile"
                       onClick={() => {
                         setPhoneMenuOpen(false)
                       }}
                     >
-                      REGISTER
+                      {session?.userId ? session.user?.name : 'REGISTER'}
                     </a>
                   </Link>
                 </li>
