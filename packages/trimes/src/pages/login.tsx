@@ -55,7 +55,7 @@ const Login: NextPage = () => {
                 </button>
               </div>
               <div className="mt-6 text-grey-dark">
-                Dont&apos;t have an account?
+                Dont&apos;t have an account?{' '}
                 <Link href="/register">
                   <a className="text-blue-600 hover:underline">Register Here</a>
                 </Link>

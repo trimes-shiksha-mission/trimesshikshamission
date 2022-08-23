@@ -27,6 +27,9 @@ model User {
   address           String
   showInMatrimony   Boolean?
   isPrivateProperty Boolean?
+  areaId            String?  @db.Uuid
+  area              Area?    @relation("areaRelation", fields: [areaId], references: [id])
+  relationWithHead  String?
   headId            String?  @db.Uuid
   head              User?    @relation("head", fields: [headId], references: [id])
   members           User[]   @relation("head")
@@ -75,6 +78,7 @@ model Area {
   createdAt DateTime @default(now()) @db.Timestamptz()
   updatedAt DateTime @default(now()) @updatedAt @db.Timestamptz()
   Admin     Admin[]
+  User      User[]   @relation("areaRelation")
 }
 
 model Editorial {

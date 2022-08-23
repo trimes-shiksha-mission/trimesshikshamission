@@ -8,7 +8,9 @@ export const getServerSideProps = async () => {
 
   if (!news.length) {
     return {
-      props: {}
+      props: {
+        news: []
+      }
     }
   }
   return {

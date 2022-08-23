@@ -37,6 +37,13 @@ export default async function UserHandler(
       const user = await prismaClient.user.findFirst({
         where: {
           id: userId
+        },
+        include: {
+          area: {
+            select: {
+              name: true
+            }
+          }
         }
       })
       if (!user) return res.status(404).json({ message: 'User not found' })
