@@ -46,7 +46,7 @@ const Profile: NextPage = () => {
     <ProtectedRoute>
       <div className="flex justify-center items-center w-full">
         <button
-          className="rounded-md bg-black text-white p-2"
+          className="rounded-md w-1/2 bg-[#FDAE09] text-2xl text-white p-2"
           onClick={async () => await fetch('/api/auth/signout')}
         >
           Logout
@@ -69,9 +69,9 @@ const Profile: NextPage = () => {
             <div className="my-5 px-6">
               <a
                 href="#"
-                className="text-gray-200 block rounded-lg text-center font-medium leading-6 px-6 py-3 bg-gray-900 hover:bg-black hover:text-white"
+                className="text-white block rounded-lg text-center font-medium leading-6 px-6 py-3 bg-orange-400 hover:bg-black hover:text-white"
               >
-                Connect with <span className="font-bold">{user?.email}</span>
+                Email: {' '} <span className="font-bold">{user?.email}</span>
               </a>
             </div>
             <div className="w-full">
@@ -150,12 +150,14 @@ const Profile: NextPage = () => {
             </div>
           </div>
         </div>
-        <button
-          className="bg-black text-white rounded-md p-3"
-          onClick={() => setAddMemberForm(true)}
-        >
-          Add Member
-        </button>
+        <div className="w-full my-10 flex justify-center">
+          <button
+            className="w-1/2 bg-[#FDAE09] text-white rounded-md p-3 items-center text-2xl"
+            onClick={() => setAddMemberForm(true)}
+          >
+            Add Member
+          </button>
+        </div>
         {addMemberForm ? (
           <form
             onSubmit={async e => {
@@ -183,7 +185,7 @@ const Profile: NextPage = () => {
               setAddMemberForm(false)
             }}
           >
-            <div className="grid md:grid-cols-2 gap-4">
+            <div className="grid md:grid-cols-2 gap-4 px-4 pt-2">
               <div>
                 <label className="block">
                   Name<span className="text-red-600">*</span>
@@ -397,7 +399,7 @@ const Profile: NextPage = () => {
                 </label>
               </div>
             </div>
-            <div className="flex">
+            <div className="flex px-4 pt-2">
               <button
                 disabled={registerLoading}
                 className="w-full px-6 py-2 mt-4 text-white bg-blue-600 rounded-lg hover:bg-blue-900"
@@ -408,11 +410,126 @@ const Profile: NextPage = () => {
           </form>
         ) : null}
 
-        {getMembersLoading
-          ? 'Loading Members...'
-          : members?.length
-          ? JSON.stringify(members)
-          : null}
+        {getMembersLoading ? (
+          'Loading Members...'
+        ) : members?.length ? (
+          // ?
+          <>
+            {members?.map(member => (
+              <div
+                key={member.id}
+                className="bg-white relative shadow rounded-lg  mb-4 w-5/6 md:w-4/6  lg:w-3/6 xl:w-2/6 mx-auto }"
+              >
+                <div className="flex justify-center"></div>
+
+                <div className="mt-16">
+                  <h1 className="font-bold text-center text-3xl text-gray-900">
+                    {member?.name}
+                  </h1>
+                  <p className="text-center text-sm text-gray-400 font-medium">
+                    {new Date(member?.birthday).toLocaleDateString()}
+                  </p>
+                  <p>
+                    <span></span>
+                  </p>
+                  <div className="my-5 px-6">
+                    <a
+                      href="#"
+                      className="text-white block rounded-lg text-center font-medium leading-6 px-6 py-3 bg-orange-400 hover:bg-black hover:text-white font-bold"
+                    >
+                      Email:{' '}
+                      <span className="font-bold">{member?.email}</span>
+                    </a>
+                  </div>
+                  <div className="w-full">
+                    <h3 className="font-medium text-gray-900 text-left px-6">
+                      Information
+                    </h3>
+                    <div className="mt-5 w-full flex flex-col items-center overflow-hidden text-sm">
+                      <a
+                        href=""
+                        className="border-t border-gray-100 text-gray-600 py-4 pl-6 pr-3 w-full block hover:bg-gray-100 transition duration-150"
+                      >
+                        <span className="text-gray-500 text-bold">
+                          Phone Number:{' '}
+                        </span>
+                        {member?.contact}
+                      </a>
+
+                      <a
+                        href=""
+                        className="border-t border-gray-100 text-gray-600 py-4 pl-6 pr-3 w-full block hover:bg-gray-100 transition duration-150"
+                      >
+                        <span className="text-gray-500 text-bold">
+                          Gender:{' '}
+                        </span>
+                        {member?.gender}
+                      </a>
+
+                      <a
+                        href=""
+                        className="border-t border-gray-100 text-gray-600 py-4 pl-6 pr-3 w-full block hover:bg-gray-100 transition duration-150"
+                      >
+                        <span className="text-gray-500 text-bold">
+                          Gautra:{' '}
+                        </span>
+                        {member?.gautra}
+                      </a>
+
+                      <a
+                        href=""
+                        className="border-t border-gray-100 text-gray-600 py-4 pl-6 pr-3 w-full block hover:bg-gray-100 transition duration-150"
+                      >
+                        <span className="text-gray-500 text-bold">
+                          Marital Status:{' '}
+                        </span>
+                        {member?.maritalStatus}
+                      </a>
+
+                      <a
+                        href="#"
+                        className="border-t border-gray-100 text-gray-600 py-4 pl-6 pr-3 w-full block hover:bg-gray-100 transition duration-150 overflow-hidden"
+                      >
+                        <span className="text-gray-500 text-bold">
+                          Address:{' '}
+                        </span>
+                        {member?.address}
+                      </a>
+
+                      <a
+                        href="#"
+                        className="border-t border-gray-100 text-gray-600 py-4 pl-6 pr-3 w-full block hover:bg-gray-100 transition duration-150 overflow-hidden"
+                      >
+                        <span className="text-gray-500 text-bold">
+                          Native Town:{' '}
+                        </span>
+                        {member?.nativeTown}
+                      </a>
+                      <a
+                        href="#"
+                        className="border-t border-gray-100 text-gray-600 py-4 pl-6 pr-3 w-full block hover:bg-gray-100 transition duration-150 overflow-hidden"
+                      >
+                        <span className="text-gray-500 text-bold">
+                          Occupation:{' '}
+                        </span>
+                        {member?.occupation}
+                      </a>
+                      <a
+                        href="#"
+                        className="border-t border-gray-100 text-gray-600 py-4 pl-6 pr-3 w-full block hover:bg-gray-100 transition duration-150 overflow-hidden"
+                      >
+                        <span className="text-gray-500 text-bold">
+                          Qualification:{' '}
+                        </span>
+                        {member?.qualification}
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </>
+        ) : null}
       </div>
     </ProtectedRoute>
   )
