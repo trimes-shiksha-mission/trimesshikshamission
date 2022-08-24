@@ -177,7 +177,7 @@ const Profile: NextPage = () => {
                   address: target.address.value,
                   isPrivateProperty: target.isPrivateProperty.checked,
                   headId,
-                  relationshipWithHead: target.relationshipWithHead.value
+                  relationWithHead: target.relationWithHead.value
                 })
                 await refetch()
                 setAddMemberForm(false)
@@ -307,7 +307,7 @@ const Profile: NextPage = () => {
                     <span className="text-red-600">*</span>
                   </label>
                   <select
-                    name="relationshipWithHead"
+                    name="relationWithHead"
                     required
                     onChange={e => {
                       if (e.target.value === 'other') {
@@ -348,7 +348,7 @@ const Profile: NextPage = () => {
                     <input
                       type="text"
                       required
-                      name="relationshipWithHead"
+                      name="relationWithHead"
                       placeholder="Please Specify relation with head*"
                       className="w-full px-4 py-2 mt-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-blue-600"
                     />
