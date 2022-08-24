@@ -111,6 +111,14 @@ const Profile: NextPage = () => {
                     </span>
                     {user.maritalStatus}
                   </div>
+                  <div className="border-t border-gray-100 text-gray-600 py-4 pl-6 pr-3 w-full block hover:bg-gray-100 transition duration-150">
+                    <span className="text-gray-500 text-bold">
+                      Family Annual Income:{' '}
+                    </span>
+                    {user.familyAnnualIncome
+                      ? 'Rs. ' + user.familyAnnualIncome
+                      : 'Not Specified'}
+                  </div>
 
                   <div className="border-t border-gray-100 text-gray-600 py-4 pl-6 pr-3 w-full block hover:bg-gray-100 transition duration-150 overflow-hidden">
                     <span className="text-gray-500 text-bold">Address: </span>

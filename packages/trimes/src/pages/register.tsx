@@ -77,7 +77,10 @@ const Register: NextPage = () => {
                 bloodGroup: target.bloodGroup.value,
                 address: target.address.value,
                 isPrivateProperty: target.isPrivateProperty.checked,
-                areaId: target.areaId.value
+                areaId: target.areaId.value,
+                ...(target.familyAnnualIncome.value && {
+                  familyAnnualIncome: target.familyAnnualIncome.value
+                })
               })
             }}
           >
@@ -251,6 +254,16 @@ const Register: NextPage = () => {
                         </option>
                       ))}
                 </select>
+              </div>
+              <div>
+                <label className="block">Family Annual Income (Optional)</label>
+                <input
+                  type="number"
+                  min={0}
+                  name="familyAnnualIncome"
+                  placeholder="Annual Income"
+                  className="w-full px-4 py-2 mt-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-blue-600"
+                />
               </div>
               <div>
                 <label className="block">

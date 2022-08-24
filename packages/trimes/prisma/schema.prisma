@@ -11,34 +11,35 @@ datasource db {
 }
 
 model User {
-  id                String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  name              String
-  email             String?  @unique
-  gender            String
-  maritalStatus     String
-  contact           String?  @unique
-  birthday          DateTime
-  occupation        String
-  qualification     String
-  gautra            String
-  nativeTown        String
-  password          String?
-  bloodGroup        String?
-  address           String
-  showInMatrimony   Boolean?
-  isPrivateProperty Boolean?
-  areaId            String?  @db.Uuid
-  area              Area?    @relation("areaRelation", fields: [areaId], references: [id])
-  relationWithHead  String?
-  headId            String?  @db.Uuid
-  head              User?    @relation("head", fields: [headId], references: [id])
-  members           User[]   @relation("head")
-  createdById       String?  @db.Uuid
-  createdBy         Admin?   @relation("createdByUsers", fields: [createdById], references: [id])
-  updatedById       String?  @db.Uuid
-  updatedBy         Admin?   @relation("updatedByUsers", fields: [updatedById], references: [id])
-  createdAt         DateTime @default(now()) @db.Timestamptz()
-  updatedAt         DateTime @default(now()) @updatedAt @db.Timestamptz()
+  id                 String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name               String
+  email              String?  @unique
+  gender             String
+  maritalStatus      String
+  contact            String?  @unique
+  birthday           DateTime
+  occupation         String
+  qualification      String
+  gautra             String
+  nativeTown         String
+  password           String?
+  bloodGroup         String?
+  address            String
+  familyAnnualIncome Float?
+  showInMatrimony    Boolean?
+  isPrivateProperty  Boolean?
+  areaId             String?  @db.Uuid
+  area               Area?    @relation("areaRelation", fields: [areaId], references: [id])
+  relationWithHead   String?
+  headId             String?  @db.Uuid
+  head               User?    @relation("head", fields: [headId], references: [id])
+  members            User[]   @relation("head")
+  createdById        String?  @db.Uuid
+  createdBy          Admin?   @relation("createdByUsers", fields: [createdById], references: [id])
+  updatedById        String?  @db.Uuid
+  updatedBy          Admin?   @relation("updatedByUsers", fields: [updatedById], references: [id])
+  createdAt          DateTime @default(now()) @db.Timestamptz()
+  updatedAt          DateTime @default(now()) @updatedAt @db.Timestamptz()
 }
 
 enum Role {
