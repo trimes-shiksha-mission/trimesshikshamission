@@ -1,10 +1,19 @@
+import { Area, User } from '@prisma/client'
 import { NextPage } from 'next'
 import { useSession } from 'next-auth/react'
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
+import { BsFillPencilFill } from 'react-icons/bs'
+import { FaUser } from 'react-icons/fa'
 import { useMutation, useQuery } from 'react-query'
 import { Loading } from '../components/Loading'
 import { ProtectedRoute } from '../components/ProtectedRoute'
+
+type UserWithArea = User & {
+  area: {
+    name: string
+  }
+}
 
 const Profile: NextPage = () => {
   const { data: session } = useSession()
@@ -25,7 +34,7 @@ const Profile: NextPage = () => {
     data: user,
     isLoading: getUserLoading,
     refetch
-  } = useQuery('user', async (): Promise<any> => {
+  } = useQuery('user', async (): Promise<UserWithArea | undefined> => {
     if (!session?.user?.id) return
     const user = await fetch(`/api/user?id=${session.user.id}`)
     return await user.json()
@@ -39,7 +48,31 @@ const Profile: NextPage = () => {
     const members = await fetch(`/api/member?headId=${session.user.id}`)
     return await members.json()
   })
+
+  const { mutateAsync: updateUser } = useMutation(async (values: any) => {
+    const user = await fetch(`/api/user`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(values)
+    })
+    return await user.json()
+  })
+
   const [addMemberForm, setAddMemberForm] = useState(false)
+  const [userProfileEdit, setUserProfileEdit] = useState(false)
+  const { data: areas, isLoading: getAreasLoading } = useQuery(
+    'areas',
+    async (): Promise<Area[]> => {
+      if (!session?.user?.id) return []
+      const areas = await fetch(`/api/area`)
+      return await areas.json()
+    },
+    {
+      enabled: userProfileEdit
+    }
+  )
   useEffect(() => {
     refetch()
   }, [refetch, session])
@@ -55,97 +88,297 @@ const Profile: NextPage = () => {
       {getUserLoading || !user ? (
         <Loading />
       ) : (
-        <div className="container mx-auto mt-12 mb-60">
-          <div className="bg-white relative shadow rounded-lg w-5/6 md:w-4/6  lg:w-3/6 xl:w-2/6 mx-auto">
-            <div className="flex justify-center"></div>
-
-            <div className="mt-16">
-              <h1 className="font-bold text-center text-3xl text-gray-900">
-                {user.name}
-              </h1>
-              <p className="text-center text-sm text-gray-400 font-medium">
-                {new Date(user.birthday).toLocaleDateString()}
-              </p>
-              <p>
-                <span></span>
-              </p>
-              <div className="my-5 px-6">
-                <a
-                  href={`mailto:${user.email}`}
-                  className="text-white block rounded-lg text-center font-medium leading-6 px-6 py-3 bg-orange-400 hover:bg-black hover:text-white"
-                >
-                  Email: <span className="font-bold">{user.email}</span>
-                </a>
+        <div className="px-4 md:px-24">
+          <div className="shadow-md rounded-lg p-2 md:p-8">
+            <div className="flex items-center justify-between">
+              <div className="flex gap-2 items-center">
+                <FaUser />
+                Profile
               </div>
-              <div className="w-full">
-                <h3 className="font-medium text-gray-900 text-left px-6">
-                  Information
-                </h3>
-                <div className="mt-5 w-full flex flex-col items-center overflow-hidden text-sm">
-                  <div className="border-t border-gray-100 text-gray-600 py-4 pl-6 pr-3 w-full block hover:bg-gray-100 transition duration-150">
-                    <span className="text-gray-500 text-bold">
-                      Phone Number:{' '}
+              <button
+                onClick={() => setUserProfileEdit(!userProfileEdit)}
+                className="flex gap-2 items-center"
+              >
+                {userProfileEdit ? (
+                  'Cancel'
+                ) : (
+                  <>
+                    <BsFillPencilFill />
+                    Edit
+                  </>
+                )}
+              </button>
+            </div>
+            <form
+              onSubmit={async e => {
+                e.preventDefault()
+                const target = e.currentTarget as any
+                await updateUser({
+                  userId: user.id,
+                  name: target.name.value,
+                  email: target.email.value,
+                  birthday: target.birthday.value,
+                  contact: target.contact.value,
+                  gautra: target.gautra.value,
+                  address: target.address.value,
+                  bloodGroup: target.bloodGroup.value,
+                  gender: target.gender.value,
+                  qualification: target.qualification.value,
+                  nativeTown: target.nativeTown.value,
+                  familyAnnualIncome: parseFloat(
+                    target.familyAnnualIncome.value
+                  ),
+                  areaId: target.areaId.value,
+                  maritalStatus: target.maritalStatus.value,
+                  isPrivateProperty: target.isPrivateProperty.checked,
+                  occupation: target.occupation.value
+                })
+                setUserProfileEdit(false)
+                await refetch()
+              }}
+            >
+              <div className="grid grid-cols-1 md:grid-cols-2 mt-4 gap-x-8">
+                <div className="grid grid-cols-2 gap-2">
+                  <label>Name</label>
+                  {userProfileEdit ? (
+                    <input
+                      name="name"
+                      required
+                      className="border border-gray-400 rounded-md px-2"
+                      type="text"
+                      disabled={!userProfileEdit}
+                      defaultValue={user.name}
+                    />
+                  ) : (
+                    <span>{user.name}</span>
+                  )}
+                  <label>Date of Birth</label>
+                  {userProfileEdit ? (
+                    <input
+                      required
+                      className="border border-gray-400 rounded-md px-2"
+                      type="date"
+                      name="birthday"
+                      disabled={!userProfileEdit}
+                      defaultValue={
+                        new Date(user.birthday).getFullYear() +
+                        '-' +
+                        (new Date(user.birthday).getMonth() + 1) +
+                        '-' +
+                        new Date(user.birthday).getDate()
+                      }
+                    />
+                  ) : (
+                    <span>
+                      {new Date(user.birthday).getDate() +
+                        '-' +
+                        (new Date(user.birthday).getMonth() + 1) +
+                        '-' +
+                        new Date(user.birthday).getFullYear()}
                     </span>
-                    {user.contact}
-                  </div>
+                  )}
+                  <label>Email</label>
+                  {userProfileEdit ? (
+                    <input
+                      name="email"
+                      className="border border-gray-400 rounded-md px-2"
+                      type="text"
+                      disabled={!userProfileEdit}
+                      defaultValue={user.email || ''}
+                    />
+                  ) : (
+                    <span>{user.email}</span>
+                  )}
+                  <label>Gautra</label>
+                  {userProfileEdit ? (
+                    <input
+                      name="gautra"
+                      required
+                      className="border border-gray-400 rounded-md px-2"
+                      type="text"
+                      disabled={!userProfileEdit}
+                      defaultValue={user.gautra || ''}
+                    />
+                  ) : (
+                    <span>{user.gautra}</span>
+                  )}
+                  <label>Blood Group</label>
+                  {userProfileEdit ? (
+                    <select
+                      name="bloodGroup"
+                      defaultValue={user.bloodGroup || ''}
+                    >
+                      <option value="">Select</option>
+                      <option value="A+">A+</option>
+                      <option value="A-">A-</option>
+                      <option value="B+">B+</option>
+                      <option value="B-">B-</option>
+                      <option value="O+">O+</option>
+                      <option value="O-">O-</option>
+                      <option value="AB+">AB+</option>
+                      <option value="AB-">AB-</option>
+                    </select>
+                  ) : (
+                    <span>{user.bloodGroup || 'N/A'}</span>
+                  )}
+                  <label>Gender</label>
+                  {userProfileEdit ? (
+                    <select name="gender" defaultValue={user.gender} required>
+                      <option value="">Select</option>
+                      <option value="male">Male</option>
+                      <option value="female">Female</option>
+                      <option value="other">Other</option>
+                    </select>
+                  ) : (
+                    <span>{user.gender}</span>
+                  )}
+                  <label>Qualification</label>
+                  {userProfileEdit ? (
+                    <input
+                      name="qualification"
+                      className="border border-gray-400 rounded-md px-2"
+                      type="text"
+                      disabled={!userProfileEdit}
+                      defaultValue={user.qualification}
+                    />
+                  ) : (
+                    <span>{user.qualification}</span>
+                  )}
+                  <label>Native Town</label>
+                  {userProfileEdit ? (
+                    <input
+                      name="nativeTown"
+                      className="border border-gray-400 rounded-md px-2"
+                      type="text"
+                      disabled={!userProfileEdit}
+                      defaultValue={user.nativeTown}
+                    />
+                  ) : (
+                    <span>{user.nativeTown}</span>
+                  )}
+                </div>
 
-                  <div className="border-t border-gray-100 text-gray-600 py-4 pl-6 pr-3 w-full block hover:bg-gray-100 transition duration-150">
-                    <span className="text-gray-500 text-bold">Gender: </span>
-                    {user.gender}
-                  </div>
-
-                  <div className="border-t border-gray-100 text-gray-600 py-4 pl-6 pr-3 w-full block hover:bg-gray-100 transition duration-150">
-                    <span className="text-gray-500 text-bold">Gautra: </span>
-                    {user.gautra}
-                  </div>
-                  <div className="border-t border-gray-100 text-gray-600 py-4 pl-6 pr-3 w-full block hover:bg-gray-100 transition duration-150">
-                    <span className="text-gray-500 text-bold">
-                      Belongs to:{' '}
-                    </span>
-                    {user.area?.name}
-                  </div>
-
-                  <div className="border-t border-gray-100 text-gray-600 py-4 pl-6 pr-3 w-full block hover:bg-gray-100 transition duration-150">
-                    <span className="text-gray-500 text-bold">
-                      Marital Status:{' '}
-                    </span>
-                    {user.maritalStatus}
-                  </div>
-                  <div className="border-t border-gray-100 text-gray-600 py-4 pl-6 pr-3 w-full block hover:bg-gray-100 transition duration-150">
-                    <span className="text-gray-500 text-bold">
-                      Family Annual Income:{' '}
-                    </span>
-                    {user.familyAnnualIncome
-                      ? 'Rs. ' + user.familyAnnualIncome
-                      : 'Not Specified'}
-                  </div>
-
-                  <div className="border-t border-gray-100 text-gray-600 py-4 pl-6 pr-3 w-full block hover:bg-gray-100 transition duration-150 overflow-hidden">
-                    <span className="text-gray-500 text-bold">Address: </span>
-                    {user.address}
-                  </div>
-
-                  <div className="border-t border-gray-100 text-gray-600 py-4 pl-6 pr-3 w-full block hover:bg-gray-100 transition duration-150 overflow-hidden">
-                    <span className="text-gray-500 text-bold">
-                      Native Town:{' '}
-                    </span>
-                    {user.nativeTown}
-                  </div>
-                  <div className="border-t border-gray-100 text-gray-600 py-4 pl-6 pr-3 w-full block hover:bg-gray-100 transition duration-150 overflow-hidden">
-                    <span className="text-gray-500 text-bold">
-                      Occupation:{' '}
-                    </span>
-                    {user.occupation}
-                  </div>
-                  <div className="border-t border-gray-100 text-gray-600 py-4 pl-6 pr-3 w-full block hover:bg-gray-100 transition duration-150 overflow-hidden">
-                    <span className="text-gray-500 text-bold">
-                      Qualification:{' '}
-                    </span>
-                    {user.qualification}
-                  </div>
+                <div className="grid grid-cols-2 gap-2 mt-2 md:mt-0">
+                  <label>Contact</label>
+                  {userProfileEdit ? (
+                    <input
+                      required
+                      name="contact"
+                      className="border border-gray-400 rounded-md px-2"
+                      type="number"
+                      disabled={!userProfileEdit}
+                      defaultValue={user.contact || ''}
+                    />
+                  ) : (
+                    <span>{user.contact}</span>
+                  )}
+                  <label>Address</label>
+                  {userProfileEdit ? (
+                    <input
+                      name="address"
+                      required
+                      className="border border-gray-400 rounded-md px-2"
+                      type="text"
+                      disabled={!userProfileEdit}
+                      defaultValue={user.address || ''}
+                    />
+                  ) : (
+                    <span>{user.address}</span>
+                  )}
+                  <label>Family Annual Income</label>
+                  {userProfileEdit ? (
+                    <input
+                      name="familyAnnualIncome"
+                      className="border border-gray-400 rounded-md px-2"
+                      type="text"
+                      disabled={!userProfileEdit}
+                      defaultValue={user.familyAnnualIncome || 'N/A'}
+                    />
+                  ) : (
+                    <span>{user.familyAnnualIncome || 'N/A'}</span>
+                  )}
+                  <label>Belongs to</label>
+                  {userProfileEdit && !getAreasLoading ? (
+                    <select name="areaId" defaultValue={user.areaId ?? ''}>
+                      <option value="">Select</option>
+                      {areas?.map(area => (
+                        <option key={area.id} value={area.id}>
+                          {area.name}
+                        </option>
+                      ))}
+                    </select>
+                  ) : (
+                    <span>{user.area.name}</span>
+                  )}
+                  <label>Marital Status</label>
+                  {userProfileEdit ? (
+                    <select
+                      name="maritalStatus"
+                      required
+                      defaultValue={user.maritalStatus}
+                    >
+                      <option value="">Select</option>
+                      <option value="married">Married</option>
+                      <option value="unmarried">Unmarried</option>
+                      <option value="divorced">Divorced</option>
+                      <option value="widowed">Widowed</option>
+                    </select>
+                  ) : (
+                    <span>{user.maritalStatus}</span>
+                  )}
+                  <label>Do you own the house where you live?</label>
+                  {userProfileEdit ? (
+                    <input
+                      name="isPrivateProperty"
+                      className="w-4"
+                      type="checkbox"
+                      disabled={!userProfileEdit}
+                      defaultChecked={user.isPrivateProperty || false}
+                    />
+                  ) : (
+                    <span>{user.isPrivateProperty ? 'Yes' : 'No'}</span>
+                  )}
+                  <label>Occupation</label>
+                  {userProfileEdit ? (
+                    <input
+                      name="occupation"
+                      className="border border-gray-400 rounded-md px-2"
+                      type="text"
+                      disabled={!userProfileEdit}
+                      defaultValue={user.occupation}
+                    />
+                  ) : (
+                    <span>{user.occupation}</span>
+                  )}
+                  {user.maritalStatus !== 'married' && (
+                    <>
+                      <label>Show in Matrimony</label>
+                      {userProfileEdit ? (
+                        <input
+                          name="showInMatrimony"
+                          className="w-4"
+                          type="checkbox"
+                          disabled={!userProfileEdit}
+                          defaultChecked={user.showInMatrimony || false}
+                        />
+                      ) : (
+                        <span>{user.showInMatrimony ? 'Yes' : 'No'}</span>
+                      )}
+                    </>
+                  )}
                 </div>
               </div>
-            </div>
+              {userProfileEdit ? (
+                <div className="mt-8 flex items-center justify-center">
+                  <button
+                    className="rounded-lg bg-[#FDAE09] text-white text-xl px-3 py-1"
+                    type="submit"
+                  >
+                    Update
+                  </button>
+                </div>
+              ) : null}
+            </form>
           </div>
           <div className="w-full my-10 flex justify-center">
             <button
