@@ -7,10 +7,10 @@ import { Footer } from '../components/Footer'
 import { Header } from '../components/Header'
 import '../styles/globals.css'
 
-function MyApp({ Component, pageProps: { session, ...pageProps } }: AppProps) {
+function MyApp({ Component, pageProps }: AppProps) {
   const queryClient = new QueryClient()
   return (
-    <SessionProvider session={session}>
+    <SessionProvider session={pageProps.session}>
       <QueryClientProvider client={queryClient}>
         <Header />
         <div className="pt-20">

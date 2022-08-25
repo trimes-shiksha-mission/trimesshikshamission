@@ -79,7 +79,9 @@ const Register: NextPage = () => {
                 isPrivateProperty: target.isPrivateProperty.checked,
                 areaId: target.areaId.value,
                 ...(target.familyAnnualIncome.value && {
-                  familyAnnualIncome: target.familyAnnualIncome.value
+                  familyAnnualIncome: parseFloat(
+                    target.familyAnnualIncome.value
+                  )
                 })
               })
             }}

@@ -1,6 +1,7 @@
 import { User } from '@prisma/client'
 import bcrypt from 'bcrypt'
-import NextAuth from 'next-auth'
+import { NextApiRequest, NextApiResponse } from 'next'
+import NextAuth, { NextAuthOptions } from 'next-auth'
 import CredentialsProvider from 'next-auth/providers/credentials'
 import { prismaClient } from '../../../lib/prisma'
 
@@ -10,11 +11,11 @@ declare module 'next-auth' {
   }
 }
 
-export default NextAuth({
+const nextAuthOptions: NextAuthOptions = {
   providers: [
     CredentialsProvider({
+      id: 'credentials',
       name: 'credentials',
-
       credentials: {
         contact: {
           label: 'contact',
@@ -57,11 +58,17 @@ export default NextAuth({
       }
       return token
     },
-    async session({ session, token }) {
+    async session({ session, token, user }) {
       if (token.user) {
         session.user = token.user as User
+        session.token = token
+        console.log({ session })
       }
       return session
     }
   }
-})
+}
+
+export default function handler(req: NextApiRequest, res: NextApiResponse) {
+  return NextAuth(req, res, nextAuthOptions)
+}
