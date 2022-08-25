@@ -37,6 +37,13 @@ export default async function UserHandler(
       const user = await prismaClient.user.findFirst({
         where: {
           id: userId
+        },
+        include: {
+          area: {
+            select: {
+              name: true
+            }
+          }
         }
       })
       if (!user) return res.status(404).json({ message: 'User not found' })
@@ -44,6 +51,25 @@ export default async function UserHandler(
         ...user,
         password: undefined
       })
+    } catch (e) {
+      res.status(500).json(e)
+      console.error(e)
+    }
+  } else if (req.method === 'PUT') {
+    const values = req.body
+    const userId = values.userId
+    delete values.userId
+    try {
+      const user = await prismaClient.user.update({
+        where: {
+          id: userId
+        },
+        data: {
+          ...values,
+          birthday: new Date(values.birthday)
+        }
+      })
+      res.status(200).json(user)
     } catch (e) {
       res.status(500).json(e)
       console.error(e)

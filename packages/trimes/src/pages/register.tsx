@@ -1,7 +1,8 @@
+import { Area } from '@prisma/client'
 import { NextPage } from 'next'
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
-import { useMutation } from 'react-query'
+import { useMutation, useQuery } from 'react-query'
 import { Loading } from '../components/Loading'
 
 const Register: NextPage = () => {
@@ -13,15 +14,28 @@ const Register: NextPage = () => {
     mutateAsync: register,
     isLoading: registerLoading
   } = useMutation(async (values: any) => {
-    const user = await fetch('/api/user', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(values)
-    })
-    return await user.json()
+    try {
+      const user = await fetch('/api/user', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(values)
+      })
+      return (await user.json()) || []
+    } catch (error) {
+      alert('Phone or Email already exists')
+    }
   })
+
+  const { data: areas, isLoading: areasLoading } = useQuery(
+    'getAreas',
+    async () => {
+      const areas = await fetch('/api/area')
+      return await areas.json()
+    }
+  )
+
   useEffect(() => {
     if (user?.id) {
       window.location.href = '/'
@@ -44,7 +58,10 @@ const Register: NextPage = () => {
                 alert('Passwords do not match')
                 return
               }
-
+              if (target.password.value.length < 4) {
+                alert('Password must be at least 4 characters')
+                return
+              }
               await register({
                 name: target.name.value,
                 email: target.email.value,
@@ -59,7 +76,11 @@ const Register: NextPage = () => {
                 nativeTown: target.nativeTown.value,
                 bloodGroup: target.bloodGroup.value,
                 address: target.address.value,
-                isPrivateProperty: target.isPrivateProperty.checked
+                isPrivateProperty: target.isPrivateProperty.checked,
+                areaId: target.areaId.value,
+                ...(target.familyAnnualIncome.value && {
+                  familyAnnualIncome: target.familyAnnualIncome.value
+                })
               })
             }}
           >
@@ -151,6 +172,16 @@ const Register: NextPage = () => {
                   />{' '}
                   Divorced
                 </label>
+                <label className="cursor-pointer ml-2">
+                  {' '}
+                  <input
+                    type="radio"
+                    name="maritalStatus"
+                    value="widowed"
+                    className=" px-4 py-2 mt-2"
+                  />{' '}
+                  Widowed
+                </label>
               </div>
               <div>
                 <div className="block">
@@ -212,6 +243,36 @@ const Register: NextPage = () => {
                   name="contact"
                   placeholder="+91-1234567890"
                   required
+                  className="w-full px-4 py-2 mt-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-blue-600"
+                />
+              </div>
+              <div>
+                <label className="block">
+                  Which area do you belong?
+                  <span className="text-red-600">*</span>
+                </label>
+                <select
+                  name="areaId"
+                  className="w-full px-4 py-2 mt-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-blue-600"
+                  required
+                >
+                  <option value="">Select Area</option>
+                  {areasLoading
+                    ? 'Loading...'
+                    : areas?.map((area: Area) => (
+                        <option key={area.id} value={area.id}>
+                          {area.name}
+                        </option>
+                      ))}
+                </select>
+              </div>
+              <div>
+                <label className="block">Family Annual Income (Optional)</label>
+                <input
+                  type="number"
+                  min={0}
+                  name="familyAnnualIncome"
+                  placeholder="Annual Income"
                   className="w-full px-4 py-2 mt-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-blue-600"
                 />
               </div>
@@ -309,8 +370,11 @@ const Register: NextPage = () => {
               </div>
             </div>
             <div className="flex">
-              <button className="w-full px-6 py-2 mt-4 text-white bg-blue-600 rounded-lg hover:bg-blue-900">
-                Create Account
+              <button
+                disabled={registerLoading}
+                className="w-full px-6 py-2 mt-4 text-white bg-blue-600 rounded-lg hover:bg-blue-900"
+              >
+                Create Account {registerLoading ? 'Loading...' : null}
               </button>
             </div>
             <div className="mt-6 text-grey-dark">
