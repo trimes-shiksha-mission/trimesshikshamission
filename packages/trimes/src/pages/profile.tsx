@@ -10,8 +10,8 @@ import { Loading } from '../components/Loading'
 import { ProtectedRoute } from '../components/ProtectedRoute'
 
 type UserWithArea = User & {
-  area: {
-    name: string
+  area?: {
+    name?: string
   }
 }
 
@@ -310,7 +310,7 @@ const Profile: NextPage = () => {
                       ))}
                     </select>
                   ) : (
-                    <span>{user.area.name}</span>
+                    <span>{user?.area?.name}</span>
                   )}
                   <label>Marital Status</label>
                   {userProfileEdit ? (
