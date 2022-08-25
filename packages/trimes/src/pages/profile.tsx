@@ -238,6 +238,7 @@ const Profile: NextPage = () => {
                       name="qualification"
                       className="border border-gray-400 rounded-md px-2"
                       type="text"
+                      required
                       disabled={!userProfileEdit}
                       defaultValue={user.qualification}
                     />
@@ -252,6 +253,7 @@ const Profile: NextPage = () => {
                       type="text"
                       disabled={!userProfileEdit}
                       defaultValue={user.nativeTown}
+                      required
                     />
                   ) : (
                     <span>{user.nativeTown}</span>
@@ -301,7 +303,11 @@ const Profile: NextPage = () => {
                   )}
                   <label>Belongs to</label>
                   {userProfileEdit && !getAreasLoading ? (
-                    <select name="areaId" defaultValue={user.areaId ?? ''}>
+                    <select
+                      name="areaId"
+                      defaultValue={user.areaId ?? ''}
+                      required
+                    >
                       <option value="">Select</option>
                       {areas?.map(area => (
                         <option key={area.id} value={area.id}>
@@ -310,7 +316,7 @@ const Profile: NextPage = () => {
                       ))}
                     </select>
                   ) : (
-                    <span>{user?.area?.name}</span>
+                    <span>{user?.area?.name || 'N/A'}</span>
                   )}
                   <label>Marital Status</label>
                   {userProfileEdit ? (
@@ -343,6 +349,7 @@ const Profile: NextPage = () => {
                   <label>Occupation</label>
                   {userProfileEdit ? (
                     <input
+                      required
                       name="occupation"
                       className="border border-gray-400 rounded-md px-2"
                       type="text"
