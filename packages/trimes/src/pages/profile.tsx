@@ -292,7 +292,9 @@ const Profile: NextPage = () => {
                       className="border border-gray-400 rounded-md px-2"
                       type="text"
                       disabled={!userProfileEdit}
-                      defaultValue={user.familyAnnualIncome || 'N/A'}
+                      defaultValue={parseFloat(
+                        user.familyAnnualIncome?.toString() || '0'
+                      )}
                     />
                   ) : (
                     <span>{user.familyAnnualIncome || 'N/A'}</span>
