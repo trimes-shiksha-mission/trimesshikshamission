@@ -5,8 +5,10 @@ import Link from 'next/link'
 import { useEffect, useState } from 'react'
 import { BsFillPencilFill } from 'react-icons/bs'
 import { FaUser } from 'react-icons/fa'
+import { MdDeleteOutline } from 'react-icons/md'
 import { useMutation, useQuery } from 'react-query'
 import { Loading } from '../components/Loading'
+import { Modal } from '../components/Modal'
 import { ProtectedRoute } from '../components/ProtectedRoute'
 
 type UserWithArea = User & {
@@ -18,6 +20,7 @@ type UserWithArea = User & {
 const Profile: NextPage = () => {
   const { data: session } = useSession()
   const [otherRelation, setOtherRelation] = useState(false)
+  const [membersVisible, setMembersVisible] = useState(false)
   const { mutateAsync: register, isLoading: registerLoading } = useMutation(
     async (values: any) => {
       const user = await fetch('/api/user', {
@@ -43,12 +46,27 @@ const Profile: NextPage = () => {
     data: members,
     isLoading: getMembersLoading,
     refetch: refetchMembers
-  } = useQuery('members', async (): Promise<any[]> => {
-    if (!session?.user?.id) return []
-    const members = await fetch(`/api/member?headId=${session.user.id}`)
-    return await members.json()
-  })
-
+  } = useQuery(
+    'members',
+    async (): Promise<User[]> => {
+      if (!session?.user?.id) return []
+      const members = await fetch(`/api/member?headId=${session.user.id}`)
+      return await members.json()
+    },
+    {
+      enabled: false
+    }
+  )
+  const [memberToDelete, setMemberToDelete] = useState<User | undefined>()
+  const { mutateAsync: deleteUser, isLoading: deleteUserLoading } = useMutation(
+    async (userId: string): Promise<User | undefined> => {
+      if (!userId) return
+      const user = await fetch(`/api/user?id=${userId}`, {
+        method: 'DELETE'
+      })
+      return await user.json()
+    }
+  )
   const { mutateAsync: updateUser } = useMutation(async (values: any) => {
     const user = await fetch(`/api/user`, {
       method: 'PUT',
@@ -59,6 +77,11 @@ const Profile: NextPage = () => {
     })
     return await user.json()
   })
+
+  useEffect(() => {
+    if (memberToDelete?.id) document.body.classList.toggle('overflow-hidden')
+    else document.body.classList.remove('overflow-hidden')
+  }, [memberToDelete])
 
   const [addMemberForm, setAddMemberForm] = useState(false)
   const [userProfileEdit, setUserProfileEdit] = useState(false)
@@ -389,14 +412,136 @@ const Profile: NextPage = () => {
               ) : null}
             </form>
           </div>
-          <div className="w-full my-10 flex justify-center">
+          <div className="w-full my-10 flex justify-center gap-4">
             <button
-              className="w-1/2 bg-[#FDAE09] text-white rounded-md p-3 items-center text-2xl"
-              onClick={() => setAddMemberForm(true)}
+              className="w-1/2 lg:w-1/4 bg-[#FDAE09] text-white rounded-md p-3 items-center text-xl"
+              onClick={() => {
+                setMembersVisible(false)
+                setAddMemberForm(!addMemberForm)
+              }}
             >
-              Add Member
+              {addMemberForm ? 'Cancel' : 'Add Member'}
+            </button>
+            <button
+              className="w-1/2 lg:w-1/4 bg-red-400 text-white rounded-md p-3 items-center text-xl"
+              onClick={async () => {
+                if (!membersVisible) {
+                  setAddMemberForm(false)
+                  setMembersVisible(true)
+                  await refetchMembers()
+                } else {
+                  setMembersVisible(false)
+                }
+              }}
+            >
+              {membersVisible
+                ? getMembersLoading
+                  ? 'Loading...'
+                  : 'Hide Members'
+                : 'List Members'}
             </button>
           </div>
+          {membersVisible && !getMembersLoading ? (
+            members?.length ? (
+              <div className="overflow-x-auto relative">
+                <table className="w-full text-sm text-left text-gray-500">
+                  <thead className="text-xs text-gray-700 uppercase bg-gray-50">
+                    <tr>
+                      <th scope="col" className="py-3 px-6">
+                        Name
+                      </th>
+                      <th scope="col" className="py-3 px-6">
+                        Relation
+                      </th>
+                      <th scope="col" className="py-3 px-6">
+                        Age
+                      </th>
+                      <th scope="col" className="py-3 px-6">
+                        Gender
+                      </th>
+                      <th scope="col" className="py-3 px-6">
+                        Gautra
+                      </th>
+                      <th scope="col" className="py-3 px-6">
+                        Email
+                      </th>
+                      <th scope="col" className="py-3 px-6">
+                        Contact
+                      </th>
+                      <th scope="col" className="py-3 px-6">
+                        Address
+                      </th>
+                      <th scope="col" className="py-3 px-6">
+                        Native Town
+                      </th>
+                      <th scope="col" className="py-3 px-6">
+                        Occupation
+                      </th>
+                      <th scope="col" className="py-3 px-6">
+                        Qualification
+                      </th>
+                      <th scope="col" className="py-3 px-6">
+                        Marital Status
+                      </th>
+                      <th scope="col" className="py-3 px-6">
+                        Show in Matrimony
+                      </th>
+                      <th scope="col" className="py-3 px-6">
+                        Action
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {members?.map(member => (
+                      <tr key={member.id} className="bg-white border-b">
+                        <th
+                          scope="row"
+                          className="py-4 px-6 font-medium text-gray-900 whitespace-nowrap"
+                        >
+                          {member.name}
+                        </th>
+                        <td className="py-4 px-6">
+                          {member.relationWithHead || 'Not Specified'}
+                        </td>
+                        <td className="py-4 px-6">
+                          {new Date(Date.now()).getFullYear() -
+                            new Date(member.birthday).getFullYear()}{' '}
+                          yrs
+                        </td>
+                        <td className="py-4 px-6">
+                          {member.gender.toUpperCase()}
+                        </td>
+                        <td className="py-4 px-6">{member.gautra}</td>
+                        <td className="py-4 px-6">{member.email || 'N/A'}</td>
+                        <td className="py-4 px-6">{member.contact || 'N/A'}</td>
+                        <td className="py-4 px-6">{member.address}</td>
+                        <td className="py-4 px-6">{member.nativeTown}</td>
+                        <td className="py-4 px-6">{member.occupation}</td>
+                        <td className="py-4 px-6">{member.qualification}</td>
+                        <td className="py-4 px-6">{member.maritalStatus}</td>
+                        <td className="py-4 px-6">
+                          {member.showInMatrimony ? 'Yes' : 'No'}
+                        </td>
+                        <td className="py-4 px-6">
+                          <button
+                            className="rounded-md text-red-600 flex items-center"
+                            onClick={() => {
+                              setMemberToDelete(member)
+                            }}
+                          >
+                            <MdDeleteOutline />
+                            Delete
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            ) : (
+              <div>No members found</div>
+            )
+          ) : null}
           {addMemberForm ? (
             <form
               onSubmit={async e => {
@@ -421,7 +566,7 @@ const Profile: NextPage = () => {
                   headId,
                   relationWithHead: target.relationWithHead.value
                 })
-                await refetch()
+                await refetchMembers()
                 setAddMemberForm(false)
               }}
             >
@@ -499,10 +644,10 @@ const Profile: NextPage = () => {
                     <input
                       type="radio"
                       name="maritalStatus"
-                      value="widow"
+                      value="widowed"
                       className=" px-4 py-2 mt-2"
                     />{' '}
-                    Widow
+                    Widowed
                   </label>
                 </div>
                 <div>
@@ -699,129 +844,86 @@ const Profile: NextPage = () => {
               </div>
             </form>
           ) : null}
-
-          {getMembersLoading ? (
-            'Loading Members...'
-          ) : members?.length ? (
-            // ?
-            <>
-              {members?.map(member => (
-                <div
-                  key={member.id}
-                  className="bg-white relative shadow rounded-lg  mb-4 w-5/6 md:w-4/6  lg:w-3/6 xl:w-2/6 mx-auto }"
-                >
-                  <div className="flex justify-center"></div>
-
-                  <div className="mt-16">
-                    <h1 className="font-bold text-center text-3xl text-gray-900">
-                      {member?.name}
-                    </h1>
-                    <p className="text-center text-sm text-gray-400 font-medium">
-                      {new Date(member?.birthday).toLocaleDateString()}
-                    </p>
-                    <p>
-                      <span></span>
-                    </p>
-                    <div className="my-5 px-6">
-                      <a
-                        href="#"
-                        className="text-white block rounded-lg text-center font-medium leading-6 px-6 py-3 bg-orange-400 hover:bg-black hover:text-white font-bold"
-                      >
-                        Email:{' '}
-                        <span className="font-bold">{member?.email}</span>
-                      </a>
-                    </div>
-                    <div className="w-full">
-                      <h3 className="font-medium text-gray-900 text-left px-6">
-                        Information
-                      </h3>
-                      <div className="mt-5 w-full flex flex-col items-center overflow-hidden text-sm">
-                        <a
-                          href=""
-                          className="border-t border-gray-100 text-gray-600 py-4 pl-6 pr-3 w-full block hover:bg-gray-100 transition duration-150"
-                        >
-                          <span className="text-gray-500 text-bold">
-                            Phone Number:{' '}
-                          </span>
-                          {member?.contact}
-                        </a>
-
-                        <a
-                          href=""
-                          className="border-t border-gray-100 text-gray-600 py-4 pl-6 pr-3 w-full block hover:bg-gray-100 transition duration-150"
-                        >
-                          <span className="text-gray-500 text-bold">
-                            Gender:{' '}
-                          </span>
-                          {member?.gender}
-                        </a>
-
-                        <a
-                          href=""
-                          className="border-t border-gray-100 text-gray-600 py-4 pl-6 pr-3 w-full block hover:bg-gray-100 transition duration-150"
-                        >
-                          <span className="text-gray-500 text-bold">
-                            Gautra:{' '}
-                          </span>
-                          {member?.gautra}
-                        </a>
-
-                        <a
-                          href=""
-                          className="border-t border-gray-100 text-gray-600 py-4 pl-6 pr-3 w-full block hover:bg-gray-100 transition duration-150"
-                        >
-                          <span className="text-gray-500 text-bold">
-                            Marital Status:{' '}
-                          </span>
-                          {member?.maritalStatus}
-                        </a>
-
-                        <a
-                          href="#"
-                          className="border-t border-gray-100 text-gray-600 py-4 pl-6 pr-3 w-full block hover:bg-gray-100 transition duration-150 overflow-hidden"
-                        >
-                          <span className="text-gray-500 text-bold">
-                            Address:{' '}
-                          </span>
-                          {member?.address}
-                        </a>
-
-                        <a
-                          href="#"
-                          className="border-t border-gray-100 text-gray-600 py-4 pl-6 pr-3 w-full block hover:bg-gray-100 transition duration-150 overflow-hidden"
-                        >
-                          <span className="text-gray-500 text-bold">
-                            Native Town:{' '}
-                          </span>
-                          {member?.nativeTown}
-                        </a>
-                        <a
-                          href="#"
-                          className="border-t border-gray-100 text-gray-600 py-4 pl-6 pr-3 w-full block hover:bg-gray-100 transition duration-150 overflow-hidden"
-                        >
-                          <span className="text-gray-500 text-bold">
-                            Occupation:{' '}
-                          </span>
-                          {member?.occupation}
-                        </a>
-                        <a
-                          href="#"
-                          className="border-t border-gray-100 text-gray-600 py-4 pl-6 pr-3 w-full block hover:bg-gray-100 transition duration-150 overflow-hidden"
-                        >
-                          <span className="text-gray-500 text-bold">
-                            Qualification:{' '}
-                          </span>
-                          {member?.qualification}
-                        </a>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </>
-          ) : null}
         </div>
       )}
+
+      {memberToDelete ? (
+        <Modal>
+          <div className="sm:flex sm:items-start">
+            <div className="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10">
+              <svg
+                className="h-6 w-6 text-red-600"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+                />
+              </svg>
+            </div>
+            <div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
+              <h3 className="text-lg leading-6 font-medium text-gray-900">
+                Delete Member
+              </h3>
+              <div className="mt-2">
+                <p className="text-sm leading-5 text-gray-500">
+                  Are you sure you want to delete this member?
+                  <br />
+                  <span className="font-semibold text-black">
+                    {memberToDelete.name}
+                  </span>
+                </p>
+              </div>
+            </div>
+          </div>
+          <div className="mt-5 sm:mt-4 sm:flex sm:flex-row-reverse">
+            <span className="flex w-full rounded-md shadow-sm sm:ml-3 sm:w-auto">
+              <button
+                type="button"
+                onClick={() => setMemberToDelete(undefined)}
+                className="inline-flex justify-center w-full rounded-md border border-transparent px-4 py-2 bg-blue-400 text-base leading-6 font-medium text-white shadow-sm hover:bg-blue-300 focus:outline-none focus:border-blue-500 focus:shadow-outline-red transition ease-in-out duration-150 sm:text-sm sm:leading-5"
+              >
+                Cancel
+              </button>
+            </span>
+            <span className="mt-3 flex w-full rounded-md shadow-sm sm:mt-0 sm:w-auto">
+              <button
+                type="button"
+                onClick={async () => {
+                  await deleteUser(memberToDelete.id)
+                  await refetchMembers()
+                  setMemberToDelete(undefined)
+                }}
+                className="inline-flex justify-center w-full rounded-md border border-transparent px-4 py-2 bg-red-600 text-base leading-6 font-medium text-white shadow-sm hover:bg-red-500 focus:outline-none focus:border-red-700 focus:shadow-outline-red transition ease-in-out duration-150 sm:text-sm sm:leading-5"
+              >
+                Delete
+              </button>
+            </span>
+          </div>
+        </Modal>
+      ) : null}
+
+      {deleteUserLoading ? (
+        <Modal empty>
+          <svg
+            className="h-12 w-12 animate-spin"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth="2"
+              d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+            />
+          </svg>
+        </Modal>
+      ) : null}
     </ProtectedRoute>
   )
 }

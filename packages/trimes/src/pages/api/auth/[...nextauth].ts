@@ -29,7 +29,6 @@ const nextAuthOptions: NextAuthOptions = {
         if (!credentials?.contact || !credentials.password) {
           return null
         }
-        // console.log(credentials)
         const foundUser: User | null = await prismaClient.user.findFirst({
           where: {
             contact: credentials.contact
@@ -62,10 +61,12 @@ const nextAuthOptions: NextAuthOptions = {
       if (token.user) {
         session.user = token.user as User
         session.token = token
-        console.log({ session })
       }
       return session
     }
+  },
+  jwt: {
+    maxAge: 1 * 60 * 60 // 1 hour
   }
 }
 
