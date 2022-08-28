@@ -5,7 +5,7 @@ import Link from 'next/link'
 import { useEffect, useState } from 'react'
 import { BsFillPencilFill } from 'react-icons/bs'
 import { FaUser } from 'react-icons/fa'
-import { MdDeleteOutline } from 'react-icons/md'
+import { MdDeleteOutline, MdModeEditOutline } from 'react-icons/md'
 import { useMutation, useQuery } from 'react-query'
 import { Loading } from '../components/Loading'
 import { Modal } from '../components/Modal'
@@ -18,19 +18,27 @@ type UserWithArea = User & {
 }
 
 const Profile: NextPage = () => {
+  //? Session
   const { data: session } = useSession()
+
+  //? States
   const [otherRelation, setOtherRelation] = useState(false)
   const [membersVisible, setMembersVisible] = useState(false)
-  const { mutateAsync: register, isLoading: registerLoading } = useMutation(
-    async (values: any) => {
-      const user = await fetch('/api/user', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(values)
-      })
-      return await user.json()
+  const [memberToDelete, setMemberToDelete] = useState<User | undefined>()
+  const [addMemberForm, setAddMemberForm] = useState(false)
+  const [userProfileEdit, setUserProfileEdit] = useState(false)
+  const [memberProfileEdit, setMemberProfileEdit] = useState<User | undefined>()
+
+  //? Queries
+  const { data: areas, isLoading: getAreasLoading } = useQuery(
+    'areas',
+    async (): Promise<Area[]> => {
+      if (!session?.user?.id) return []
+      const areas = await fetch(`/api/area`)
+      return await areas.json()
+    },
+    {
+      enabled: userProfileEdit
     }
   )
   const {
@@ -57,7 +65,21 @@ const Profile: NextPage = () => {
       enabled: false
     }
   )
-  const [memberToDelete, setMemberToDelete] = useState<User | undefined>()
+
+  //? Mutations
+
+  const { mutateAsync: register, isLoading: registerLoading } = useMutation(
+    async (values: any) => {
+      const user = await fetch('/api/user', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(values)
+      })
+      return await user.json()
+    }
+  )
   const { mutateAsync: deleteUser, isLoading: deleteUserLoading } = useMutation(
     async (userId: string): Promise<User | undefined> => {
       if (!userId) return
@@ -67,38 +89,25 @@ const Profile: NextPage = () => {
       return await user.json()
     }
   )
-  const { mutateAsync: updateUser } = useMutation(async (values: any) => {
-    const user = await fetch(`/api/user`, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(values)
-    })
-    return await user.json()
-  })
-
-  useEffect(() => {
-    if (memberToDelete?.id) document.body.classList.toggle('overflow-hidden')
-    else document.body.classList.remove('overflow-hidden')
-  }, [memberToDelete])
-
-  const [addMemberForm, setAddMemberForm] = useState(false)
-  const [userProfileEdit, setUserProfileEdit] = useState(false)
-  const { data: areas, isLoading: getAreasLoading } = useQuery(
-    'areas',
-    async (): Promise<Area[]> => {
-      if (!session?.user?.id) return []
-      const areas = await fetch(`/api/area`)
-      return await areas.json()
-    },
-    {
-      enabled: userProfileEdit
+  const { mutateAsync: updateUser, isLoading: updateUserLoading } = useMutation(
+    async (values: any) => {
+      const user = await fetch(`/api/user`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(values)
+      })
+      return await user.json()
     }
   )
+
+  //? UseEffects
+
   useEffect(() => {
     refetch()
   }, [refetch, session])
+
   return (
     <ProtectedRoute>
       <div className="flex justify-center items-center w-full">
@@ -160,7 +169,7 @@ const Profile: NextPage = () => {
                 await refetch()
               }}
             >
-              <div className="grid grid-cols-1 md:grid-cols-2 mt-4 gap-x-8">
+              <div className="grid grid-cols-1 md:grid-cols-2 mt-4 gap-x-8 break-words">
                 <div className="grid grid-cols-2 gap-2">
                   <label>Name</label>
                   {userProfileEdit ? (
@@ -186,8 +195,12 @@ const Profile: NextPage = () => {
                       defaultValue={
                         new Date(user.birthday).getFullYear() +
                         '-' +
+                        (new Date(user.birthday).getMonth() + 1 < 10
+                          ? '0'
+                          : '') +
                         (new Date(user.birthday).getMonth() + 1) +
                         '-' +
+                        (new Date(user.birthday).getDate() < 10 ? '0' : '') +
                         new Date(user.birthday).getDate()
                       }
                     />
@@ -522,7 +535,15 @@ const Profile: NextPage = () => {
                         <td className="py-4 px-6">
                           {member.showInMatrimony ? 'Yes' : 'No'}
                         </td>
-                        <td className="py-4 px-6">
+                        <td className="py-4 px-6 flex gap-2">
+                          <button
+                            className="rounded-md text-gray-600 flex items-center"
+                            onClick={() => setMemberProfileEdit(member)}
+                          >
+                            <MdModeEditOutline />
+                            Edit
+                          </button>
+                          <span>/</span>
                           <button
                             className="rounded-md text-red-600 flex items-center"
                             onClick={() => {
@@ -922,6 +943,303 @@ const Profile: NextPage = () => {
               d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
             />
           </svg>
+        </Modal>
+      ) : null}
+
+      {/*  edit profile for member form */}
+      {memberProfileEdit ? (
+        <Modal>
+          <form
+            onSubmit={async e => {
+              e.preventDefault()
+              const target = e.currentTarget as any
+              const headId = session?.user?.id
+              if (!headId) return
+              await updateUser({
+                userId: memberProfileEdit.id,
+                name: target.name.value,
+                email: target.email.value,
+                maritalStatus: target.maritalStatus.value,
+                gender: target.gender.value,
+                birthday: target.birthday.value,
+                contact: target.contact.value,
+                occupation: target.occupation.value,
+                qualification: target.qualification.value,
+                gautra: target.gautra.value,
+                nativeTown: target.nativeTown.value,
+                bloodGroup: target.bloodGroup.value,
+                address: target.address.value,
+                isPrivateProperty: target.isPrivateProperty.checked,
+                headId,
+                relationWithHead: target.relationWithHead.value
+              })
+              await refetchMembers()
+              setMemberProfileEdit(undefined)
+            }}
+          >
+            <div className="grid md:grid-cols-2 gap-4 px-4">
+              <div>
+                <label className="block">
+                  Name<span className="text-red-600">*</span>
+                </label>
+                <input
+                  type="text"
+                  defaultValue={memberProfileEdit.name}
+                  name="name"
+                  placeholder="Name"
+                  className="w-full px-4 py-2 mt-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-blue-600"
+                  required
+                />
+              </div>
+              <div>
+                <label className="block">Email</label>
+                <input
+                  defaultValue={memberProfileEdit.email || undefined}
+                  type="email"
+                  name="email"
+                  placeholder="Email"
+                  className="w-full px-4 py-2 mt-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-blue-600"
+                />
+              </div>
+              <div>
+                <label className="block">Contact</label>
+                <input
+                  defaultValue={memberProfileEdit.contact || undefined}
+                  type="number"
+                  name="contact"
+                  placeholder="Contact"
+                  className="w-full px-4 py-2 mt-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-blue-600"
+                />
+              </div>
+
+              <div>
+                <div className="block">
+                  Marital Status
+                  <span className="text-red-600">*</span>
+                </div>
+
+                <select
+                  defaultValue={memberProfileEdit.maritalStatus}
+                  required
+                  name="maritalStatus"
+                  className="w-full px-4 py-2 mt-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-blue-600"
+                >
+                  <option value="">Select</option>
+                  <option value="married">Married</option>
+                  <option value="unmarried">Unmarried</option>
+                  <option value="divorced">Divorced</option>
+                  <option value="widowed">Widowed</option>
+                </select>
+              </div>
+              <div>
+                <div className="block">
+                  Gender
+                  <span className="text-red-600">*</span>
+                </div>
+
+                <select
+                  defaultValue={memberProfileEdit.gender}
+                  name="gender"
+                  required
+                >
+                  <option value="">Select</option>
+                  <option value="male">Male</option>
+                  <option value="female">Female</option>
+                  <option value="other">Other</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block">
+                  Relation with Head
+                  <span className="text-red-600">*</span>
+                </label>
+                <select
+                  name="relationWithHead"
+                  required
+                  defaultValue={memberProfileEdit.relationWithHead || undefined}
+                  onChange={e => {
+                    if (e.target.value === 'other') {
+                      setOtherRelation(true)
+                    } else {
+                      setOtherRelation(false)
+                    }
+                  }}
+                >
+                  <option value="">Select</option>
+                  <option value="father">Father</option>
+                  <option value="mother">Mother</option>
+                  <option value="wife">Wife</option>
+                  <option value="son">Son</option>
+                  <option value="daughterInLaw">Daughter in Law</option>
+                  <option value="daughter">Daughter</option>
+                  <option value="grandSon">Grand Son</option>
+                  <option value="grandDaughter">Grand Daughter</option>
+                  <option value="other">Other</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block">
+                  Date of Birth
+                  <span className="text-red-600">*</span>
+                </label>
+                <input
+                  defaultValue={
+                    new Date(memberProfileEdit.birthday).getFullYear() +
+                    '-' +
+                    (new Date(memberProfileEdit.birthday).getMonth() + 1 < 10
+                      ? '0'
+                      : '') +
+                    (new Date(memberProfileEdit.birthday).getMonth() + 1) +
+                    '-' +
+                    (new Date(memberProfileEdit.birthday).getDate() < 10
+                      ? '0'
+                      : '') +
+                    new Date(memberProfileEdit.birthday).getDate()
+                  }
+                  type="date"
+                  id="birthday"
+                  name="birthday"
+                  placeholder="DD/MM/YYYY"
+                  required
+                ></input>
+              </div>
+              {otherRelation ? (
+                <div>
+                  <input
+                    type="text"
+                    defaultValue={
+                      memberProfileEdit.relationWithHead || undefined
+                    }
+                    required
+                    name="relationWithHead"
+                    placeholder="Please Specify relation with head*"
+                    className="w-full px-4 py-2 mt-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-blue-600"
+                  />
+                </div>
+              ) : null}
+              <div>
+                <label className="block">
+                  Occupation
+                  <span className="text-red-600">*</span>
+                </label>
+                <input
+                  defaultValue={memberProfileEdit.occupation}
+                  type="text"
+                  name="occupation"
+                  placeholder="Occupation"
+                  required
+                  className="w-full px-4 py-2 mt-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-blue-600"
+                />
+              </div>
+              <div>
+                <label className="block">
+                  Qualification
+                  <span className="text-red-600">*</span>
+                </label>
+                <input
+                  type="text"
+                  name="qualification"
+                  defaultValue={memberProfileEdit.qualification}
+                  required
+                  placeholder="Qualification"
+                  className="w-full px-4 py-2 mt-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-blue-600"
+                />
+              </div>
+              <div>
+                <label className="block">
+                  Gautra
+                  <span className="text-red-600">*</span>
+                </label>
+                <input
+                  type="text"
+                  defaultValue={memberProfileEdit.gautra}
+                  name="gautra"
+                  placeholder="Gautra"
+                  required
+                  className="w-full px-4 py-2 mt-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-blue-600"
+                />
+              </div>
+              <div>
+                <label className="block">
+                  Native Town
+                  <span className="text-red-600">*</span>
+                </label>
+                <input
+                  type="text"
+                  defaultValue={memberProfileEdit.nativeTown}
+                  name="nativeTown"
+                  required
+                  placeholder="Native Town"
+                  className="w-full px-4 py-2 mt-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-blue-600"
+                />
+              </div>
+              <div>
+                <label className="block">Blood Group</label>
+                <select
+                  name="bloodGroup"
+                  defaultValue={memberProfileEdit.bloodGroup || ''}
+                  className="w-full px-4 py-2 mt-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-blue-600"
+                >
+                  <option value="">Select</option>
+                  <option value="O-">O-</option>
+                  <option value="O+">O+</option>
+                  <option value="A+">A+</option>
+                  <option value="A-">A-</option>
+                  <option value="B+">B+</option>
+                  <option value="B-">B-</option>
+                  <option value="AB+">AB+</option>
+                  <option value="AB-">AB-</option>
+                </select>
+              </div>
+              <div>
+                <label className="block">
+                  Address
+                  <span className="text-red-600">*</span>
+                </label>
+                <input
+                  type="text"
+                  name="address"
+                  defaultValue={memberProfileEdit.address}
+                  placeholder="Address"
+                  required
+                  className="w-full px-4 py-2 mt-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-blue-600"
+                />
+              </div>
+              <div>
+                <label>
+                  <input
+                    type="checkbox"
+                    defaultChecked={
+                      memberProfileEdit.isPrivateProperty || false
+                    }
+                    name="isPrivateProperty"
+                    className="mr-2"
+                  />
+                  Do you own the house where you live?
+                </label>
+              </div>
+            </div>
+            <div className="flex gap-2 pt-2 justify-center items-center">
+              <button
+                disabled={updateUserLoading}
+                className="px-6 py-2 mt-4 text-white w-64 bg-blue-600 rounded-lg hover:bg-blue-900"
+                type="submit"
+              >
+                Update {updateUserLoading && 'Loading...'}
+              </button>
+              <button
+                className="px-6 py-2 mt-4 text-white w-64 bg-orange-600 rounded-lg hover:bg-orange-900"
+                type="button"
+                onClick={() => {
+                  setMemberProfileEdit(undefined)
+                }}
+              >
+                Cancel
+              </button>
+            </div>
+          </form>
         </Modal>
       ) : null}
     </ProtectedRoute>

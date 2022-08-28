@@ -21,6 +21,10 @@ export const Header: FC = () => {
     })
   }, [router])
 
+  useEffect(() => {
+    document.body.classList.toggle('overflow-hidden', phoneMenuOpen)
+  }, [phoneMenuOpen])
+
   return (
     <>
       <header
@@ -167,7 +171,7 @@ export const Header: FC = () => {
         <AnimatePresence>
           {phoneMenuOpen && (
             <motion.div
-              className="lg:hidden absolute top-0 left-0 w-screen h-screen bg-white py-2 px-4 flex flex-col items-end"
+              className="lg:hidden absolute top-0 left-0 overflow-x-auto w-screen h-screen bg-white py-2 px-4  items-end"
               initial={{
                 x: '100%',
                 opacity: 0
@@ -185,7 +189,8 @@ export const Header: FC = () => {
               }}
             >
               <CgClose
-                size="32"
+                className="float-right"
+                size={32}
                 onClick={() => {
                   setPhoneMenuOpen(false)
                 }}
