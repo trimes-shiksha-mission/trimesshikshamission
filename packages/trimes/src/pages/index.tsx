@@ -33,7 +33,7 @@ const Home: NextPage<{ editorial: Editorial }> = ({ editorial }) => {
         <div className=" px-5 py-10 lg:px-48 lg:flex lg:space-x-12 pt-8 shadow-2xl m-10 rounded-xl text-center">
           <div className="lg:w-1/4">
             <h2 className="text-3xl font-semibold italic text-orange-400">
-              अपनो से अपनो की बात
+              अपने से अपनी बात
             </h2>
             <span>{editorial.createdAt.toLocaleString()}</span>
           </div>
