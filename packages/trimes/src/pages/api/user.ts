@@ -59,7 +59,9 @@ export default async function UserHandler(
     const values = req.body
     const userId = values.userId
     delete values.userId
+
     try {
+      Object.keys(values).forEach(k => !values[k] && delete values[k])
       const user = await prismaClient.user.update({
         where: {
           id: userId
