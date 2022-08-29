@@ -5,7 +5,10 @@ import { prismaClient } from '../lib/prisma'
 
 export const getServerSideProps = async () => {
   const gyanganga = await prismaClient.blog.findMany({
-    where: { type: 'GYANGANGA' }
+    where: { type: 'GYANGANGA' },
+    orderBy: {
+      createdAt: 'desc'
+    }
   })
 
   if (!gyanganga.length) {
