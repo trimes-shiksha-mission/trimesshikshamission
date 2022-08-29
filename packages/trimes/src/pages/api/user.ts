@@ -74,5 +74,18 @@ export default async function UserHandler(
       res.status(500).json(e)
       console.error(e)
     }
+  } else if (req.method === 'DELETE') {
+    const userId = req.query.id as string
+    try {
+      const user = await prismaClient.user.delete({
+        where: {
+          id: userId
+        }
+      })
+      res.status(200).json(user)
+    } catch (e) {
+      res.status(500).json(e)
+      console.error(e)
+    }
   }
 }
