@@ -1,6 +1,7 @@
 import { Editorial } from '@prisma/client'
 import type { NextPage } from 'next'
 import Image from 'next/image'
+import { useEffect, useState } from 'react'
 import { Autoplay, Pagination } from 'swiper'
 import 'swiper/css/pagination'
 import { Swiper, SwiperSlide } from 'swiper/react'
@@ -27,6 +28,12 @@ export const getServerSideProps = async () => {
 }
 
 const Home: NextPage<{ editorial: Editorial }> = ({ editorial }) => {
+  const [editorialContent, setEditorialContent] = useState('')
+
+  useEffect(() => {
+    setEditorialContent(editorial?.body)
+  }, [editorial])
+
   return (
     <>
       {editorial && (
@@ -44,7 +51,7 @@ const Home: NextPage<{ editorial: Editorial }> = ({ editorial }) => {
             <p
               className="mt-2"
               dangerouslySetInnerHTML={{
-                __html: editorial.body.replaceAll('\n', '<br/>')
+                __html: editorialContent
               }}
             ></p>
           </div>

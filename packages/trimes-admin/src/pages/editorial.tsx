@@ -3,11 +3,12 @@ import { Button, Form, Input, message, Modal, Row, Table } from 'antd'
 import { NextPage } from 'next'
 import { useState } from 'react'
 import { useMutation, useQuery } from 'react-query'
+import { Editor } from '../components/Editor'
 import { ProtectedRoute } from '../components/ProtectedRoute'
 
 const Editorial: NextPage = () => {
   const { mutateAsync: addEditorial, isLoading: addEditorialLoading } =
-    useMutation(async editorial => {
+    useMutation(async (editorial: { title: string; body: string }) => {
       try {
         const res = await fetch('/api/editorial', {
           method: 'POST',
@@ -21,17 +22,18 @@ const Editorial: NextPage = () => {
         message.error((error as any).message)
       }
     })
-  const { data: editorials, isLoading: getEditorialLoading } = useQuery(
-    'editorial',
-    async () => {
-      const res = await fetch('/api/editorial')
-      const data = await res.json()
-      if (data.error) {
-        return []
-      }
-      return data
+  const {
+    data: editorials,
+    isLoading: getEditorialLoading,
+    refetch
+  } = useQuery('editorial', async () => {
+    const res = await fetch('/api/editorial')
+    const data = await res.json()
+    if (data.error) {
+      return []
     }
-  )
+    return data
+  })
 
   const { mutateAsync: deleteEditorial, isLoading: deleteEditorialLoading } =
     useMutation(async id => {
@@ -50,7 +52,11 @@ const Editorial: NextPage = () => {
     })
 
   const [addEditorialModal, setAddEditorialModal] = useState(false)
+  const [editorValue, setEditorValue] = useState('')
 
+  if (getEditorialLoading) {
+    return <div>Loading...</div>
+  }
   return (
     <ProtectedRoute role={['SUPERUSER']}>
       <Row>
@@ -103,14 +109,23 @@ const Editorial: NextPage = () => {
         <Form
           layout="vertical"
           onFinish={async values => {
-            await addEditorial(values)
+            await addEditorial({
+              title: values.title,
+              body: editorValue
+            })
+            await refetch()
           }}
         >
-          <Form.Item label="Title:" name="title">
+          <Form.Item label="Title:" name="title" rules={[{ required: true }]}>
             <Input type="text" />
           </Form.Item>
-          <Form.Item label="Body:" name="body">
-            <Input.TextArea rows={10} />
+          <Form.Item label="Content:">
+            <Editor
+              key={'editorial'}
+              placeholder={'Write something...'}
+              editorHtml={editorValue}
+              setEditorHtml={setEditorValue}
+            />
           </Form.Item>
           <Form.Item>
             <Button
