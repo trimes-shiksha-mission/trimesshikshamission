@@ -1,6 +1,7 @@
 import { Editorial } from '@prisma/client'
 import type { NextPage } from 'next'
 import Image from 'next/image'
+import { useEffect, useState } from 'react'
 import { Autoplay, Pagination } from 'swiper'
 import 'swiper/css/pagination'
 import { Swiper, SwiperSlide } from 'swiper/react'
@@ -27,24 +28,36 @@ export const getServerSideProps = async () => {
 }
 
 const Home: NextPage<{ editorial: Editorial }> = ({ editorial }) => {
+  const [editorialContent, setEditorialContent] = useState('')
+
+  useEffect(() => {
+    setEditorialContent(editorial?.body)
+  }, [editorial])
+
   return (
     <>
       {editorial && (
-        <div className=" px-5 py-10 lg:px-48 lg:flex lg:space-x-12 pt-8 shadow-2xl m-10 rounded-xl text-center">
+        <div className=" px-3 py-10 lg:px-48 lg:flex lg:space-x-12 pt-8 shadow-2xl m-10 rounded-xl text-center ">
           <div className="lg:w-1/4">
-            <h2 className="text-3xl font-semibold italic text-orange-400">
-              अपनो से अपनो की बात
+            <h2 className="text-3xl font-semibold italic text-red-400 text-center">
+              अपने से अपनी बात (Editorial)
             </h2>
-            <span>{editorial.createdAt.toLocaleString()}</span>
+            <h2 className="text-3xl  mt-4 font-semibold italic text-blue-500 text-center">
+              "हो सकता है मैं आपके विचारों से सहमत न हो पाऊं फिर भी विचार प्रकट करने के आपके अधिकारों की रक्षा करूंगा..."
+            </h2>
+            <h2 className="text-3xl font-semibold italic text-purple-500 text-right px-3">
+              वाल्तेयर
+            </h2>
+            <span className = "text-center">{editorial.createdAt.toLocaleString()}</span>
           </div>
-          <div className="w-full mt-4">
-            <h3 className="text-2xl font-semibold text-orange-600">
+          <div className="w-full mt-4 text-center">
+            <h3 className="text-2xl font-semibold text-orange-600 text-center">
               {editorial.title}
             </h3>
             <p
-              className="mt-2"
+              className="mt-2 "
               dangerouslySetInnerHTML={{
-                __html: editorial.body.replaceAll('\n', '<br/>')
+                __html: editorialContent
               }}
             ></p>
           </div>

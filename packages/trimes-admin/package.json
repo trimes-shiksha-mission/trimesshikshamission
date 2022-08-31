@@ -22,7 +22,8 @@
     "@prisma/client": "^4.2.1",
     "@supabase/supabase-js": "^1.35.6",
     "multiparty": "^4.2.3",
-    "form-data": "^4.0.0"
+    "form-data": "^4.0.0",
+    "react-quill": "^2.0.0"
   },
   "devDependencies": {
     "@types/node": "18.7.3",

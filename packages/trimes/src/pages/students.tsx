@@ -5,7 +5,10 @@ import { prismaClient } from '../lib/prisma'
 
 export const getServerSideProps = async () => {
   const students = await prismaClient.blog.findMany({
-    where: { type: 'STUDENT' }
+    where: { type: 'STUDENT' },
+    orderBy: {
+      createdAt: 'desc'
+    }
   })
 
   if (!students.length) {

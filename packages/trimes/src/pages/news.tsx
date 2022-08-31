@@ -4,7 +4,12 @@ import { ProtectedRoute } from '../components/ProtectedRoute'
 import { prismaClient } from '../lib/prisma'
 
 export const getServerSideProps = async () => {
-  const news = await prismaClient.blog.findMany({ where: { type: 'NEWS' } })
+  const news = await prismaClient.blog.findMany({
+    where: { type: 'NEWS' },
+    orderBy: {
+      createdAt: 'desc'
+    }
+  })
 
   if (!news.length) {
     return {
