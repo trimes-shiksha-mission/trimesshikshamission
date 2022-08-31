@@ -6,7 +6,11 @@ module.exports = {
       none: 'none',
       blur: 'blur(20px)'
     },
-    extend: {},
+    extend: {
+      colors: {
+        primary: '#FDAE09'
+      }
+    }
   },
   plugins: [require('tailwindcss-filters')]
 }

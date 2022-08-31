@@ -13,9 +13,22 @@ export default async function AllUserHandler(
   page = page > 0 ? page : 1
 
   const total = await prismaClient.user.count()
+  const countToTake = page > total / 5 ? total % 5 : 5
+  console.log({ page, total, countToTake })
   const users = await prismaClient.user.findMany({
-    skip: (page - 1) * 10,
-    take: total - (page - 1) * 10 > 10 ? 10 : total - (page - 1) * 10
+    skip: (page - 1) * 5,
+    take: countToTake,
+    where: {
+      headId: null
+    },
+    include: {
+      members: true,
+      area: {
+        select: {
+          name: true
+        }
+      }
+    }
   })
 
   return res.status(200).json({ users, total })
