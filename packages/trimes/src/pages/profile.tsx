@@ -1,8 +1,7 @@
 import { Area, User } from '@prisma/client'
 import { NextPage } from 'next'
-import { useSession } from 'next-auth/react'
 import Link from 'next/link'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { BsFillPencilFill } from 'react-icons/bs'
 import { FaUser } from 'react-icons/fa'
 import { MdDeleteOutline, MdModeEditOutline } from 'react-icons/md'
@@ -10,6 +9,8 @@ import { useMutation, useQuery } from 'react-query'
 import { Loading } from '../components/Loading'
 import { Modal } from '../components/Modal'
 import { ProtectedRoute } from '../components/ProtectedRoute'
+import fetchJson from '../lib/fetchJson'
+import useUser from '../lib/useUser'
 
 type UserWithArea = User & {
   area?: {
@@ -19,23 +20,25 @@ type UserWithArea = User & {
 
 const Profile: NextPage = () => {
   //? Session
-  const { data: session } = useSession()
+  const { user: sessionUser } = useUser({
+    redirectTo: '/login',
+    redirectIfFound: false
+  })
 
   //? States
   const [otherRelation, setOtherRelation] = useState(false)
   const [membersVisible, setMembersVisible] = useState(false)
-  const [memberToDelete, setMemberToDelete] = useState<User | undefined>()
+  const [memberToDelete, setMemberToDelete] = useState<User>()
   const [addMemberForm, setAddMemberForm] = useState(false)
   const [userProfileEdit, setUserProfileEdit] = useState(false)
-  const [memberProfileEdit, setMemberProfileEdit] = useState<User | undefined>()
+  const [memberProfileEdit, setMemberProfileEdit] = useState<User>()
 
   //? Queries
   const { data: areas, isLoading: getAreasLoading } = useQuery(
     'areas',
     async (): Promise<Area[]> => {
-      if (!session?.user?.id) return []
-      const areas = await fetch(`/api/area`)
-      return await areas.json()
+      if (!sessionUser?.id) return []
+      return await fetchJson(`/api/area`)
     },
     {
       enabled: userProfileEdit
@@ -46,9 +49,8 @@ const Profile: NextPage = () => {
     isLoading: getUserLoading,
     refetch
   } = useQuery('user', async (): Promise<UserWithArea | undefined> => {
-    if (!session?.user?.id) return
-    const user = await fetch(`/api/user?id=${session.user.id}`)
-    return await user.json()
+    if (!sessionUser?.id) return
+    return await fetchJson(`/api/user?id=${sessionUser.id}`)
   })
   const {
     data: members,
@@ -57,8 +59,8 @@ const Profile: NextPage = () => {
   } = useQuery(
     'members',
     async (): Promise<User[]> => {
-      if (!session?.user?.id) return []
-      const members = await fetch(`/api/member?headId=${session.user.id}`)
+      if (!sessionUser?.id) return []
+      const members = await fetch(`/api/member?headId=${sessionUser.id}`)
       return await members.json()
     },
     {
@@ -101,12 +103,6 @@ const Profile: NextPage = () => {
       return await user.json()
     }
   )
-
-  //? UseEffects
-
-  useEffect(() => {
-    refetch()
-  }, [refetch, session])
 
   return (
     <ProtectedRoute>
@@ -568,7 +564,7 @@ const Profile: NextPage = () => {
               onSubmit={async e => {
                 e.preventDefault()
                 const target = e.currentTarget as any
-                const headId = session?.user?.id
+                const headId = sessionUser?.id
                 if (!headId) return
                 await register({
                   name: target.name.value,
@@ -869,7 +865,7 @@ const Profile: NextPage = () => {
       )}
 
       {memberToDelete ? (
-        <Modal>
+        <Modal visible={memberToDelete !== undefined}>
           <div className="sm:flex sm:items-start">
             <div className="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10">
               <svg
@@ -929,7 +925,7 @@ const Profile: NextPage = () => {
       ) : null}
 
       {deleteUserLoading ? (
-        <Modal empty>
+        <Modal visible={deleteUserLoading} empty>
           <svg
             className="h-12 w-12 animate-spin"
             fill="none"
@@ -948,12 +944,12 @@ const Profile: NextPage = () => {
 
       {/*  edit profile for member form */}
       {memberProfileEdit ? (
-        <Modal>
+        <Modal visible={memberProfileEdit !== undefined}>
           <form
             onSubmit={async e => {
               e.preventDefault()
               const target = e.currentTarget as any
-              const headId = session?.user?.id
+              const headId = sessionUser?.id
               if (!headId) return
               await updateUser({
                 userId: memberProfileEdit.id,

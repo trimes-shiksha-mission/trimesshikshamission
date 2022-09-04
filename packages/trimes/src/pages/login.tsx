@@ -1,14 +1,14 @@
 import { NextPage } from 'next'
-import { signIn, useSession } from 'next-auth/react'
 import Link from 'next/link'
+import fetchJson from '../lib/fetchJson'
+import useUser from '../lib/useUser'
 
 const Login: NextPage = () => {
-  const { data: session } = useSession()
+  const { mutateUser } = useUser({
+    redirectTo: '/',
+    redirectIfFound: true
+  })
 
-  if (session) {
-    window.location.href = '/'
-    return <>Already signed in</>
-  }
   return (
     <>
       <div className="flex items-center justify-center min-h-screen bg-gray-100">
@@ -20,10 +20,21 @@ const Login: NextPage = () => {
           <form
             onSubmit={async e => {
               e.preventDefault()
-              await signIn('credentials', {
+              const body = {
                 contact: e.currentTarget.contact.value,
                 password: e.currentTarget.password.value
-              })
+              }
+              try {
+                mutateUser(
+                  await fetchJson('/api/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(body)
+                  })
+                )
+              } catch (error) {
+                alert('Error logging in')
+              }
             }}
           >
             <div className="mt-4">

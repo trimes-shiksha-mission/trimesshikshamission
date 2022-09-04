@@ -1,10 +1,10 @@
 import { AnimatePresence, motion } from 'framer-motion'
-import { useSession } from 'next-auth/react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { FC, useEffect, useState } from 'react'
 import { CgClose, CgMenuRightAlt } from 'react-icons/cg'
+import useUser from '../lib/useUser'
 
 const checkRoute = (currRoute: string, link: string) => {
   return '/' + currRoute.split('/')[1] === link
@@ -14,7 +14,7 @@ export const Header: FC = () => {
   const [phoneMenuOpen, setPhoneMenuOpen] = useState(false)
   const router = useRouter()
   const currRoute = router.route
-  const { data: session } = useSession()
+  const { user } = useUser()
   useEffect(() => {
     router.events.on('routeChangeComplete', () => {
       setPhoneMenuOpen(false)
@@ -151,15 +151,10 @@ export const Header: FC = () => {
               <li
                 className={`opacity-95 relative cursor-pointer py-2 text-base font-medium mx-4 text-black hover:text-primary transition-all duration-200  `}
               >
-                <Link href={session?.user?.id ? '/profile' : '/login'} passHref>
-                  <a>
-                    {session?.user?.id ? session.user?.name : 'Register/Login'}
-                  </a>
+                <Link href={user?.id ? '/profile' : '/login'} passHref>
+                  <a>{user?.id ? user.name : 'Register/Login'}</a>
                 </Link>
-                {checkRoute(
-                  currRoute,
-                  session?.user?.id ? '/profile' : '/login'
-                ) && (
+                {checkRoute(currRoute, user?.id ? '/profile' : '/login') && (
                   <div
                     className={`bg-black w-full h-[2px] absolute mt-1`}
                   ></div>
@@ -342,27 +337,19 @@ export const Header: FC = () => {
                 </li>
                 <li
                   className={`relative text-2xl w-full font-bold px-4 text-center py-4 animated hover:text-primary ${
-                    checkRoute(
-                      currRoute,
-                      session?.user?.id ? '/profile' : '/login'
-                    )
+                    checkRoute(currRoute, user?.id ? '/profile' : '/login')
                       ? 'text-primary'
                       : 'text-gray-800'
                   }`}
                 >
-                  <Link
-                    href={session?.user?.id ? '/profile' : '/login'}
-                    passHref
-                  >
+                  <Link href={user?.id ? '/profile' : '/login'} passHref>
                     <a
                       className="nav-link-item-mobile"
                       onClick={() => {
                         setPhoneMenuOpen(false)
                       }}
                     >
-                      {session?.user?.id
-                        ? session.user?.name
-                        : 'Register/Login'}
+                      {user?.id ? user?.name : 'Register/Login'}
                     </a>
                   </Link>
                 </li>

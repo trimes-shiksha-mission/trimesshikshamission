@@ -2,9 +2,39 @@
 @tailwind components;
 @tailwind utilities;
 
-.jobs{
-  background-image: url('../../public/wallpaper.jpg')
+.jobs {
+  background-image: url('../../public/wallpaper.jpg');
 }
-.glassmorphism{
+.glassmorphism {
   backdrop-filter: blur(20px);
 }
+
+/* nprogress */
+
+#nprogress {
+  @apply pointer-events-none;
+}
+
+#nprogress .bar {
+  @apply bg-primary fixed z-[1000] top-0 left-0 w-full h-1;
+}
+
+#nprogress .spinner {
+  @apply block fixed z-[1001] top-1 right-1 sm:top-2 sm:right-2;
+}
+
+#nprogress .spinner-icon {
+  @apply w-5 h-5 box-border border-2 border-transparent border-t-primary border-l-primary rounded-full;
+  animation: nprogress-spinner 500ms linear infinite;
+}
+
+@keyframes nprogress-spinner {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* nprogress end */
