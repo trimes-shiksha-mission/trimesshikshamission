@@ -8,15 +8,18 @@ export default async function AllUserHandler(
   if (req.method !== 'POST')
     return res.status(405).json({ message: 'Method not allowed' })
 
+  const pageSize = 10
   let { filters, page } = req.body
   // console.log(filters)
   page = page > 0 ? page : 1
 
-  const total = await prismaClient.user.count()
-  const countToTake = page > total / 5 ? total % 5 : 5
-  console.log({ page, total, countToTake })
-  const users = await prismaClient.user.findMany({
-    skip: (page - 1) * 5,
+  const totalHeads = await prismaClient.user.count({ where: { headId: null } })
+  const countToTake =
+    page > totalHeads / pageSize ? totalHeads % pageSize : pageSize
+
+  const totalUsers = await prismaClient.user.count()
+  const heads = await prismaClient.user.findMany({
+    skip: (page - 1) * pageSize,
     take: countToTake,
     where: {
       headId: null
@@ -31,5 +34,5 @@ export default async function AllUserHandler(
     }
   })
 
-  return res.status(200).json({ users, total })
+  return res.status(200).json({ heads, totalHeads, totalUsers })
 }
