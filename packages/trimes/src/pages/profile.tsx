@@ -48,10 +48,16 @@ const Profile: NextPage = () => {
     data: user,
     isLoading: getUserLoading,
     refetch
-  } = useQuery('user', async (): Promise<UserWithArea | undefined> => {
-    if (!sessionUser?.id) return
-    return await fetchJson(`/api/user?id=${sessionUser.id}`)
-  })
+  } = useQuery(
+    'user',
+    async (): Promise<UserWithArea | undefined> => {
+      if (!sessionUser?.id) return
+      return await fetchJson(`/api/user?id=${sessionUser.id}`)
+    },
+    {
+      enabled: sessionUser?.id !== undefined
+    }
+  )
   const {
     data: members,
     isLoading: getMembersLoading,
