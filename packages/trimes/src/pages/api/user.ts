@@ -18,7 +18,28 @@ export default async function UserHandler(
     }
     try {
       Object.keys(values).forEach(k => !values[k] && delete values[k])
-
+      if (values.email) {
+        const found = await prismaClient.user.count({
+          where: {
+            email: values.email
+          }
+        })
+        if (found)
+          return res.status(200).json({
+            error: 'Email already exists'
+          })
+      }
+      if (values.contact) {
+        const found = await prismaClient.user.count({
+          where: {
+            contact: values.contact
+          }
+        })
+        if (found)
+          return res.status(200).json({
+            error: 'Contact already exists'
+          })
+      }
       const user = await prismaClient.user.create({
         data: {
           ...values,

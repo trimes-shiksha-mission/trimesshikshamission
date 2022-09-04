@@ -62,7 +62,11 @@ export const Header: FC = () => {
                 <Link href="/" passHref>
                   <a>HOME</a>
                 </Link>
-                {checkRoute(currRoute, '/')}
+                {checkRoute(currRoute, '/') && (
+                  <div
+                    className={`bg-black w-full h-[2px] absolute mt-1`}
+                  ></div>
+                )}
               </li>
               <li
                 className={`opacity-95 relative cursor-pointer py-2 text-base font-medium mx-4  hover:text-primary transition-all duration-200 text-black`}

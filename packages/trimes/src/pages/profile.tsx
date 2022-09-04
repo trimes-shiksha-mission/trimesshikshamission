@@ -78,14 +78,13 @@ const Profile: NextPage = () => {
 
   const { mutateAsync: register, isLoading: registerLoading } = useMutation(
     async (values: any) => {
-      const user = await fetch('/api/user', {
+      return await fetchJson('/api/user', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
         body: JSON.stringify(values)
       })
-      return await user.json()
     }
   )
   const { mutateAsync: deleteUser, isLoading: deleteUserLoading } = useMutation(
@@ -572,25 +571,32 @@ const Profile: NextPage = () => {
                 const target = e.currentTarget as any
                 const headId = sessionUser?.id
                 if (!headId) return
-                await register({
-                  name: target.name.value,
-                  email: target.email.value,
-                  maritalStatus: target.maritalStatus.value,
-                  gender: target.gender.value,
-                  birthday: target.birthday.value,
-                  contact: target.contact.value,
-                  occupation: target.occupation.value,
-                  qualification: target.qualification.value,
-                  gautra: target.gautra.value,
-                  nativeTown: target.nativeTown.value,
-                  bloodGroup: target.bloodGroup.value,
-                  address: target.address.value,
-                  isPrivateProperty: target.isPrivateProperty.checked,
-                  headId,
-                  relationWithHead: target.relationWithHead.value
-                })
-                await refetchMembers()
-                setAddMemberForm(false)
+                try {
+                  const user: any = await register({
+                    name: target.name.value,
+                    email: target.email.value,
+                    maritalStatus: target.maritalStatus.value,
+                    gender: target.gender.value,
+                    birthday: target.birthday.value,
+                    contact: target.contact.value,
+                    occupation: target.occupation.value,
+                    qualification: target.qualification.value,
+                    gautra: target.gautra.value,
+                    nativeTown: target.nativeTown.value,
+                    bloodGroup: target.bloodGroup.value,
+                    address: target.address.value,
+                    isPrivateProperty: target.isPrivateProperty.checked,
+                    headId,
+                    relationWithHead: target.relationWithHead.value
+                  })
+                  if (user.error) {
+                    return alert(user.error)
+                  }
+                  await refetchMembers()
+                  setAddMemberForm(false)
+                } catch (error) {
+                  alert('Some error occurred! Please report to administrator')
+                }
               }}
             >
               <div className="grid md:grid-cols-2 gap-4 px-4 lg:mx-32 lg:gap-x-8 pt-2">
