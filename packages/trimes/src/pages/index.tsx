@@ -40,12 +40,12 @@ const Home: NextPage<{ editorial: Editorial }> = ({ editorial }) => {
         <div className=" px-3 py-10 lg:px-48 lg:flex lg:space-x-12 pt-8 shadow-2xl m-10 rounded-xl text-center ">
           <div className="lg:w-1/4">
             <h2 className="text-3xl font-semibold italic text-red-400 text-center">
-              अपनो  से अपनी बात (Editorial)
+              अपनों से अपनी बात (Editorial)
             </h2>
-            <h2 className="text-3xl  mt-4 font-semibold italic text-blue-500 text-center">
+            <h2 className="text-sm  mt-4 font-semibold italic text-blue-500 text-center">
               &quot;हो सकता है मैं आपके विचारों से सहमत न हो पाऊं फिर भी विचार प्रकट करने के आपके अधिकारों की रक्षा करूंगा...&quot;
             </h2>
-            <h2 className="text-3xl font-semibold italic text-purple-500 text-right px-3">
+            <h2 className="text-4sm font-semibold italic text-purple-500 text-right px-3">
               वाल्तेयर
             </h2>
             <span className = "text-center">{editorial.createdAt.toLocaleString()}</span>
