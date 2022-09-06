@@ -4,7 +4,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
 import { IoEyeOutline } from 'react-icons/io5'
-import { useQuery } from 'react-query'
+import { useMutation, useQuery } from 'react-query'
 import { Modal } from '../components/Modal'
 import { filters } from './api/userfilters'
 
@@ -26,28 +26,41 @@ const ViewAll: NextPage = () => {
   const [membersModal, setMembersModal] = useState<UserWithMembers>()
   const queryPage = parseInt((useRouter().query.page as string) || '1')
   const [page, setPage] = useState(queryPage)
-  const {
-    data: userData,
-    isLoading: getUsersLoading,
-    refetch: refetchUsers
-  } = useQuery([page], async () => {
-    if (page === -1) return
-    const data = await fetch('/api/allusers', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        page: page ? page : 1
+  const { data: userData, isLoading: getUsersLoading } = useQuery(
+    [page],
+    async () => {
+      if (page === -1) return
+      const data = await fetch('/api/allusers', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          page: page ? page : 1
+        })
       })
-    })
-    const { heads, totalHeads, totalUsers } = (await data.json()) as {
-      heads: UserWithMembers[]
-      totalHeads: number
-      totalUsers: number
+      const { heads, totalHeads, totalUsers } = (await data.json()) as {
+        heads: UserWithMembers[]
+        totalHeads: number
+        totalUsers: number
+      }
+      return { heads, totalHeads, totalUsers }
     }
-    return { heads, totalHeads, totalUsers }
-  })
+  )
+  const [filteredUsers, setFilteredUsers] = useState<any[]>([])
+  const { mutateAsync: getFilteredUsers } = useMutation(
+    async (filters: any) => {
+      const data = await fetch('/api/userfilters', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(filters)
+      })
+      return await data.json()
+    }
+  )
+
   useEffect(() => {
     if (queryPage !== -1) {
       setPage(queryPage)
@@ -66,115 +79,303 @@ const ViewAll: NextPage = () => {
             <h2 className="text-2xl font-semibold leading-tight">Users</h2>
           </div>
 
+          {/* filters for name, qualification, occupation, gender */}
+          <form
+            onSubmit={async e => {
+              e.preventDefault()
+              const form = e.currentTarget as any
+              const filteredUsers: any[] = await getFilteredUsers({
+                name: form.name.value,
+                qualification: form.qualification.value,
+                occupation: form.occupation.value,
+                gender: form.gender.value,
+                gautra: form.gautra.value
+              })
+              setFilteredUsers(filteredUsers)
+            }}
+            className="grid grid-cols-2 gap-4 p-6"
+          >
+            <div>
+              <label className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">
+                Name
+              </label>
+              <input
+                className="appearance-none block w-full border rounded py-3 px-4 mb-3 leading-tight focus:outline-none"
+                type="text"
+                name="name"
+                placeholder="Name"
+              />
+            </div>
+            <div>
+              <label className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">
+                Qualification
+              </label>
+              <select
+                className="block appearance-none w-full border py-3 px-4 pr-8 rounded leading-tight focus:outline-none"
+                name="qualification"
+              >
+                <option value="">Choose...</option>
+                {filters?.qualification.map(qualification => (
+                  <option key={qualification} value={qualification}>
+                    {qualification}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">
+                Occupation
+              </label>
+              <select
+                className="block appearance-none w-full border py-3 px-4 pr-8 rounded leading-tight focus:outline-none"
+                name="occupation"
+              >
+                <option value="">Choose...</option>
+                {filters?.occupation.map(occupation => (
+                  <option key={occupation} value={occupation}>
+                    {occupation}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">
+                Gender
+              </label>
+              <select
+                className="block appearance-none w-full border py-3 px-4 pr-8 rounded leading-tight focus:outline-none"
+                name="gender"
+              >
+                <option value="">Choose...</option>
+                <option value="male">Male</option>
+                <option value="female">Female</option>
+                <option value="other">Others</option>
+              </select>
+            </div>
+            <div>
+              <label className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">
+                Gautra
+              </label>
+              <select
+                className="block appearance-none w-full border py-3 px-4 pr-8 rounded leading-tight focus:outline-none"
+                name="gautra"
+              >
+                <option value="">Choose...</option>
+                {filters?.gautra.map(gautra => (
+                  <option key={gautra} value={gautra}>
+                    {gautra}
+                  </option>
+                ))}
+              </select>
+            </div>
+            {/* search button */}
+            <button className="col-span-2 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 w-1/4  rounded">
+              Search
+            </button>
+          </form>
+
           <div className="-mx-4 sm:-mx-8 px-4 sm:px-8 py-4 overflow-x-auto">
             <div className="inline-block min-w-full shadow rounded-lg overflow-hidden">
-              <table className="min-w-full leading-normal">
-                <thead>
-                  <tr>
-                    <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-50 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                      Sr. No.
-                    </th>
-                    <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-50 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                      Name
-                    </th>
-                    <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-50 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                      Gautra
-                    </th>
-                    <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-50 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                      Gender
-                    </th>
-                    <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-50 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                      Area
-                    </th>
-                    <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-50 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                      Qualification
-                    </th>
-                    <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-50 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                      Occupation
-                    </th>
-                    <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-50 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                      Marital Status
-                    </th>
-                    <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-50 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                      View Members
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {userData?.heads?.map((user, index) => (
-                    <tr key={user.id}>
-                      <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                        <div className="flex items-center">
-                          {/* <div className="flex-shrink-0 w-5 h-5">
+              {filteredUsers.length ? (
+                <table className="min-w-full leading-normal">
+                  <thead>
+                    <tr>
+                      <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-50 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                        Sr. No.
+                      </th>
+                      <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-50 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                        Name
+                      </th>
+                      <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-50 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                        Gautra
+                      </th>
+                      <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-50 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                        Gender
+                      </th>
+                      <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-50 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                        Qualification
+                      </th>
+                      <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-50 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                        Occupation
+                      </th>
+                      <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-50 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                        Marital Status
+                      </th>
+                      <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-50 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                        Family Head
+                      </th>
+                      <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-50 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                        Relation with Head
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {filteredUsers?.map((user: any, index: number) => (
+                      <tr key={user.id}>
+                        <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                          <div className="flex items-center">
+                            <div className="ml-3">
+                              <p className="text-gray-900 whitespace-no-wrap">
+                                {index + 1}
+                              </p>
+                            </div>
+                          </div>
+                        </td>
+                        <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                          <p className="text-gray-900 whitespace-no-wrap">
+                            {user.name}
+                          </p>
+                        </td>
+                        <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                          <p className="text-gray-900 whitespace-no-wrap">
+                            {user.gautra}
+                          </p>
+                        </td>
+                        <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                          <p className="text-gray-900 whitespace-no-wrap">
+                            {user.gender}
+                          </p>
+                        </td>
+
+                        <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                          <p className="text-gray-900 whitespace-no-wrap">
+                            {user.qualification}
+                          </p>
+                        </td>
+                        <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                          <p className="text-gray-900 whitespace-no-wrap">
+                            {user.occupation}
+                          </p>
+                        </td>
+                        <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                          <p className="text-gray-900 whitespace-no-wrap">
+                            {user.maritalStatus}
+                          </p>
+                        </td>
+                        <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                          <p className="text-gray-900 whitespace-no-wrap">
+                            {user.head?.name}
+                          </p>
+                        </td>
+                        <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                          <p className="text-gray-900 whitespace-no-wrap">
+                            {user.relationWithHead}
+                          </p>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              ) : (
+                <table className="min-w-full leading-normal">
+                  <thead>
+                    <tr>
+                      <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-50 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                        Sr. No.
+                      </th>
+                      <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-50 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                        Name
+                      </th>
+                      <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-50 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                        Gautra
+                      </th>
+                      <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-50 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                        Gender
+                      </th>
+                      <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-50 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                        Area
+                      </th>
+                      <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-50 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                        Qualification
+                      </th>
+                      <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-50 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                        Occupation
+                      </th>
+                      <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-50 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                        Marital Status
+                      </th>
+                      <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-50 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                        View Members
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {userData?.heads?.map((user, index) => (
+                      <tr key={user.id}>
+                        <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                          <div className="flex items-center">
+                            {/* <div className="flex-shrink-0 w-5 h-5">
                           <img
                             className="w-full h-full rounded-full"
                             src="https://images.unsplash.com/photo-149479058377-be9c29b29330?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2.2&w=160&h=160&q=80"
                             alt=""
                           />
                         </div> */}
-                          <div className="ml-3">
-                            <p className="text-gray-900 whitespace-no-wrap">
-                              {/* calculate sr. no. according to page */}
-                              {index + 1 + (page - 1) * 10}
-                            </p>
+                            <div className="ml-3">
+                              <p className="text-gray-900 whitespace-no-wrap">
+                                {/* calculate sr. no. according to page */}
+                                {index + 1 + (page - 1) * 10}
+                              </p>
+                            </div>
                           </div>
-                        </div>
-                      </td>
-                      <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                        <p className="text-gray-900 whitespace-no-wrap">
-                          {user.name}
-                        </p>
-                      </td>
-                      <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                        <p className="text-gray-900 whitespace-no-wrap">
-                          {user.gautra}
-                        </p>
-                      </td>
-                      <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                        <p className="text-gray-900 whitespace-no-wrap">
-                          {user.gender}
-                        </p>
-                      </td>
-                      <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                        <p className="text-gray-900 whitespace-no-wrap">
-                          {user.area?.name}
-                        </p>
-                      </td>
-                      <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                        <p className="text-gray-900 whitespace-no-wrap">
-                          {user.qualification}
-                        </p>
-                      </td>
-                      <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                        <p className="text-gray-900 whitespace-no-wrap">
-                          {user.occupation}
-                        </p>
-                      </td>
-                      <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                        <p className="text-gray-900 whitespace-no-wrap">
-                          {user.maritalStatus}
-                        </p>
-                      </td>
-                      <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                        <button
-                          onClick={() => setMembersModal(user)}
-                          className={`${
-                            user.members?.length === 0
-                              ? 'cursor-not-allowed text-gray-500'
-                              : 'text-blue-500'
-                          } flex items-center justify-center gap-1 bg-white border border-blue-500 rounded-md px-2 py-1 whitespace-no-wrap`}
-                          disabled={user.members?.length === 0}
-                        >
-                          <span>{user.members?.length}&nbsp;View</span>{' '}
-                          <IoEyeOutline />
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+                        </td>
+                        <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                          <p className="text-gray-900 whitespace-no-wrap">
+                            {user.name}
+                          </p>
+                        </td>
+                        <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                          <p className="text-gray-900 whitespace-no-wrap">
+                            {user.gautra}
+                          </p>
+                        </td>
+                        <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                          <p className="text-gray-900 whitespace-no-wrap">
+                            {user.gender}
+                          </p>
+                        </td>
+                        <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                          <p className="text-gray-900 whitespace-no-wrap">
+                            {user.area?.name}
+                          </p>
+                        </td>
+                        <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                          <p className="text-gray-900 whitespace-no-wrap">
+                            {user.qualification}
+                          </p>
+                        </td>
+                        <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                          <p className="text-gray-900 whitespace-no-wrap">
+                            {user.occupation}
+                          </p>
+                        </td>
+                        <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                          <p className="text-gray-900 whitespace-no-wrap">
+                            {user.maritalStatus}
+                          </p>
+                        </td>
+                        <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                          <button
+                            onClick={() => setMembersModal(user)}
+                            className={`${
+                              user.members?.length === 0
+                                ? 'cursor-not-allowed text-gray-500'
+                                : 'text-blue-500'
+                            } flex items-center justify-center gap-1 bg-white border border-blue-500 rounded-md px-2 py-1 whitespace-no-wrap`}
+                            disabled={user.members?.length === 0}
+                          >
+                            <span>{user.members?.length}&nbsp;View</span>{' '}
+                            <IoEyeOutline />
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              )}
             </div>
           </div>
+
           <div className="px-5 py-5 bg-white border-t flex flex-col xs:flex-row items-center xs:justify-between">
             <span className="text-xs xs:text-sm text-gray-900">
               Showing {(page - 1) * pageSize + 1} to{' '}
