@@ -6,6 +6,7 @@ import { useEffect, useState } from 'react'
 import { IoEyeOutline } from 'react-icons/io5'
 import { useMutation, useQuery } from 'react-query'
 import { Modal } from '../components/Modal'
+import { ProtectedRoute } from '../components/ProtectedRoute'
 import { filters } from './api/userfilters'
 
 type UserWithMembers = User & {
@@ -24,12 +25,14 @@ const ViewAll: NextPage = () => {
     }
   )
   const [membersModal, setMembersModal] = useState<UserWithMembers>()
-  const queryPage = parseInt((useRouter().query.page as string) || '1')
+  const router = useRouter()
+  const queryPage = parseInt((router.query.page as string) || '1')
   const [page, setPage] = useState(queryPage)
   const { data: userData, isLoading: getUsersLoading } = useQuery(
     [page],
     async () => {
       if (page === -1) return
+      if (selectedFilters !== null) return
       const data = await fetch('/api/allusers', {
         method: 'POST',
         headers: {
@@ -47,7 +50,10 @@ const ViewAll: NextPage = () => {
       return { heads, totalHeads, totalUsers }
     }
   )
-  const [filteredUsers, setFilteredUsers] = useState<any[]>([])
+  const [filteredUsers, setFilteredUsers] = useState<{
+    users: any[]
+    count: number
+  }>()
   const { mutateAsync: getFilteredUsers } = useMutation(
     async (filters: any) => {
       const data = await fetch('/api/userfilters', {
@@ -60,19 +66,37 @@ const ViewAll: NextPage = () => {
       return await data.json()
     }
   )
-
+  const [selectedFilters, setSelectedFilters] = useState<{
+    name: string
+    qualification: string
+    occupation: string
+    gender: string
+    gautra: string
+    currPage: number
+  } | null>(null)
   useEffect(() => {
     if (queryPage !== -1) {
       setPage(queryPage)
     }
   }, [page, queryPage])
 
+  useEffect(() => {
+    if (page >= 1 && selectedFilters !== null) {
+      getFilteredUsers({ ...selectedFilters, currPage: page }).then(data => {
+        setFilteredUsers({
+          users: data.filteredUsers,
+          count: data.count
+        })
+      })
+    }
+  }, [getFilteredUsers, page, selectedFilters])
+
   if (getUsersLoading) {
     return <div>Loading...</div>
   }
 
   return (
-    <>
+    <ProtectedRoute>
       <div className="container mx-auto px-4 sm:px-8">
         <div className="py-8">
           <div>
@@ -83,15 +107,30 @@ const ViewAll: NextPage = () => {
           <form
             onSubmit={async e => {
               e.preventDefault()
+              router.push(
+                {
+                  pathname: '/viewAll'
+                },
+                undefined,
+                { shallow: true }
+              )
+              setPage(1)
               const form = e.currentTarget as any
-              const filteredUsers: any[] = await getFilteredUsers({
+              const tempFilters = {
                 name: form.name.value,
                 qualification: form.qualification.value,
                 occupation: form.occupation.value,
                 gender: form.gender.value,
-                gautra: form.gautra.value
+                gautra: form.gautra.value,
+                currPage: 0
+              }
+              const data = await getFilteredUsers(tempFilters)
+              setSelectedFilters(tempFilters)
+              setFilteredUsers({
+                users: data.filteredUsers,
+                count: data.count
               })
-              setFilteredUsers(filteredUsers)
+              console.log(data.count)
             }}
             className="grid grid-cols-2 gap-4 p-6"
           >
@@ -100,6 +139,7 @@ const ViewAll: NextPage = () => {
                 Name
               </label>
               <input
+                defaultValue={selectedFilters?.name}
                 className="appearance-none block w-full border rounded py-3 px-4 mb-3 leading-tight focus:outline-none"
                 type="text"
                 name="name"
@@ -111,6 +151,7 @@ const ViewAll: NextPage = () => {
                 Qualification
               </label>
               <select
+                defaultValue={selectedFilters?.qualification}
                 className="block appearance-none w-full border py-3 px-4 pr-8 rounded leading-tight focus:outline-none"
                 name="qualification"
               >
@@ -127,6 +168,7 @@ const ViewAll: NextPage = () => {
                 Occupation
               </label>
               <select
+                defaultValue={selectedFilters?.occupation}
                 className="block appearance-none w-full border py-3 px-4 pr-8 rounded leading-tight focus:outline-none"
                 name="occupation"
               >
@@ -143,6 +185,7 @@ const ViewAll: NextPage = () => {
                 Gender
               </label>
               <select
+                defaultValue={selectedFilters?.gender}
                 className="block appearance-none w-full border py-3 px-4 pr-8 rounded leading-tight focus:outline-none"
                 name="gender"
               >
@@ -157,6 +200,7 @@ const ViewAll: NextPage = () => {
                 Gautra
               </label>
               <select
+                defaultValue={selectedFilters?.gautra}
                 className="block appearance-none w-full border py-3 px-4 pr-8 rounded leading-tight focus:outline-none"
                 name="gautra"
               >
@@ -168,15 +212,28 @@ const ViewAll: NextPage = () => {
                 ))}
               </select>
             </div>
-            {/* search button */}
-            <button className="col-span-2 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 w-1/4  rounded">
-              Search
-            </button>
+            <div className="grid grid-cols-8 gap-8 col-span-2">
+              <button className="col-span-2 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2  rounded">
+                Search
+              </button>
+              {/* reset button */}
+              <button
+                type="reset"
+                className="col-span-2 bg-red-500 hover:bg-red-700 text-white font-bold py-2 rounded"
+                onClick={() => {
+                  setPage(1)
+                  setSelectedFilters(null)
+                  setFilteredUsers(undefined)
+                }}
+              >
+                Reset
+              </button>
+            </div>
           </form>
 
           <div className="-mx-4 sm:-mx-8 px-4 sm:px-8 py-4 overflow-x-auto">
             <div className="inline-block min-w-full shadow rounded-lg overflow-hidden">
-              {filteredUsers.length ? (
+              {filteredUsers?.users.length ? (
                 <table className="min-w-full leading-normal">
                   <thead>
                     <tr>
@@ -210,13 +267,13 @@ const ViewAll: NextPage = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {filteredUsers?.map((user: any, index: number) => (
+                    {filteredUsers?.users.map((user: any, index: number) => (
                       <tr key={user.id}>
                         <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
                           <div className="flex items-center">
                             <div className="ml-3">
                               <p className="text-gray-900 whitespace-no-wrap">
-                                {index + 1}
+                                {(page - 1) * 10 + index + 1}
                               </p>
                             </div>
                           </div>
@@ -377,16 +434,30 @@ const ViewAll: NextPage = () => {
           </div>
 
           <div className="px-5 py-5 bg-white border-t flex flex-col xs:flex-row items-center xs:justify-between">
-            <span className="text-xs xs:text-sm text-gray-900">
-              Showing {(page - 1) * pageSize + 1} to{' '}
-              {page >=
-              parseInt(((userData?.totalHeads || 0) / pageSize + 1).toString())
-                ? userData?.totalHeads
-                : (page - 1) * pageSize + pageSize}{' '}
-              of {userData?.totalHeads} Head Members
-              <br />
-              Total Users (including members): {userData?.totalUsers}
-            </span>
+            {filteredUsers?.users.length ? (
+              <span className="text-xs xs:text-sm text-gray-900">
+                Showing {(page - 1) * pageSize + 1} to{' '}
+                {page >=
+                parseInt(((filteredUsers.count || 0) / pageSize + 1).toString())
+                  ? filteredUsers.count
+                  : (page - 1) * pageSize + pageSize}{' '}
+                of {filteredUsers.count} Members using search criteria
+                <br />
+              </span>
+            ) : (
+              <span className="text-xs xs:text-sm text-gray-900">
+                Showing {(page - 1) * pageSize + 1} to{' '}
+                {page >=
+                parseInt(
+                  ((userData?.totalHeads || 0) / pageSize + 1).toString()
+                )
+                  ? userData?.totalHeads
+                  : (page - 1) * pageSize + pageSize}{' '}
+                of {userData?.totalHeads} Head Members
+                <br />
+                Total Users (including members): {userData?.totalUsers}
+              </span>
+            )}
             <div className="inline-flex mt-2 xs:mt-0">
               <Link
                 href={`${page <= 1 ? '#' : `/viewAll?page=${page - 1}`}`}
@@ -402,7 +473,32 @@ const ViewAll: NextPage = () => {
                   Prev
                 </a>
               </Link>
-              {userData?.totalHeads && userData?.totalHeads > pageSize ? (
+              {filteredUsers?.users.length ? (
+                <Link
+                  href={`${
+                    page >=
+                    parseInt(
+                      ((filteredUsers.count || 0) / pageSize + 1).toString()
+                    )
+                      ? '#'
+                      : `/viewAll?page=${page + 1}`
+                  }`}
+                  passHref
+                >
+                  <a
+                    className={`text-sm bg-primary hover:opacity-80 text-white font-semibold py-2 px-4 rounded-r ${
+                      page >=
+                      parseInt(
+                        ((filteredUsers.count || 0) / pageSize + 1).toString()
+                      )
+                        ? 'pointer-events-none opacity-50'
+                        : 'cursor-pointer'
+                    }`}
+                  >
+                    Next
+                  </a>
+                </Link>
+              ) : userData?.totalHeads && userData?.totalHeads > pageSize ? (
                 <Link
                   href={`${
                     page >=
@@ -528,7 +624,7 @@ const ViewAll: NextPage = () => {
           </tbody>
         </table>
       </Modal>
-    </>
+    </ProtectedRoute>
   )
 }
 

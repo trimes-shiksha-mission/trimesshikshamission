@@ -1,16 +1,16 @@
+import { withIronSessionApiRoute } from 'iron-session/next'
 import { NextApiRequest, NextApiResponse } from 'next'
 import { prismaClient } from '../../lib/prisma'
+import { sessionOptions } from '../../lib/session'
 
-export default async function AllUserHandler(
-  req: NextApiRequest,
-  res: NextApiResponse
-) {
+async function AllUserHandler(req: NextApiRequest, res: NextApiResponse) {
+  if (!req.session.user) return 'User not logged in'
   if (req.method !== 'POST')
     return res.status(405).json({ message: 'Method not allowed' })
 
   const pageSize = 10
-  let { filters, page } = req.body
-  // console.log(filters)
+  let { page } = req.body
+
   page = page > 0 ? page : 1
 
   const totalHeads = await prismaClient.user.count({ where: { headId: null } })
@@ -36,3 +36,5 @@ export default async function AllUserHandler(
 
   return res.status(200).json({ heads, totalHeads, totalUsers })
 }
+
+export default withIronSessionApiRoute(AllUserHandler, sessionOptions)
