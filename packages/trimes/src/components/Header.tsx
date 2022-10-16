@@ -68,7 +68,7 @@ export const Header: FC = () => {
                   ></div>
                 )}
               </li>
-              <li
+              {/* <li
                 className={`opacity-95 relative cursor-pointer py-2 text-base font-medium mx-4  hover:text-primary transition-all duration-200 text-black`}
               >
                 <Link href="/matrimonial" passHref>
@@ -79,7 +79,7 @@ export const Header: FC = () => {
                     className={`bg-black w-full h-[2px] absolute mt-1`}
                   ></div>
                 )}
-              </li>
+              </li> */}
               <li
                 className={`opacity-95 relative cursor-pointer py-2 text-base font-medium mx-4 text-black hover:text-primary transition-all duration-200`}
               >
@@ -92,7 +92,7 @@ export const Header: FC = () => {
                   ></div>
                 )}
               </li>
-              <li
+              {/* <li
                 className={`opacity-95 relative cursor-pointer py-2 text-base font-medium mx-4 text-black hover:text-primary transition-all duration-200`}
               >
                 <Link href="/ec" passHref>
@@ -103,7 +103,7 @@ export const Header: FC = () => {
                     className={`bg-black w-full h-[2px] absolute mt-1`}
                   ></div>
                 )}
-              </li>
+              </li> */}
               <li
                 className={`opacity-95 relative cursor-pointer py-2 text-base font-medium mx-4 text-black hover:text-primary transition-all duration-200`}
               >
@@ -140,7 +140,7 @@ export const Header: FC = () => {
                   ></div>
                 )}
               </li>
-              <li
+              {/* <li
                 className={`opacity-95 relative cursor-pointer py-2 text-base font-medium mx-4 text-black hover:text-primary transition-all duration-200  `}
               >
                 <Link href="/jobs" passHref>
@@ -151,7 +151,23 @@ export const Header: FC = () => {
                     className={`bg-black w-full h-[2px] absolute mt-1`}
                   ></div>
                 )}
-              </li>
+              </li> */}
+
+              {user?.id ? (
+                <li
+                  className={`opacity-95 relative cursor-pointer py-2 text-base font-medium mx-4 text-black hover:text-primary transition-all duration-200  `}
+                >
+                  <Link href="/viewAll" passHref>
+                    <a>View Members</a>
+                  </Link>
+                  {checkRoute(currRoute, '/jobs') && (
+                    <div
+                      className={`bg-black w-full h-[2px] absolute mt-1`}
+                    ></div>
+                  )}
+                </li>
+              ) : null}
+
               <li
                 className={`opacity-95 relative cursor-pointer py-2 text-base font-medium mx-4 text-black hover:text-primary transition-all duration-200  `}
               >
