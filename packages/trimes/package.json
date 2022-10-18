@@ -26,7 +26,8 @@
     "react-query": "^3.39.2",
     "bcrypt": "^5.0.1",
     "react-quill": "^2.0.0",
-    "nprogress": "^0.2.0"
+    "nprogress": "^0.2.0",
+    "iron-session": "^6.2.1"
   },
   "devDependencies": {
     "@types/node": "18.0.6",
