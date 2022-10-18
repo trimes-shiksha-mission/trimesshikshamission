@@ -1,5 +1,6 @@
 import { Blog } from '@prisma/client'
 import { NextPage } from 'next'
+import Image from 'next/image'
 import { ProtectedRoute } from '../components/ProtectedRoute'
 import { prismaClient } from '../lib/prisma'
 
@@ -44,14 +45,20 @@ const News: NextPage<{ news: Blog[] }> = ({ news }) => {
           key={n.id}
           className="max-w-sm lg:max-w-full lg:flex mt-6 ml-6 mr-6 md:ml-2 lg:ml-12 lg:mr-12 mb-2"
         >
-          {n.images[0] && (
-            <div
-              className="h-auto lg:w-48 flex-none bg-cover rounded-t-lg lg:rounded-t-none lg:rounded-l text-center overflow-hidden"
-              title="news"
-            >
-              <img src={n.images[0]} />
-            </div>
-          )}
+          <div
+            className="h-auto lg:w-48 flex-none bg-cover rounded-t-lg lg:rounded-t-none lg:rounded-l text-center overflow-hidden"
+            title="news"
+          >
+            {n.images?.at(0) && (
+              <Image
+                layout="responsive"
+                alt={n.title}
+                width={1}
+                height={1}
+                src={n.images[0]}
+              />
+            )}
+          </div>
           <div className="border-r border-b border-l border-gray-400 lg:border-l-0 lg:border-t lg:border-gray-400 bg-white rounded-b-lg lg:rounded-b-none lg:rounded-r-lg p-4  flex flex-col justify-between leading-normal ">
             <div className="mb-8">
               <p className="text-sm text-gray-600 flex items-center">
