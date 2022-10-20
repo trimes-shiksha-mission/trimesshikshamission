@@ -160,7 +160,7 @@ export const Header: FC = () => {
                   <Link href="/viewAll" passHref>
                     <a>View Members</a>
                   </Link>
-                  {checkRoute(currRoute, '/jobs') && (
+                  {checkRoute(currRoute, '/viewAll') && (
                     <div
                       className={`bg-black w-full h-[2px] absolute mt-1`}
                     ></div>
@@ -229,7 +229,7 @@ export const Header: FC = () => {
                     </a>
                   </Link>
                 </li>
-                <li
+                {/* <li
                   className={`relative text-2xl w-full font-bold px-4 text-center py-4 animated hover:text-primary ${
                     checkRoute(currRoute, '/matrimonial')
                       ? 'text-primary'
@@ -246,7 +246,7 @@ export const Header: FC = () => {
                       MATRIMONIAL
                     </a>
                   </Link>
-                </li>
+                </li> */}
                 <li
                   className={`relative text-2xl w-full font-bold px-4 text-center py-4 animated hover:text-primary ${
                     checkRoute(currRoute, '/news')
@@ -265,7 +265,7 @@ export const Header: FC = () => {
                     </a>
                   </Link>
                 </li>
-                <li
+                {/* <li
                   className={`relative text-2xl w-full font-bold px-4 text-center py-4 animated hover:text-primary ${
                     checkRoute(currRoute, '/ec')
                       ? 'text-primary'
@@ -279,10 +279,10 @@ export const Header: FC = () => {
                         setPhoneMenuOpen(false)
                       }}
                     >
-                      CHOKHLA
+                      CHOKHLE
                     </a>
                   </Link>
-                </li>
+                </li> */}
                 <li
                   className={`relative text-2xl w-full font-bold px-4 text-center py-4 animated hover:text-primary ${
                     checkRoute(currRoute, '/samagri')
@@ -337,7 +337,7 @@ export const Header: FC = () => {
                     </a>
                   </Link>
                 </li>
-                <li
+                {/* <li
                   className={`relative text-2xl w-full font-bold px-4 text-center py-4 animated hover:text-primary ${
                     checkRoute(currRoute, '/jobs')
                       ? 'text-primary'
@@ -352,6 +352,25 @@ export const Header: FC = () => {
                       }}
                     >
                       JOBS
+                    </a>
+                  </Link>
+                </li> */}
+
+                <li
+                  className={`relative text-2xl w-full font-bold px-4 text-center py-4 animated hover:text-primary ${
+                    checkRoute(currRoute, '/viewAll')
+                      ? 'text-primary'
+                      : 'text-gray-800'
+                  }`}
+                >
+                  <Link href={'/viewAll'} passHref>
+                    <a
+                      className="nav-link-item-mobile"
+                      onClick={() => {
+                        setPhoneMenuOpen(false)
+                      }}
+                    >
+                      View Members
                     </a>
                   </Link>
                 </li>
