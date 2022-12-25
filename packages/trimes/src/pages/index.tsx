@@ -46,7 +46,7 @@ const Home: NextPage<{ editorial: Editorial }> = ({ editorial }) => {
               &quot;हो सकता है मैं आपके विचारों से सहमत न हो पाऊं फिर भी विचार
               प्रकट करने के आपके अधिकारों की रक्षा करूंगा...&quot;
             </div>
-            <h2 className="text-sm font-semibold italic text-purple-500 text-right px-3">
+            <h2 className="text-1xs font-semibold italic text-purple-500 text-right px-3">
               ~वाल्तेयर
             </h2>
             <span className="text-center">
