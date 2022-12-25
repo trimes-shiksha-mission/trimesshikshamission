@@ -21,7 +21,7 @@ export const Footer: FC = () => {
             </p>
             <span className="mt-4 block">
               <IoLocationSharp className="inline mr-1" />
-              Address of Trimes Shiksha Mission
+              104-F Sector 9A Udaipur, Rajasthan
             </span>
             <a href="tel:+91-9413217950" className="mt-4 block">
               <BsFillTelephoneFill className="inline mr-1" />
