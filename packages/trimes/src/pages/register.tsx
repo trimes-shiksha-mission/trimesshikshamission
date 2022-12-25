@@ -113,7 +113,10 @@ const Register: NextPage = () => {
                   Password
                   <span className="text-red-600">*</span>
                 </label>
-                <span className='text-red-600'>A new password needs to be created by head member here</span>
+                <span className="text-red-600">
+                  Head member द्वारा इस वेबसाइट पर रजिस्ट्रेशन के समय बनाए जाने
+                  वाला पासवर्ड
+                </span>
                 <input
                   type="password"
                   name="password"
