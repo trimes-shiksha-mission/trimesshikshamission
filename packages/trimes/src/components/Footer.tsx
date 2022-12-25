@@ -1,10 +1,9 @@
-import Image from 'next/image'
+import Link from 'next/link'
 import { FC } from 'react'
 import { BsFillTelephoneFill } from 'react-icons/bs'
+import { FaHeart } from 'react-icons/fa'
 import { IoLocationSharp } from 'react-icons/io5'
 import { MdEmail } from 'react-icons/md'
-import { FaHeart } from 'react-icons/fa'
-import Link from 'next/link'
 
 export const Footer: FC = () => {
   return (
@@ -14,8 +13,11 @@ export const Footer: FC = () => {
           <h5 className="text-base">CONTACT</h5>
           <div className="mt-3 text-[0.8rem]">
             <p>
-              Trimes Shiksha Mission is a non-profit organization registered as
-              a NGO
+              त्रिमेस शिक्षा मिशन कोई आर्गेनाइजेशन नहीं है। यह तो मात्र एक
+              अभियान है। जो 3-E ( E ducation, E mployment & E nvironment) पर
+              कार्य करने को उद्धृत है। इस मिशन के अन्तर्गत 18-07-2021 को Trimes
+              Vidhya Pracharini Sansthan (त्रिमेस विद्या प्रचारिणी संस्थान TVS)
+              नाम से संस्था की स्थापना की गई जो एक Non Profit NGO है।
             </p>
             <span className="mt-4 block">
               <IoLocationSharp className="inline mr-1" />
@@ -90,7 +92,9 @@ export const Footer: FC = () => {
         </div>
       </div>
       <div className="bg-secondary w-full px-8 py-1 text-base flex flex-col sm:flex-row justify-between text-white bg-[#808080]">
-        <span>Copyright &copy; 2022 TRIMES SHIKSHA MISSION. ALL RIGHTS RESERVED</span>
+        <span>
+          Copyright &copy; 2022 TRIMES SHIKSHA MISSION. ALL RIGHTS RESERVED
+        </span>
         <span>
           <Link href="/terms">TERMS OF USE</Link> |
           <Link href="/privacy"> PRIVACY POLICY</Link>
