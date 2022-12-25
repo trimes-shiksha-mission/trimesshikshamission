@@ -42,10 +42,10 @@ const Home: NextPage<{ editorial: Editorial }> = ({ editorial }) => {
             <h2 className="text-3xl font-semibold italic text-red-400 text-center">
               अपनों से अपनी बात (Editorial)
             </h2>
-            <h2 className="text-md  mt-4 font-semibold italic text-blue-500 text-center">
+            <div className="text-1xs  mt-4 font-semibold italic text-blue-500 text-center">
               &quot;हो सकता है मैं आपके विचारों से सहमत न हो पाऊं फिर भी विचार
               प्रकट करने के आपके अधिकारों की रक्षा करूंगा...&quot;
-            </h2>
+            </div>
             <h2 className="text-sm font-semibold italic text-purple-500 text-right px-3">
               ~वाल्तेयर
             </h2>
