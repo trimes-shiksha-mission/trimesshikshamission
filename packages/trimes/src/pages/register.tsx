@@ -113,6 +113,7 @@ const Register: NextPage = () => {
                   Password
                   <span className="text-red-600">*</span>
                 </label>
+                <span className='text-red-600'>A new password needs to be created by head member here</span>
                 <input
                   type="password"
                   name="password"
