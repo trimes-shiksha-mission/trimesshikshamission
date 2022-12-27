@@ -26,7 +26,7 @@ export const getServerSideProps = async () => {
       }
     }
   }
-  console.log(news)
+
   return {
     props: {
       news: news?.map(n => ({
