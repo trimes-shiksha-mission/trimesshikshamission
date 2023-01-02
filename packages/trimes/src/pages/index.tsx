@@ -37,7 +37,7 @@ const Home: NextPage<{ editorial: Editorial }> = ({ editorial }) => {
   return (
     <>
       {editorial && (
-        <div className=" px-3 py-10 lg:px-48 lg:flex lg:space-x-12 pt-8 shadow-xl m-10 rounded-xl text-center shadow-blue-500/50">
+        <div className=" px-3 py-10 lg:px-48 lg:flex lg:space-x-12 pt-8 shadow-xl m-10 rounded-xl text-center shadow-blue-500/50 border-4 border-black">
           <div className="lg:w-1/4">
             <h2 className="text-3xl font-semibold italic text-red-400 text-center">
               अपनों से अपनी बात (Editorial)
@@ -102,20 +102,20 @@ const Home: NextPage<{ editorial: Editorial }> = ({ editorial }) => {
             the right direction in their lives.
           </div>
         </div>
-        <div className="px-2 text-center mt-3 shadow-xl shadow-blue-500/50 py-4">
+        <div className="px-2 text-center mt-3 shadow-xl shadow-blue-500/50 py-4 border-4 border-black">
           <div className="text-xl text-orange-400">Matrimonial</div>
           <div className="mt-10">
             Helping Trivedi Meware Brahamins to cherish the meaning of Happy
             Marriage and help them to find their better half.
           </div>
         </div>
-        <div className="text-center shadow-xl shadow-blue-500/50 py-4 mt-3">
+        <div className="text-center shadow-xl shadow-blue-500/50 py-4 mt-3 border-4 border-black">
           <div className="text-xl text-orange-400 ">Find/Post Jobs</div>
           <div className="mt-10 px-2">
             We Help community members to Find or Post Jobs.
           </div>
         </div>
-        <div className="text-center mt-3 shadow-xl shadow-blue-500/50 py-4">
+        <div className="text-center mt-3 shadow-xl shadow-blue-500/50 py-4 border-4 border-black">
           <div className="text-xl text-orange-400">News</div>
           <div className="mt-10 px-3">
             We help community members to get updated with the latest events and
