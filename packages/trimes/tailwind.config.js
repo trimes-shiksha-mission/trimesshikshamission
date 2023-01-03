@@ -9,10 +9,10 @@ module.exports = {
     extend: {
       colors: {
         primary: '#FDAE09'
+      },
+      fontSize: {
+        '1xs': '0.5rem'
       }
-    },
-    fontSize:{
-      '1xs': '0.5rem',
     }
   },
   plugins: [require('tailwindcss-filters')]
