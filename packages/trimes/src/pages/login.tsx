@@ -49,6 +49,9 @@ const Login: NextPage = () => {
               </div>
               <div className="mt-4">
                 <label className="block">Password</label>
+                <span className="text-red-600">
+                  Head member द्वारा इस वेबसाइट पर बनाया गया स्वयं का पासवर्ड
+                </span>
                 <input
                   type="password"
                   name="password"

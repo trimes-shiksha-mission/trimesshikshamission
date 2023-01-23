@@ -5,7 +5,7 @@ import { sessionOptions } from '../../lib/session'
 
 function logoutRoute(req: NextApiRequest, res: NextApiResponse<User | null>) {
   req.session.destroy()
-  res.json(null)
+  res.redirect('/logout')
 }
 
 export default withIronSessionApiRoute(logoutRoute, sessionOptions)

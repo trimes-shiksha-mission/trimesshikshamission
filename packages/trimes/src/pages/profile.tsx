@@ -112,7 +112,7 @@ const Profile: NextPage = () => {
   return (
     <ProtectedRoute>
       <div className="flex justify-center items-center w-full">
-        <Link href="/api/auth/signout" passHref>
+        <Link href="/api/logout" passHref>
           <a className="rounded-md w-1/4 mt-2 bg-[#FDAE09] text-2xl text-white p-2 text-center">
             Logout
           </a>
