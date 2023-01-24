@@ -4,15 +4,12 @@ import Link from 'next/link'
 const Registered: NextPage = () => {
   return (
     <div className="text-center text-xl">
-      <h1>You have successfully registered</h1>
-      {/* Login to website to continue */}
-
-      <span>
+      <div>
         <Link href="/login" className="text-blue-600">
-          Login{' '}
+          Login&nbsp;
         </Link>
-        to website to continue
-      </span>
+        <span>to website to continue</span>
+      </div>
     </div>
   )
 }
