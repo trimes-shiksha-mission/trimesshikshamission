@@ -1,4 +1,5 @@
 import { NextPage } from 'next'
+import Link from 'next/link'
 
 const Registered: NextPage = () => {
   return (
@@ -7,9 +8,9 @@ const Registered: NextPage = () => {
       {/* Login to website to continue */}
 
       <span>
-        <a href="/login" className="text-blue-600">
+        <Link href="/login" className="text-blue-600">
           Login{' '}
-        </a>
+        </Link>
         to website to continue
       </span>
     </div>
