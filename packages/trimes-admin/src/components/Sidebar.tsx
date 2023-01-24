@@ -68,6 +68,14 @@ export const Sidebar: FC = () => {
             []),
           ...(((user?.role === 'ADMIN' || user?.role === 'SUPERUSER') && [
             {
+              key: '8',
+              label: <Link href={'/users'}>Users</Link>,
+              onClick: handleSidebarChange
+            }
+          ]) ||
+            []),
+          ...(((user?.role === 'ADMIN' || user?.role === 'SUPERUSER') && [
+            {
               key: '3',
               type: undefined as any,
               label: 'Vidhya Pracharini',
@@ -103,7 +111,6 @@ export const Sidebar: FC = () => {
             label: <Link href="/samagri">Samagri</Link>,
             onClick: handleSidebarChange
           }
-
         ]}
       />
     </Layout.Sider>

@@ -1,0 +1,38 @@
+import { withIronSessionApiRoute } from 'iron-session/next'
+import { NextApiRequest, NextApiResponse } from 'next'
+import { prismaClient } from '../../lib/prisma'
+import { sessionOptions } from '../../lib/session'
+
+async function Users(req: NextApiRequest, res: NextApiResponse) {
+  if (req.session.user) {
+    if (req.method === 'GET') {
+      const users = await prismaClient.user.findMany({
+        include: {
+          area: true,
+          head: true
+        }
+      })
+      return res.json(
+        users.map(user => ({
+          ...user,
+          password: undefined
+        }))
+      )
+    } else if (req.method === 'DELETE') {
+      const { id } = req.body
+      const user = await prismaClient.user.delete({
+        where: {
+          id
+        }
+      })
+      return res.json(user)
+    }
+  } else {
+    res.json({
+      isLoggedIn: false,
+      message: 'You are not logged in'
+    })
+  }
+}
+
+export default withIronSessionApiRoute(Users, sessionOptions)
