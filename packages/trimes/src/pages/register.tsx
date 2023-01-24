@@ -38,7 +38,7 @@ const Register: NextPage = () => {
 
   useEffect(() => {
     if (user?.id) {
-      window.location.href = '/'
+      window.location.href = '/registeredSuccessfully'
     }
   }, [user])
 

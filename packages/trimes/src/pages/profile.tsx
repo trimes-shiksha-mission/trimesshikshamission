@@ -593,6 +593,7 @@ const Profile: NextPage = () => {
                     return alert(user.error)
                   }
                   await refetchMembers()
+                  alert('Member added successfully!')
                   setAddMemberForm(false)
                 } catch (error) {
                   alert('Some error occurred! Please report to administrator')
