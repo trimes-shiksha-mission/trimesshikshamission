@@ -1,5 +1,6 @@
 import { NextPage } from 'next'
 import Link from 'next/link'
+import { useState } from 'react'
 import fetchJson from '../lib/fetchJson'
 import useUser from '../lib/useUser'
 
@@ -8,6 +9,8 @@ const Login: NextPage = () => {
     redirectTo: '/',
     redirectIfFound: true
   })
+  const [loginLoading, setLoginLoading] = useState(false)
+  const [errorMsg, setErrorMsg] = useState('')
 
   return (
     <>
@@ -20,6 +23,7 @@ const Login: NextPage = () => {
           <form
             onSubmit={async e => {
               e.preventDefault()
+              setLoginLoading(true)
               const body = {
                 contact: e.currentTarget.contact.value,
                 password: e.currentTarget.password.value
@@ -32,9 +36,10 @@ const Login: NextPage = () => {
                     body: JSON.stringify(body)
                   })
                 )
-              } catch (error) {
-                alert('Error logging in')
+              } catch (error: any) {
+                setErrorMsg(error.data.message)
               }
+              setLoginLoading(false)
             }}
           >
             <div className="mt-4">
@@ -59,15 +64,33 @@ const Login: NextPage = () => {
                   className="w-full px-4 py-2 mt-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-blue-600"
                 />
               </div>
-
-              <span className="text-xs text-red-400 hidden">
-                Password must be same!
-              </span>
-              <div className="flex">
-                <button className="w-full px-6 py-2 mt-4 text-white bg-blue-600 rounded-lg hover:bg-blue-900">
-                  Login
-                </button>
-              </div>
+              <button className="w-full justify-center items-center gap-2 flex px-6 py-2 mt-4 text-white bg-blue-600 rounded-lg hover:bg-blue-900">
+                <span>Login</span>
+                {/* loading spinner */}
+                {loginLoading && (
+                  <svg
+                    className="w-5 h-5 text-white animate-spin"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                  >
+                    <circle
+                      className="opacity-25"
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      strokeWidth="4"
+                    ></circle>
+                    <path
+                      className="opacity-75"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8v1a7 7 0 00-7 7h1z"
+                    ></path>
+                  </svg>
+                )}
+              </button>
+              {errorMsg && <div className="mt-4 text-red-600">{errorMsg}</div>}
               <div className="mt-6 text-grey-dark">
                 Dont&apos;t have an account?{' '}
                 <Link href="/register">

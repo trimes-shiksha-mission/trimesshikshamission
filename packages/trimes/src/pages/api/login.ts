@@ -24,14 +24,13 @@ async function loginRoute(req: NextApiRequest, res: NextApiResponse) {
         req.session.user = user
         await req.session.save()
         return res.json(user)
+      } else {
+        return res.status(401).json({ message: 'Wrong Password!' })
       }
+    } else {
+      req.session.destroy()
+      return res.status(401).json({ message: 'User not found!' })
     }
-    req.session.destroy()
-    res.json({
-      id: '',
-      isLoggedIn: false,
-      name: ''
-    })
   } catch (error) {
     res.status(500).json({ message: (error as Error).message })
   }
