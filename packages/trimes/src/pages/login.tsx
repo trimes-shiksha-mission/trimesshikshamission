@@ -11,6 +11,7 @@ const Login: NextPage = () => {
   })
   const [loginLoading, setLoginLoading] = useState(false)
   const [errorMsg, setErrorMsg] = useState('')
+  const [showPassword, setShowPassword] = useState(false)
 
   return (
     <>
@@ -52,17 +53,42 @@ const Login: NextPage = () => {
                   className="w-full px-4 py-2 mt-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-blue-600"
                 />
               </div>
-              <div className="mt-4">
+              <div className="mt-4 relative">
                 <label className="block">Password</label>
                 <span className="text-red-600">
                   Head member द्वारा इस वेबसाइट पर बनाया गया स्वयं का पासवर्ड
                 </span>
+                <div className="flex justify-end">
+                  {showPassword ? (
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                    >
+                      Hide Password
+                    </button>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                    >
+                      Show Password
+                    </button>
+                  )}
+                </div>
                 <input
-                  type="password"
+                  type={showPassword ? 'text' : 'password'}
                   name="password"
                   placeholder="Password"
                   className="w-full px-4 py-2 mt-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-blue-600"
                 />
+
+                <div className="absolute inset-y-0 right-0 flex items-center">
+                  <button
+                    type="button"
+                    className="p-1 mr-2 text-gray-500 rounded-md hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-opacity-50"
+                    onClick={() => setShowPassword(!showPassword)}
+                  ></button>
+                </div>
               </div>
               <button className="w-full justify-center items-center gap-2 flex px-6 py-2 mt-4 text-white bg-blue-600 rounded-lg hover:bg-blue-900">
                 <span>Login</span>

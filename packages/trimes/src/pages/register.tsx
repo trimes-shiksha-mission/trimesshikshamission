@@ -50,6 +50,10 @@ const Register: NextPage = () => {
           <h3 className="text-2xl font-bold text-center">
             Join our Trimes Family
           </h3>
+          <h3 className="text-xl text-red-500 font-bold text-center">
+            ( यदि आप त्रिवेदी मेवाड़ा ब्राह्मण समाज से आते हैं,तो ही इस form को
+            भरें। )
+          </h3>
           <form
             onSubmit={async e => {
               e.preventDefault()

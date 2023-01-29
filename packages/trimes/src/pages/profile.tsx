@@ -32,6 +32,8 @@ const Profile: NextPage = () => {
   const [addMemberForm, setAddMemberForm] = useState(false)
   const [userProfileEdit, setUserProfileEdit] = useState(false)
   const [memberProfileEdit, setMemberProfileEdit] = useState<User>()
+  const [changePasswordModal, setChangePasswordModal] = useState(false)
+  const [showPassword, setShowPassword] = useState(false)
 
   //? Queries
   const { data: areas, isLoading: getAreasLoading } = useQuery(
@@ -108,15 +110,31 @@ const Profile: NextPage = () => {
       return await user.json()
     }
   )
+  const { mutateAsync: changePassword, isLoading: changePasswordLoading } =
+    useMutation(async (values: any) => {
+      return await fetchJson(`/api/changePassword`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(values)
+      })
+    })
 
   return (
     <ProtectedRoute>
-      <div className="flex justify-center items-center w-full">
+      <div className="flex justify-center items-center gap-2 w-full">
         <Link href="/api/logout" passHref>
-          <a className="rounded-md w-1/4 mt-2 bg-[#FDAE09] text-2xl text-white p-2 text-center">
+          <a className="rounded-md w-1/4 sm:w-1/5 mt-2 bg-[#FDAE09] text-xl text-white p-1 text-center">
             Logout
           </a>
         </Link>
+        <button
+          className="rounded-md  md:w-1/5 mt-2 bg-[#FDAE09] text-xl text-white p-1 text-center"
+          onClick={() => setChangePasswordModal(!changePasswordModal)}
+        >
+          Change Password
+        </button>
       </div>
       {getUserLoading || !user ? (
         <Loading />
@@ -1243,6 +1261,133 @@ const Profile: NextPage = () => {
                 type="button"
                 onClick={() => {
                   setMemberProfileEdit(undefined)
+                }}
+              >
+                Cancel
+              </button>
+            </div>
+          </form>
+        </Modal>
+      ) : null}
+
+      {changePasswordModal ? (
+        <Modal visible={changePasswordModal}>
+          <form
+            onSubmit={async e => {
+              e.preventDefault()
+              const password = e.currentTarget.oldPassword.value
+              const newPassword = e.currentTarget.newPassword.value
+              const confirmPassword = e.currentTarget.confirmPassword.value
+              if (newPassword !== confirmPassword) {
+                alert('New Password and Confirm Password must be same')
+                return
+              }
+
+              try {
+                await changePassword({
+                  password,
+                  newPassword
+                })
+                alert('Password Changed Successfully')
+                setChangePasswordModal(false)
+              } catch (error: any) {
+                alert(error.message || 'Something error occurred!')
+              }
+            }}
+          >
+            <div className="flex justify-end">
+              {showPassword ? (
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                >
+                  Hide Password
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                >
+                  Show Password
+                </button>
+              )}
+            </div>
+            <div className="flex flex-col gap-2">
+              <div>
+                <label className="block">
+                  Old Password
+                  <span className="text-red-600">*</span>
+                </label>
+                <input
+                  type={showPassword ? 'text' : 'password'}
+                  name="oldPassword"
+                  placeholder="Old Password"
+                  required
+                  className="w-full px-4 py-2 mt-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-blue-600"
+                />
+              </div>
+              <div>
+                <label className="block">
+                  New Password
+                  <span className="text-red-600">*</span>
+                </label>
+                <input
+                  type={showPassword ? 'text' : 'password'}
+                  name="newPassword"
+                  placeholder="New Password"
+                  required
+                  className="w-full px-4 py-2 mt-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-blue-600"
+                />
+              </div>
+              <div>
+                <label className="block">
+                  Confirm Password
+                  <span className="text-red-600">*</span>
+                </label>
+                <input
+                  type={showPassword ? 'text' : 'password'}
+                  name="confirmPassword"
+                  placeholder="Confirm Password"
+                  required
+                  className="w-full px-4 py-2 mt-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-blue-600"
+                />
+              </div>
+            </div>
+            <div className="flex gap-2 pt-2 justify-center items-center">
+              <button
+                disabled={changePasswordLoading}
+                className="px-6 py-2 mt-4 text-white w-64 bg-red-400 rounded-lg hover:bg-red-300"
+                type="submit"
+              >
+                Change Password{' '}
+                {changePasswordLoading && (
+                  <svg
+                    className="w-5 h-5 text-white animate-spin"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                  >
+                    <circle
+                      className="opacity-25"
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      strokeWidth="4"
+                    ></circle>
+                    <path
+                      className="opacity-75"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8v1a7 7 0 00-7 7h1z"
+                    ></path>
+                  </svg>
+                )}
+              </button>
+              <button
+                className="px-6 py-2 mt-4 text-white w-64 bg-[#FDAE09] rounded-lg hover:bg-[#FDA000]"
+                type="button"
+                onClick={() => {
+                  setChangePasswordModal(false)
                 }}
               >
                 Cancel
