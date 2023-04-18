@@ -9,7 +9,7 @@ export const sessionOptions: IronSessionOptions = {
   cookieOptions: {
     secure: process.env.NODE_ENV === 'production'
   },
-  ttl: 1 * 60 * 60 // 1 hour
+  ttl: 15 * 60 // 15 minutes
 }
 
 // This is where we specify the typings of req.session.*
