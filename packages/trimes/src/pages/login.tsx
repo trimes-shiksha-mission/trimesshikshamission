@@ -1,6 +1,7 @@
 import { NextPage } from 'next'
 import Link from 'next/link'
 import { useState } from 'react'
+import { useMutation } from 'react-query'
 import fetchJson from '../lib/fetchJson'
 import useUser from '../lib/useUser'
 
@@ -9,6 +10,26 @@ const Login: NextPage = () => {
     redirectTo: '/',
     redirectIfFound: true
   })
+
+  const { mutateAsync: registerEmail, isLoading: emailRegisterLoading } =
+    useMutation(
+      async (values: { email: string; phone: number; password: string }) => {
+        try {
+          const user = await fetch('/api/user/registerEmail', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(values)
+          })
+          return await user.json()
+        } catch (error) {
+          if ((error as any).message) alert((error as any).message)
+          else alert('Something went wrong')
+        }
+      }
+    )
+
   const [loginLoading, setLoginLoading] = useState(false)
   const [errorMsg, setErrorMsg] = useState('')
   const [showPassword, setShowPassword] = useState(false)
@@ -153,6 +174,116 @@ const Login: NextPage = () => {
                 </a>
               </Link>
             </div>
+          </div>
+        </div>
+      )}
+
+      {errorMsg === 'User email not found!' && (
+        <div className="fixed inset-0 z-10 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="w-1/2 p-4 bg-white rounded-lg shadow-lg">
+            <div className="flex justify-end">
+              <button
+                className="text-2xl font-bold"
+                onClick={() => setErrorMsg('')}
+              >
+                &times;
+              </button>
+            </div>
+            {/* Ask for email */}
+            <h3 className="text-2xl font-bold text-center">Enter your email</h3>
+            <p className="mt-4 text-center">
+              As per our records, your email is not registered with us. Please
+              enter your email to register.{' '}
+              <b>(You&apos;ll get an email once your account is verified.)</b>
+            </p>
+            <form
+              onSubmit={async e => {
+                e.preventDefault()
+                const target = e.currentTarget
+                const email = target.email.value
+                const phone = Number(target.phone.value)
+                const password = target.password.value
+                if (!email || !phone || !password) {
+                  return alert('Missing required fields!')
+                }
+                await registerEmail({
+                  email,
+                  password,
+                  phone
+                })
+              }}
+            >
+              <div className="mt-4">
+                <div className="mt-4">
+                  <label className="block">
+                    Email
+                    <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="email"
+                    name="email"
+                    placeholder="Email"
+                    className="w-full px-4 py-2 mt-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-blue-600"
+                    required
+                  />
+                </div>
+                <div className="mt-4">
+                  <label className="block">
+                    Phone
+                    <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="tel"
+                    name="phone"
+                    placeholder="Phone Number"
+                    className="w-full px-4 py-2 mt-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-blue-600"
+                    required
+                  />
+                </div>
+                <div className="mt-4">
+                  <label className="block">
+                    Password
+                    <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="password"
+                    name="password"
+                    placeholder="Password"
+                    className="w-full px-4 py-2 mt-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-blue-600"
+                    required
+                  />
+                </div>
+                {/* Submit button */}
+                <div className="flex justify-center mt-4">
+                  <button className="px-4 py-2 text-white bg-blue-600 rounded-lg hover:bg-blue-900">
+                    {emailRegisterLoading ? (
+                      <svg
+                        className="w-5 h-5 text-white animate-spin"
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                      >
+                        <circle
+                          className="opacity-25"
+                          cx="12"
+                          cy="12"
+                          r="10"
+                          stroke="currentColor"
+                          strokeWidth="4"
+                        ></circle>
+                        <path
+                          className="opacity-75"
+                          fill="currentColor"
+                          d="M4 12a8 8 0 018-8v1a7 7 0 00-7 7h1z"
+                        ></path>
+                      </svg>
+                    ) : (
+                      'Submit'
+                    )}
+                  </button>
+                </div>
+              </div>
+            </form>
           </div>
         </div>
       )}
