@@ -6,6 +6,7 @@ import { sessionOptions } from '../../../lib/session'
 async function Users(req: NextApiRequest, res: NextApiResponse) {
   if (req.session.user) {
     if (req.method === 'GET') {
+<<<<<<< Updated upstream
       const whereUserQuery: { isVerified?: boolean } = {}
 
       if (req.query.approved === 'true') {
@@ -13,6 +14,9 @@ async function Users(req: NextApiRequest, res: NextApiResponse) {
       }
       const users = await prismaClient.user.findMany({
         where: whereUserQuery,
+=======
+      const users = await prismaClient.user.findMany({
+>>>>>>> Stashed changes
         include: {
           area: true,
           head: true
