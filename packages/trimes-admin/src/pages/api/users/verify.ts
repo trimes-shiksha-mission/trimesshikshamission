@@ -1,3 +1,4 @@
+import * as fs from "fs"
 import { withIronSessionApiRoute } from 'iron-session/next/dist'
 import { NextApiRequest, NextApiResponse } from 'next'
 import { prismaClient } from '../../../lib/prisma'
@@ -6,7 +7,7 @@ import { sessionOptions } from '../../../lib/session'
 
 async function ApproveUser(req: NextApiRequest, res: NextApiResponse) {
   if (req.session.user && req.session.user.role === 'ADMIN') {
-    if (req.method === 'PUT') {
+    if (req.method === 'PATCH') {
       const { id } = req.body
 
       const user = await prismaClient.user.update({
@@ -19,10 +20,13 @@ async function ApproveUser(req: NextApiRequest, res: NextApiResponse) {
       })
 
       if (user && user.email && !user.headId) {
+        let source = fs.readFileSync('/Users/apple/Development/trimesshikshamission/packages/trimes/template/notApproved.html', 'utf8');
+       
+        source = source.replace("[User]", user.name);
         await sendMail({
           to: user.email,
-          subject: 'Your account has been approved',
-          text: 'Your account has been approved'
+          subject: 'Welcome to Trimes',
+          html: source
         })
       }
       return res.json(user)

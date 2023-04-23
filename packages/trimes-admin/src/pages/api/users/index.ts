@@ -12,7 +12,7 @@ async function Users(req: NextApiRequest, res: NextApiResponse) {
         whereUserQuery.isVerified = false
       }
       const users = await prismaClient.user.findMany({
-        where: { whereUserQuery },
+        where: whereUserQuery, 
         include: {
           area: true,
           head: true
