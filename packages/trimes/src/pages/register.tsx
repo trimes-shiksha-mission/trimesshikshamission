@@ -104,12 +104,17 @@ const Register: NextPage = () => {
                 />
               </div>
               <div>
-                <label className="block">Email</label>
+                <label className="block">
+                  Email
+                  <span className="text-red-600">*</span>
+                </label>
+
                 <input
                   type="email"
                   name="email"
                   placeholder="Email"
                   className="w-full px-4 py-2 mt-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-blue-600"
+                  required
                 />
               </div>
               <div>

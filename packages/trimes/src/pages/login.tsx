@@ -91,9 +91,8 @@ const Login: NextPage = () => {
                 </div>
               </div>
               <button className="w-full justify-center items-center gap-2 flex px-6 py-2 mt-4 text-white bg-blue-600 rounded-lg hover:bg-blue-900">
-                <span>Login</span>
                 {/* loading spinner */}
-                {loginLoading && (
+                {loginLoading ? (
                   <svg
                     className="w-5 h-5 text-white animate-spin"
                     xmlns="http://www.w3.org/2000/svg"
@@ -114,6 +113,8 @@ const Login: NextPage = () => {
                       d="M4 12a8 8 0 018-8v1a7 7 0 00-7 7h1z"
                     ></path>
                   </svg>
+                ) : (
+                  <span>Login</span>
                 )}
               </button>
               {errorMsg && <div className="mt-4 text-red-600">{errorMsg}</div>}
@@ -127,6 +128,34 @@ const Login: NextPage = () => {
           </form>
         </div>
       </div>
+
+      {errorMsg === 'User not verified!' && (
+        <div className="fixed inset-0 z-10 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="w-1/2 p-4 bg-white rounded-lg shadow-lg">
+            <div className="flex justify-end">
+              <button
+                className="text-2xl font-bold"
+                onClick={() => setErrorMsg('')}
+              >
+                &times;
+              </button>
+            </div>
+            <h3 className="text-2xl font-bold text-center">
+              Your account is not verified yet.
+            </h3>
+            <p className="mt-4 text-center">
+              Please wait for the admin to verify your account.
+            </p>
+            <div className="flex justify-center mt-4">
+              <Link href="/">
+                <a className="px-4 py-2 text-white bg-blue-600 rounded-lg hover:bg-blue-900">
+                  Go to Home
+                </a>
+              </Link>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   )
 }
