@@ -15,6 +15,9 @@ async function loginRoute(req: NextApiRequest, res: NextApiResponse) {
       }
     })
     if (foundUser) {
+      if (!foundUser.isVerified) {
+        return res.status(401).json({ message: 'User not verified!' })
+      }
       const isValid = await bcrypt.compare(password, foundUser.password || '')
       if (isValid) {
         const user = {

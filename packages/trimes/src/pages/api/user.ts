@@ -1,6 +1,7 @@
 import bcrypt from 'bcrypt'
 import { NextApiRequest, NextApiResponse } from 'next'
 import { prismaClient } from '../../lib/prisma'
+import { sendMail } from '../../lib/sendMail'
 
 export default async function UserHandler(
   req: NextApiRequest,
@@ -47,6 +48,14 @@ export default async function UserHandler(
           ...(hashedPassword && { password: hashedPassword })
         }
       })
+
+      if (user && !user.headId && user.email) {
+        await sendMail({
+          to: user.email,
+          subject: 'Welcome to Trimes',
+          text: 'Welcome to Trimes'
+        })
+      }
       res.status(200).json(user)
     } catch (e) {
       res.status(500).json(e)

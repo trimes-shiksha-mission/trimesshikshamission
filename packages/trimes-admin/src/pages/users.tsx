@@ -10,7 +10,8 @@ const Users: NextPage = () => {
     isLoading: getUsersLoading,
     refetch
   } = useQuery('Users', async () => {
-    return await fetch('/api/users').then(res => res.json())
+    const users = await fetch('/api/users')
+    return await users.json()
   })
 
   const { mutateAsync: deleteUser, isLoading: deleteUserLoading } = useMutation(

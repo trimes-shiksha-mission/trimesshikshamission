@@ -1,12 +1,18 @@
 import { withIronSessionApiRoute } from 'iron-session/next'
 import { NextApiRequest, NextApiResponse } from 'next'
-import { prismaClient } from '../../lib/prisma'
-import { sessionOptions } from '../../lib/session'
+import { prismaClient } from '../../../lib/prisma'
+import { sessionOptions } from '../../../lib/session'
 
 async function Users(req: NextApiRequest, res: NextApiResponse) {
   if (req.session.user) {
     if (req.method === 'GET') {
+      const whereUserQuery: { isVerified?: boolean } = {}
+
+      if (req.query.approved === 'true') {
+        whereUserQuery.isVerified = false
+      }
       const users = await prismaClient.user.findMany({
+        where: whereUserQuery,
         include: {
           area: true,
           head: true
