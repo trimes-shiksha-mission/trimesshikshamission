@@ -3,7 +3,7 @@ import { createTransport } from 'nodemailer'
 type MailOptions = {
   to: string
   subject: string
-  text: string
+  html: string
 }
 const transporter = createTransport({
   host: 'smtp.gmail.com',

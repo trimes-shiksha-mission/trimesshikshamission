@@ -1,7 +1,8 @@
-import bcrypt from 'bcrypt'
-import { NextApiRequest, NextApiResponse } from 'next'
-import { prismaClient } from '../../lib/prisma'
-import { sendMail } from '../../lib/sendMail'
+import bcrypt from 'bcrypt';
+import * as fs from "fs";
+import { NextApiRequest, NextApiResponse } from 'next';
+import { prismaClient } from '../../../lib/prisma';
+import { sendMail } from '../../../lib/sendMail';
 
 export default async function UserHandler(
   req: NextApiRequest,
@@ -50,13 +51,16 @@ export default async function UserHandler(
       })
 
       if (user && !user.headId && user.email) {
+        let source = fs.readFileSync('/Users/apple/Development/trimesshikshamission/packages/trimes/template/notApproved.html', 'utf8');
+       
+        source = source.replace("[User]", user.name);
         await sendMail({
-          to: user.email,
-          subject: 'Welcome to Trimes',
-          text: 'Welcome to Trimes'
+          to: 'tanu16782@gmail.com',
+          subject:'Thanks for registering',
+          html:source
         })
       }
-      res.status(200).json(user)
+      res.status(200).json('email senr')
     } catch (e) {
       res.status(500).json(e)
       console.error(e)

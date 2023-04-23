@@ -1,7 +1,7 @@
 import { withIronSessionApiRoute } from 'iron-session/next'
 import { NextApiRequest, NextApiResponse } from 'next'
-import { prismaClient } from '../../lib/prisma'
-import { sessionOptions } from '../../lib/session'
+import { prismaClient } from '../../../lib/prisma'
+import { sessionOptions } from '../../../lib/session'
 
 export interface filters {
   qualification: string[]

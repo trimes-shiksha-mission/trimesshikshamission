@@ -7,7 +7,7 @@ import { IoEyeOutline } from 'react-icons/io5'
 import { useMutation, useQuery } from 'react-query'
 import { Modal } from '../components/Modal'
 import { ProtectedRoute } from '../components/ProtectedRoute'
-import { filters } from './api/userfilters'
+import { filters } from './api/user/userfilters'
 
 type UserWithMembers = User & {
   members?: User[]

@@ -5,7 +5,7 @@ import { prismaClient } from '../../lib/prisma'
 import { sessionOptions } from '../../lib/session'
 
 async function loginRoute(req: NextApiRequest, res: NextApiResponse) {
-  const { contact, password } = await req.body
+  const {contact, password } =  req.body
 
   try {
     //get login info from db
@@ -15,6 +15,13 @@ async function loginRoute(req: NextApiRequest, res: NextApiResponse) {
       }
     })
     if (foundUser) {
+
+      if(foundUser.email)
+      {
+        return res.status(401).json({ message:  'User email not found!' })
+       
+      }
+      
       if (!foundUser.isVerified) {
         return res.status(401).json({ message: 'User not verified!' })
       }
