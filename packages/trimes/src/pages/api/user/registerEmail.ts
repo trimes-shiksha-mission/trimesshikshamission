@@ -1,3 +1,4 @@
+import bcrypt from 'bcrypt'
 import { readFile } from 'fs/promises'
 import { withIronSessionApiRoute } from 'iron-session/next'
 import { NextApiRequest, NextApiResponse } from 'next'
@@ -16,6 +17,13 @@ async function registerEmail(req: NextApiRequest, res: NextApiResponse) {
 
     if (!foundUser) {
       return res.status(401).json({ message: 'User not found!' })
+    }
+
+    const isValid = await bcrypt.compare(password, foundUser.password || '')
+
+    if(!isValid)
+    {
+      return res.status(401).json({message:'Wrong password!'})
     }
 
     await prismaClient.user.update({
