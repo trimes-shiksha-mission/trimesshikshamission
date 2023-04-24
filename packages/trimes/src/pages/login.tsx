@@ -13,7 +13,7 @@ const Login: NextPage = () => {
 
   const { mutateAsync: registerEmail, isLoading: emailRegisterLoading } =
     useMutation(
-      async (values: { email: string; phone: number; password: string }) => {
+      async (values: { email: string; phone: string; password: string }) => {
         try {
           const user = await fetch('/api/user/registerEmail', {
             method: 'POST',
@@ -201,7 +201,7 @@ const Login: NextPage = () => {
                 e.preventDefault()
                 const target = e.currentTarget
                 const email = target.email.value
-                const phone = Number(target.phone.value)
+                const phone = target.phone.value
                 const password = target.password.value
                 if (!email || !phone || !password) {
                   return alert('Missing required fields!')
