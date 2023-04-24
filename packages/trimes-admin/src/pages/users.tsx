@@ -32,7 +32,7 @@ const Users: NextPage = () => {
     'verifyUser',
     async (id: string) => {
       return await fetch(`/api/users/verify`, {
-        method: 'POST',
+        method: 'PATCH',
         body: JSON.stringify({ id }),
         headers: {
           'Content-Type': 'application/json'
