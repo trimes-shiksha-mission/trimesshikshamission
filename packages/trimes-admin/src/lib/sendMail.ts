@@ -10,8 +10,8 @@ const transporter = createTransport({
   port: 587,
   secure: false,
   auth: {
-    user: 'trimesshikshamission@gmail.com',
-    pass: 'ufulzjadqgmsgsns'
+    user: process.env.MAIL_EMAIL,
+    pass: process.env.MAIL_PASSWORD
   }
 })
 export const sendMail = async (mailOptions: MailOptions) => {
