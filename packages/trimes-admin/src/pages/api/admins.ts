@@ -1,4 +1,5 @@
 import { hash } from 'bcrypt'
+import validate from 'deep-email-validator'
 import { withIronSessionApiRoute } from 'iron-session/next'
 import { NextApiRequest, NextApiResponse } from 'next'
 import { prismaClient } from '../../lib/prisma'
@@ -16,6 +17,13 @@ async function AdminHandler(req: NextApiRequest, res: NextApiResponse) {
       if (!email || !password || !name) {
         throw new Error('Missing fields')
       }
+
+
+  const isEmailValid= await validate(email)
+  if(!isEmailValid.valid)
+  {
+  throw new Error ('This email address not found,please provide valid email address!')
+  }
       const hashedPassword = await hash(password, 10)
       await prismaClient.admin.create({
         data: {
@@ -73,6 +81,12 @@ async function AdminHandler(req: NextApiRequest, res: NextApiResponse) {
       if (!id || !name || !email) {
         throw new Error('Missing fields')
       }
+      
+      const isEmailValid= await validate(email)
+      if(!isEmailValid.valid){
+        throw new Error ('This email address not found,please provide valid email address!')
+       }
+    
       let hashedPassword = undefined
       if (password) {
         hashedPassword = await hash(password, 10)

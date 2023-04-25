@@ -1,4 +1,4 @@
-import * as fs from 'fs'
+import { readFile } from 'fs/promises'
 import { withIronSessionApiRoute } from 'iron-session/next'
 import { NextApiRequest, NextApiResponse } from 'next'
 import { prismaClient } from '../../../lib/prisma'
@@ -23,7 +23,7 @@ async function ApproveUser(req: NextApiRequest, res: NextApiResponse) {
       })
 
       if (user && user.email && !user.headId) {
-        let source = fs.readFileSync('template/approve.html', 'utf8')
+        let source = await readFile('template/notApproved.html', 'utf8')
 
         source = source.replace('[User]', user.name)
         await sendMail({
