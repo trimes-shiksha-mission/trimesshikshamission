@@ -1,5 +1,5 @@
 import bcrypt from 'bcrypt';
-import * as fs from "fs";
+import { readFile } from 'fs/promises';
 import { NextApiRequest, NextApiResponse } from 'next';
 import { prismaClient } from '../../../lib/prisma';
 import { sendMail } from '../../../lib/sendMail';
@@ -51,7 +51,7 @@ export default async function UserHandler(
       })
 
       if (user && !user.headId && user.email) {
-        let source = fs.readFileSync('/Users/apple/Development/trimesshikshamission/packages/trimes/template/notApproved.html', 'utf8');
+        let source = await readFile('template/notApproved.html', 'utf8')
        
         source = source.replace("[User]", user.name);
         await sendMail({
