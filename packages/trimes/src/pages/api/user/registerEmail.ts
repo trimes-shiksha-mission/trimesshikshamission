@@ -1,4 +1,5 @@
 import bcrypt from 'bcrypt'
+import validate from 'deep-email-validator'
 import { readFile } from 'fs/promises'
 import { withIronSessionApiRoute } from 'iron-session/next'
 import { NextApiRequest, NextApiResponse } from 'next'
@@ -25,6 +26,13 @@ async function registerEmail(req: NextApiRequest, res: NextApiResponse) {
     {
       return res.status(401).json({message:'Wrong password!'})
     }
+
+  const isEmailValid= await validate(email)
+
+  if(!isEmailValid.valid)
+  {
+    return res.status(404).json({message:'This email address not found,please provide valid email address!'})
+  }
 
     await prismaClient.user.update({
       where: {

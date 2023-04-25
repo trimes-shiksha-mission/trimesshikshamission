@@ -1,4 +1,5 @@
 import bcrypt from 'bcrypt';
+import validate from 'deep-email-validator';
 import { readFile } from 'fs/promises';
 import { NextApiRequest, NextApiResponse } from 'next';
 import { prismaClient } from '../../../lib/prisma';
@@ -21,6 +22,13 @@ export default async function UserHandler(
     try {
       Object.keys(values).forEach(k => !values[k] && delete values[k])
       if (values.email) {
+
+        const isEmailValid= await validate(values.email)
+
+        if(!isEmailValid.valid)
+        {
+          return res.status(404).json({message:'This email address not found,please provide valid email address!'})
+        }
         const found = await prismaClient.user.count({
           where: {
             email: values.email
@@ -60,7 +68,7 @@ export default async function UserHandler(
           html:source
         })
       }
-      res.status(200).json('email senr')
+      res.status(200).json('Email sent successfully!')
     } catch (e) {
       res.status(500).json(e)
       console.error(e)

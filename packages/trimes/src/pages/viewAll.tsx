@@ -130,7 +130,6 @@ const ViewAll: NextPage = () => {
                 users: data.filteredUsers,
                 count: data.count
               })
-              console.log(data.count)
             }}
             className="grid grid-cols-2 gap-4 p-6"
           >

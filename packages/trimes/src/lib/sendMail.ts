@@ -20,8 +20,10 @@ export const sendMail = async (mailOptions: MailOptions) => {
       ...mailOptions,
       from: 'trimesshikshamission@gmail.com'
     })
+  
     return sendMail
   } catch (err) {
     throw new Error('Error in sending mail' + err)
   }
 }
+

@@ -249,7 +249,6 @@ const Users: NextPage = () => {
         <Form
           layout="vertical"
           onFinish={async values => {
-            console.log(values)
           }}
           initialValues={modalOpen}
         >

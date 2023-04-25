@@ -14,7 +14,6 @@ export const Editor: FC<{
   const handleChange = (html: string) => {
     setEditorHtml(html)
   }
-  console.log(editorHtml)
   return (
     <div>
       <ReactQuill
