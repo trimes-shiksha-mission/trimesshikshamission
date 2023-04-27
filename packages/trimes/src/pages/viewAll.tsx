@@ -20,7 +20,7 @@ const ViewAll: NextPage = () => {
   const { data: filters, isLoading: getFiltersLoading } = useQuery(
     'filters',
     async () => {
-      const data = await fetch('/api/userfilters')
+      const data = await fetch('/api/user/userfilters')
       return (await data.json()) as filters
     }
   )
@@ -55,8 +55,17 @@ const ViewAll: NextPage = () => {
     count: number
   }>()
   const { mutateAsync: getFilteredUsers } = useMutation(
-    async (filters: any) => {
-      const data = await fetch('/api/userfilters', {
+    async (filters: {
+      name: string
+      qualification: string
+      occupation: string
+      gender: string
+      gautra: string
+      currPage: number
+      bloodGroup: string
+      maritalStatus: string
+    }) => {
+      const data = await fetch('/api/user/userfilters', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -73,6 +82,8 @@ const ViewAll: NextPage = () => {
     gender: string
     gautra: string
     currPage: number
+    bloodGroup: string
+    maritalStatus: string
   } | null>(null)
   useEffect(() => {
     if (queryPage !== -1) {
@@ -122,7 +133,9 @@ const ViewAll: NextPage = () => {
                 occupation: form.occupation.value,
                 gender: form.gender.value,
                 gautra: form.gautra.value,
-                currPage: 0
+                currPage: 0,
+                bloodGroup: form.bloodGroup.value,
+                maritalStatus: form.maritalStatus.value
               }
               const data = await getFilteredUsers(tempFilters)
               setSelectedFilters(tempFilters)
@@ -209,6 +222,42 @@ const ViewAll: NextPage = () => {
                     {gautra}
                   </option>
                 ))}
+              </select>
+            </div>
+            <div>
+              <label className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">
+                Blood Group
+              </label>
+              <select
+                defaultValue={selectedFilters?.bloodGroup}
+                className="block appearance-none w-full border py-3 px-4 pr-8 rounded leading-tight focus:outline-none"
+                name="bloodGroup"
+              >
+                <option value="">Select</option>
+                <option value="O-">O-</option>
+                <option value="O+">O+</option>
+                <option value="A+">A+</option>
+                <option value="A-">A-</option>
+                <option value="B+">B+</option>
+                <option value="B-">B-</option>
+                <option value="AB+">AB+</option>
+                <option value="AB-">AB-</option>
+              </select>
+            </div>
+            <div>
+              <label className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">
+                Marital Status
+              </label>
+              <select
+                defaultValue={selectedFilters?.maritalStatus}
+                className="block appearance-none w-full border py-3 px-4 pr-8 rounded leading-tight focus:outline-none"
+                name="maritalStatus"
+              >
+                <option value="">Choose...</option>
+                <option value="married">Married</option>
+                <option value="unmarried">Unmarried</option>
+                <option value="divorced">Divorced</option>
+                <option value="widowed">Widowed</option>
               </select>
             </div>
             <div className="grid grid-cols-8 gap-8 col-span-2">
