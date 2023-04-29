@@ -26,7 +26,7 @@ function MyApp({ Component, pageProps }: AppProps) {
     >
       <QueryClientProvider client={queryClient}>
         <Header />
-        <div className="pt-20">
+        <div className="pt-20 min-h-[60vh]">
           <Component {...pageProps} />
         </div>
         <Script src="/chatra.js" />

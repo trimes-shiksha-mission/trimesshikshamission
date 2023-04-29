@@ -7,8 +7,8 @@ import { MdEmail } from 'react-icons/md'
 
 export const Footer: FC = () => {
   return (
-    <div className="mt-10">
-      <div className="w-full p-8 grid md:grid-cols-3 gap-3 md:px-28 bg-primary text-white bg-[#3d4045]">
+    <div className="mt-10 bottom-0">
+      <div className="w-full p-8 grid md:grid-cols-3 gap-3 md:px-28 bg-[#3d4045] text-white">
         <div>
           <h5 className="text-base">CONTACT</h5>
           <div className="mt-3 text-[0.8rem]">

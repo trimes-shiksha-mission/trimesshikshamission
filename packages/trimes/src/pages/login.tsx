@@ -110,6 +110,15 @@ const Login: NextPage = () => {
                     onClick={() => setShowPassword(!showPassword)}
                   ></button>
                 </div>
+
+                {/* Forgot Password link */}
+                <div className="mt-4 text-right">
+                  <Link href="/forgotPassword">
+                    <a className="text-blue-600 hover:underline">
+                      Forgot Password?
+                    </a>
+                  </Link>
+                </div>
               </div>
               <button className="w-full justify-center items-center gap-2 flex px-6 py-2 mt-4 text-white bg-blue-600 rounded-lg hover:bg-blue-900">
                 {/* loading spinner */}
@@ -253,6 +262,7 @@ const Login: NextPage = () => {
                     required
                   />
                 </div>
+
                 {/* Submit button */}
                 <div className="flex justify-center mt-4">
                   <button className="px-4 py-2 text-white bg-blue-600 rounded-lg hover:bg-blue-900">
