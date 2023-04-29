@@ -27,9 +27,9 @@ const ForgotPassword: NextPage = () => {
               </button>
             </div>
             <div className="flex items-center justify-center w-full">
-              <a className="text-blue-500" href="/login">
+              <Link className="text-blue-500" href="/login">
                 Already have an account? Login here
-              </a>
+              </Link>
             </div>
 
             <div className="flex items-center justify-center w-full text-grey-dark">
