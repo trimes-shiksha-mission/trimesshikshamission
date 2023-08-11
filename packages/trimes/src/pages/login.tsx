@@ -113,10 +113,11 @@ const Login: NextPage = () => {
 
                 {/* Forgot Password link */}
                 <div className="mt-4 text-right">
-                  <Link href="/forgotPassword">
-                    <a className="text-blue-600 hover:underline">
-                      Forgot Password?
-                    </a>
+                  <Link
+                    href="/forgotPassword"
+                    className="text-blue-600 hover:underline"
+                  >
+                    Forgot Password?
                   </Link>
                 </div>
               </div>
@@ -150,8 +151,11 @@ const Login: NextPage = () => {
               {errorMsg && <div className="mt-4 text-red-600">{errorMsg}</div>}
               <div className="mt-6 text-grey-dark">
                 Dont&apos;t have an account?{' '}
-                <Link href="/register">
-                  <a className="text-blue-600 hover:underline">Register Here</a>
+                <Link
+                  href="/register"
+                  className="text-blue-600 hover:underline"
+                >
+                  Register Here
                 </Link>
               </div>
             </div>
@@ -177,10 +181,11 @@ const Login: NextPage = () => {
               Please wait for the admin to verify your account.
             </p>
             <div className="flex justify-center mt-4">
-              <Link href="/">
-                <a className="px-4 py-2 text-white bg-blue-600 rounded-lg hover:bg-blue-900">
-                  Go to Home
-                </a>
+              <Link
+                href="/"
+                className="px-4 py-2 text-white bg-blue-600 rounded-lg hover:bg-blue-900"
+              >
+                Go to Home
               </Link>
             </div>
           </div>

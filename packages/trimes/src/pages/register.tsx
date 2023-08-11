@@ -394,8 +394,8 @@ const Register: NextPage = () => {
             </div>
             <div className="mt-6 text-grey-dark">
               Already have an account?
-              <Link href="/login">
-                <a className="text-blue-600 hover:underline">Log in</a>
+              <Link href="/login" className="text-blue-600 hover:underline">
+                Log in
               </Link>
             </div>
           </form>

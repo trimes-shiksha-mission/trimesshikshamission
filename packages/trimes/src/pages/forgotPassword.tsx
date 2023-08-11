@@ -34,8 +34,8 @@ const ForgotPassword: NextPage = () => {
 
             <div className="flex items-center justify-center w-full text-grey-dark">
               Dont&apos;t have an account?{' '}
-              <Link href="/register">
-                <a className="text-blue-600 hover:underline">Register Here</a>
+              <Link href="/register" className="text-blue-600 hover:underline">
+                Register Here
               </Link>
             </div>
           </div>

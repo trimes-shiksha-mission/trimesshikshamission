@@ -23,17 +23,17 @@ export const Footer: FC = () => {
               <IoLocationSharp className="inline mr-1" />
               अस्थाई कार्यालय: 104-F Sector 9A Udaipur, Rajasthan
             </span>
-            <a href="tel:+91-9413217950" className="mt-4 block">
+            <Link href="tel:+91-9413217950" className="mt-4 block">
               <BsFillTelephoneFill className="inline mr-1" />
               +91- 9413217950
-            </a>
-            <a
+            </Link>
+            <Link
               href="mailto:trimesshikshamission@gmail.com"
               className="mt-4 block"
             >
               <MdEmail className="inline mr-1" />
               trimesshikshamission@gmail.com
-            </a>
+            </Link>
           </div>
         </div>
         <div>

@@ -33,21 +33,22 @@ export const Header: FC = () => {
       >
         <nav>
           <div className="flex justify-between items-center animated py-1 animate-fadeInDown ">
-            <Link href="/" passHref>
-              <a className="ml-2 lg:ml-4py-2 flex items-center text-base sm:text-xl ">
-                <div className="w-16 mr-3">
-                  <Image
-                    src="/logo.png"
-                    alt=""
-                    layout="responsive"
-                    height={1}
-                    width={1}
-                  />
-                </div>
-                <span className="font-semibold tracking-wide">
-                  Trimes Shiksha Mission
-                </span>
-              </a>
+            <Link
+              href="/"
+              className="ml-2 lg:ml-4py-2 flex items-center text-base sm:text-xl "
+            >
+              <div className="w-16 mr-3">
+                <Image
+                  src="/logo.png"
+                  alt=""
+                  layout="responsive"
+                  height={1}
+                  width={1}
+                />
+              </div>
+              <span className="font-semibold tracking-wide">
+                Trimes Shiksha Mission
+              </span>
             </Link>
             <CgMenuRightAlt
               className={`${phoneMenuOpen ? 'invisible' : 'visible'}
@@ -59,9 +60,7 @@ export const Header: FC = () => {
               <li
                 className={`opacity-95 relative cursor-pointer py-2 text-base font-medium mx-4 hover:text-primary transition-all duration-200 text-black`}
               >
-                <Link href="/" passHref>
-                  <a>HOME</a>
-                </Link>
+                <Link href="/">HOME</Link>
                 {checkRoute(currRoute, '/') && (
                   <div
                     className={`bg-black w-full h-[2px] absolute mt-1`}
@@ -71,8 +70,8 @@ export const Header: FC = () => {
               {/* <li
                 className={`opacity-95 relative cursor-pointer py-2 text-base font-medium mx-4  hover:text-primary transition-all duration-200 text-black`}
               >
-                <Link href="/matrimonial" passHref>
-                  <a>MATRIMONIAL</a>
+                <Link href="/matrimonial" >
+                  MATRIMONIAL
                 </Link>
                 {checkRoute(currRoute, '/matrimonial') && (
                   <div
@@ -83,9 +82,7 @@ export const Header: FC = () => {
               <li
                 className={`opacity-95 relative cursor-pointer py-2 text-base font-medium mx-4 text-black hover:text-primary transition-all duration-200`}
               >
-                <Link href="/news" passHref>
-                  <a>NEWS</a>
-                </Link>
+                <Link href="/news">NEWS</Link>
                 {checkRoute(currRoute, '/news') && (
                   <div
                     className={`bg-black w-full h-[2px] absolute mt-1`}
@@ -95,8 +92,8 @@ export const Header: FC = () => {
               {/* <li
                 className={`opacity-95 relative cursor-pointer py-2 text-base font-medium mx-4 text-black hover:text-primary transition-all duration-200`}
               >
-                <Link href="/ec" passHref>
-                  <a>CHOKHLE</a>
+                <Link href="/ec" >
+                  CHOKHLE
                 </Link>
                 {checkRoute(currRoute, '/ec') && (
                   <div
@@ -107,9 +104,7 @@ export const Header: FC = () => {
               <li
                 className={`opacity-95 relative cursor-pointer py-2 text-base font-medium mx-4 text-black hover:text-primary transition-all duration-200`}
               >
-                <Link href="/samagri" passHref>
-                  <a>SAMAGRI</a>
-                </Link>
+                <Link href="/samagri">SAMAGRI</Link>
                 {checkRoute(currRoute, '/samagri') && (
                   <div
                     className={`bg-black w-full h-[2px] absolute mt-1`}
@@ -119,9 +114,7 @@ export const Header: FC = () => {
               <li
                 className={`opacity-95 relative cursor-pointer py-2 text-base font-medium mx-4 text-black hover:text-primary transition-all duration-200`}
               >
-                <Link href="/gyanganga" passHref>
-                  <a>GYAN GANGA</a>
-                </Link>
+                <Link href="/gyanganga">GYAN GANGA</Link>
                 {checkRoute(currRoute, '/gyanganga') && (
                   <div
                     className={`bg-black w-full h-[2px] absolute mt-1`}
@@ -131,9 +124,7 @@ export const Header: FC = () => {
               <li
                 className={`opacity-95 relative cursor-pointer py-2 text-base font-medium mx-4 text-black hover:text-primary transition-all duration-200`}
               >
-                <Link href="/students" passHref>
-                  <a>STUDENTS CORNER</a>
-                </Link>
+                <Link href="/students">STUDENTS CORNER</Link>
                 {checkRoute(currRoute, '/students') && (
                   <div
                     className={`bg-black w-full h-[2px] absolute mt-1`}
@@ -143,8 +134,8 @@ export const Header: FC = () => {
               {/* <li
                 className={`opacity-95 relative cursor-pointer py-2 text-base font-medium mx-4 text-black hover:text-primary transition-all duration-200  `}
               >
-                <Link href="/jobs" passHref>
-                  <a>JOBS PORTAL</a>
+                <Link href="/jobs" >
+                  JOBS PORTAL
                 </Link>
                 {checkRoute(currRoute, '/jobs') && (
                   <div
@@ -157,9 +148,7 @@ export const Header: FC = () => {
                 <li
                   className={`opacity-95 relative cursor-pointer py-2 text-base font-medium mx-4 text-black hover:text-primary transition-all duration-200  `}
                 >
-                  <Link href="/viewAll" passHref>
-                    <a>View Members</a>
-                  </Link>
+                  <Link href="/viewAll">View Members</Link>
                   {checkRoute(currRoute, '/viewAll') && (
                     <div
                       className={`bg-black w-full h-[2px] absolute mt-1`}
@@ -171,8 +160,8 @@ export const Header: FC = () => {
               <li
                 className={`opacity-95 relative cursor-pointer py-2 text-base font-medium mx-4 text-black hover:text-primary transition-all duration-200  `}
               >
-                <Link href={user?.id ? '/profile' : '/login'} passHref>
-                  <a>{user?.id ? user.name : 'Register/Login'}</a>
+                <Link href={user?.id ? '/profile' : '/login'}>
+                  {user?.id ? user.name : 'Register/Login'}
                 </Link>
                 {checkRoute(currRoute, user?.id ? '/profile' : '/login') && (
                   <div
@@ -218,15 +207,14 @@ export const Header: FC = () => {
                       : 'text-gray-800'
                   }`}
                 >
-                  <Link href={'/'} passHref>
-                    <a
-                      className="nav-link-item-mobile"
-                      onClick={() => {
-                        setPhoneMenuOpen(false)
-                      }}
-                    >
-                      Home
-                    </a>
+                  <Link
+                    href={'/'}
+                    className="nav-link-item-mobile"
+                    onClick={() => {
+                      setPhoneMenuOpen(false)
+                    }}
+                  >
+                    Home
                   </Link>
                 </li>
                 {/* <li
@@ -236,15 +224,11 @@ export const Header: FC = () => {
                       : 'text-gray-800'
                   }`}
                 >
-                  <Link href={'/matrimonial'} passHref>
-                    <a
-                      className="nav-link-item-mobile"
+                  <Link href={'/matrimonial'} className="nav-link-item-mobile"
                       onClick={() => {
                         setPhoneMenuOpen(false)
-                      }}
-                    >
+                      }}>
                       MATRIMONIAL
-                    </a>
                   </Link>
                 </li> */}
                 <li
@@ -254,15 +238,14 @@ export const Header: FC = () => {
                       : 'text-gray-800'
                   }`}
                 >
-                  <Link href={'/news'} passHref>
-                    <a
-                      className="nav-link-item-mobile"
-                      onClick={() => {
-                        setPhoneMenuOpen(false)
-                      }}
-                    >
-                      NEWS
-                    </a>
+                  <Link
+                    href={'/news'}
+                    className="nav-link-item-mobile"
+                    onClick={() => {
+                      setPhoneMenuOpen(false)
+                    }}
+                  >
+                    NEWS
                   </Link>
                 </li>
                 {/* <li
@@ -272,15 +255,11 @@ export const Header: FC = () => {
                       : 'text-gray-800'
                   }`}
                 >
-                  <Link href={'/ec'} passHref>
-                    <a
-                      className="nav-link-item-mobile"
+                  <Link href={'/ec'} className="nav-link-item-mobile"
                       onClick={() => {
                         setPhoneMenuOpen(false)
-                      }}
-                    >
+                      }} >
                       CHOKHLE
-                    </a>
                   </Link>
                 </li> */}
                 <li
@@ -290,15 +269,14 @@ export const Header: FC = () => {
                       : 'text-gray-800'
                   }`}
                 >
-                  <Link href={'/samagri'} passHref>
-                    <a
-                      className="nav-link-item-mobile"
-                      onClick={() => {
-                        setPhoneMenuOpen(false)
-                      }}
-                    >
-                      SAMAGRI
-                    </a>
+                  <Link
+                    href={'/samagri'}
+                    className="nav-link-item-mobile"
+                    onClick={() => {
+                      setPhoneMenuOpen(false)
+                    }}
+                  >
+                    SAMAGRI
                   </Link>
                 </li>
                 <li
@@ -308,15 +286,14 @@ export const Header: FC = () => {
                       : 'text-gray-800'
                   }`}
                 >
-                  <Link href={'/gyanganga'} passHref>
-                    <a
-                      className="nav-link-item-mobile"
-                      onClick={() => {
-                        setPhoneMenuOpen(false)
-                      }}
-                    >
-                      GYAN GANGA
-                    </a>
+                  <Link
+                    href={'/gyanganga'}
+                    className="nav-link-item-mobile"
+                    onClick={() => {
+                      setPhoneMenuOpen(false)
+                    }}
+                  >
+                    GYAN GANGA
                   </Link>
                 </li>
                 <li
@@ -326,15 +303,14 @@ export const Header: FC = () => {
                       : 'text-gray-800'
                   }`}
                 >
-                  <Link href={'/students'} passHref>
-                    <a
-                      className="nav-link-item-mobile"
-                      onClick={() => {
-                        setPhoneMenuOpen(false)
-                      }}
-                    >
-                      STUDENTS
-                    </a>
+                  <Link
+                    href={'/students'}
+                    className="nav-link-item-mobile"
+                    onClick={() => {
+                      setPhoneMenuOpen(false)
+                    }}
+                  >
+                    STUDENTS
                   </Link>
                 </li>
                 {/* <li
@@ -344,15 +320,11 @@ export const Header: FC = () => {
                       : 'text-gray-800'
                   }`}
                 >
-                  <Link href={'/jobs'} passHref>
-                    <a
-                      className="nav-link-item-mobile"
+                  <Link href={'/jobs'} className="nav-link-item-mobile"
                       onClick={() => {
                         setPhoneMenuOpen(false)
-                      }}
-                    >
+                      }}>
                       JOBS
-                    </a>
                   </Link>
                 </li> */}
 
@@ -363,15 +335,14 @@ export const Header: FC = () => {
                       : 'text-gray-800'
                   }`}
                 >
-                  <Link href={'/viewAll'} passHref>
-                    <a
-                      className="nav-link-item-mobile"
-                      onClick={() => {
-                        setPhoneMenuOpen(false)
-                      }}
-                    >
-                      View Members
-                    </a>
+                  <Link
+                    href={'/viewAll'}
+                    className="nav-link-item-mobile"
+                    onClick={() => {
+                      setPhoneMenuOpen(false)
+                    }}
+                  >
+                    View Members
                   </Link>
                 </li>
                 <li
@@ -381,15 +352,14 @@ export const Header: FC = () => {
                       : 'text-gray-800'
                   }`}
                 >
-                  <Link href={user?.id ? '/profile' : '/login'} passHref>
-                    <a
-                      className="nav-link-item-mobile"
-                      onClick={() => {
-                        setPhoneMenuOpen(false)
-                      }}
-                    >
-                      {user?.id ? user?.name : 'Register/Login'}
-                    </a>
+                  <Link
+                    href={user?.id ? '/profile' : '/login'}
+                    className="nav-link-item-mobile"
+                    onClick={() => {
+                      setPhoneMenuOpen(false)
+                    }}
+                  >
+                    {user?.id ? user?.name : 'Register/Login'}
                   </Link>
                 </li>
               </ul>

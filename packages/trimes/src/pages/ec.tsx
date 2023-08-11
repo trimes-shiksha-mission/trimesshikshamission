@@ -8,8 +8,8 @@ const EC: NextPage = () => {
           <div className="relative px-4 py-10 bg-white shadow-lg sm:rounded-3xl sm:p-20 bg-clip-padding bg-opacity-60 border border-gray-200">
             <div className="text-7xl">This Section will be live soon :)</div>
             <div className="text-center mt-10">
-              <Link href="/">
-                <a className="text-4xl text-sky-700 font-medium">Go to Home</a>
+              <Link href="/" className="text-4xl text-sky-700 font-medium">
+                Go to Home
               </Link>
             </div>
           </div>

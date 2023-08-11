@@ -13,8 +13,8 @@ export const ProtectedRoute: FC<{ children: ReactNode }> = ({ children }) => {
       <>
         <div className="w-full text-center text-3xl mb-96 mt-20">
           Please
-          <Link href="/login">
-            <a className="text-sky-500 text-bold"> Login </a>
+          <Link href="/login" className="text-sky-500 text-bold">
+            Login
           </Link>
           to Website to access this feature.
         </div>

@@ -517,17 +517,13 @@ const ViewAll: NextPage = () => {
             <div className="inline-flex mt-2 xs:mt-0">
               <Link
                 href={`${page <= 1 ? '#' : `/viewAll?page=${page - 1}`}`}
-                passHref
+                className={`text-sm bg-primary hover:opacity-80  text-white font-semibold py-2 px-4 rounded-l ${
+                  page <= 1
+                    ? 'pointer-events-none opacity-50'
+                    : 'cursor-pointer'
+                }`}
               >
-                <a
-                  className={`text-sm bg-primary hover:opacity-80  text-white font-semibold py-2 px-4 rounded-l ${
-                    page <= 1
-                      ? 'pointer-events-none opacity-50'
-                      : 'cursor-pointer'
-                  }`}
-                >
-                  Prev
-                </a>
+                Prev
               </Link>
               {filteredUsers?.users.length ? (
                 <Link
@@ -539,20 +535,16 @@ const ViewAll: NextPage = () => {
                       ? '#'
                       : `/viewAll?page=${page + 1}`
                   }`}
-                  passHref
+                  className={`text-sm bg-primary hover:opacity-80 text-white font-semibold py-2 px-4 rounded-r ${
+                    page >=
+                    parseInt(
+                      ((filteredUsers.count || 0) / pageSize + 1).toString()
+                    )
+                      ? 'pointer-events-none opacity-50'
+                      : 'cursor-pointer'
+                  }`}
                 >
-                  <a
-                    className={`text-sm bg-primary hover:opacity-80 text-white font-semibold py-2 px-4 rounded-r ${
-                      page >=
-                      parseInt(
-                        ((filteredUsers.count || 0) / pageSize + 1).toString()
-                      )
-                        ? 'pointer-events-none opacity-50'
-                        : 'cursor-pointer'
-                    }`}
-                  >
-                    Next
-                  </a>
+                  Next
                 </Link>
               ) : userData?.totalHeads && userData?.totalHeads > pageSize ? (
                 <Link
@@ -564,20 +556,16 @@ const ViewAll: NextPage = () => {
                       ? '#'
                       : `/viewAll?page=${page + 1}`
                   }`}
-                  passHref
+                  className={`text-sm bg-primary hover:opacity-80 text-white font-semibold py-2 px-4 rounded-r ${
+                    page >=
+                    parseInt(
+                      ((userData.totalHeads || 0) / pageSize + 1).toString()
+                    )
+                      ? 'pointer-events-none opacity-50'
+                      : 'cursor-pointer'
+                  }`}
                 >
-                  <a
-                    className={`text-sm bg-primary hover:opacity-80 text-white font-semibold py-2 px-4 rounded-r ${
-                      page >=
-                      parseInt(
-                        ((userData.totalHeads || 0) / pageSize + 1).toString()
-                      )
-                        ? 'pointer-events-none opacity-50'
-                        : 'cursor-pointer'
-                    }`}
-                  >
-                    Next
-                  </a>
+                  Next
                 </Link>
               ) : null}
             </div>
