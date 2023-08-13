@@ -8,7 +8,6 @@ import { MdDeleteOutline, MdModeEditOutline } from 'react-icons/md'
 import { useMutation, useQuery } from 'react-query'
 import { Loading } from '../components/Loading'
 import { Modal } from '../components/Modal'
-import { ProtectedRoute } from '../components/ProtectedRoute'
 import fetchJson from '../lib/fetchJson'
 import useUser from '../lib/useUser'
 
@@ -122,7 +121,7 @@ const Profile: NextPage = () => {
     })
 
   return (
-    <ProtectedRoute>
+    <>
       <div className="flex justify-center items-center gap-2 w-full">
         <Link
           href="/api/logout"
@@ -1397,7 +1396,7 @@ const Profile: NextPage = () => {
           </form>
         </Modal>
       ) : null}
-    </ProtectedRoute>
+    </>
   )
 }
 

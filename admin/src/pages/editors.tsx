@@ -12,7 +12,6 @@ import {
 import { NextPage } from 'next'
 import { useState } from 'react'
 import { useMutation, useQuery } from 'react-query'
-import { ProtectedRoute } from '../../components/ProtectedRoute'
 import useUser from '../../lib/useUser'
 
 const Editors: NextPage = () => {
@@ -77,7 +76,7 @@ const Editors: NextPage = () => {
   const { user } = useUser()
 
   return (
-    <ProtectedRoute>
+    <>
       <h3>Editors</h3>
       {user?.role !== 'EDITOR' && (
         <Button onClick={() => setAddEditorModal(true)}>Add Editor</Button>
@@ -228,7 +227,7 @@ const Editors: NextPage = () => {
           </Form.Item>
         </Form>
       </Modal>
-    </ProtectedRoute>
+    </>
   )
 }
 

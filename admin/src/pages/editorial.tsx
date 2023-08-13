@@ -1,73 +1,71 @@
-import { DeleteOutlined } from '@ant-design/icons'
-import { Button, Form, Input, message, Modal, Row, Table } from 'antd'
+import { DeleteOutlined, EyeOutlined } from '@ant-design/icons'
+import { Button, Form, Input, Modal, Table } from 'antd'
 import { NextPage } from 'next'
 import { useState } from 'react'
-import { useMutation, useQuery } from 'react-query'
+import { Layout } from '~/components/Layout'
+import { useMessageApi } from '~/context/messageApi'
+import { RouterOutputs, api } from '~/utils/api'
 import { Editor } from '../components/Editor'
-import { ProtectedRoute } from '../components/ProtectedRoute'
 
 const Editorial: NextPage = () => {
-  const { mutateAsync: addEditorial, isLoading: addEditorialLoading } =
-    useMutation(async (editorial: { title: string; body: string }) => {
-      try {
-        const res = await fetch('/api/editorial', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(editorial)
-        })
-        message.success('Editorial added successfully')
-      } catch (error) {
-        message.error((error as any).message)
-      }
-    })
+  type EditorialType = RouterOutputs['editorials']['getAll']['editorials'][0]
+
+  const messageApi = useMessageApi()
+  const [addEditorialModal, setAddEditorialModal] = useState(false)
+  const [previewModal, setPreviewModal] = useState<EditorialType | null>(null)
+  const [variables, setVariables] = useState<{
+    page: number
+    limit: number
+    sort?: {
+      by: string
+      order: 'asc' | 'desc'
+    }
+  }>({
+    page: 1,
+    limit: 10,
+    sort: {
+      by: 'createdAt',
+      order: 'desc'
+    }
+  })
+
+  //? Queries
   const {
     data: editorials,
     isLoading: getEditorialLoading,
-    refetch
-  } = useQuery('editorial', async () => {
-    const res = await fetch('/api/editorial')
-    const data = await res.json()
-    if (data.error) {
-      return []
-    }
-    return data
-  })
+    refetch,
+    isRefetching
+  } = api.editorials.getAll.useQuery(variables)
 
+  //? Mutations
   const { mutateAsync: deleteEditorial, isLoading: deleteEditorialLoading } =
-    useMutation(async id => {
-      try {
-        await fetch('/api/editorial', {
-          method: 'DELETE',
-          body: JSON.stringify({ id }),
-          headers: {
-            'Content-Type': 'application/json'
-          }
-        })
-        message.success('Editorial deleted successfully')
-      } catch (error) {
-        message.error((error as any).message)
-      }
-    })
+    api.editorials.deleteOne.useMutation()
+  const { mutateAsync: addEditorial, isLoading: addEditorialLoading } =
+    api.editorials.createOne.useMutation()
 
-  const [addEditorialModal, setAddEditorialModal] = useState(false)
-  const [editorValue, setEditorValue] = useState('')
-
-  if (getEditorialLoading) {
-    return <div>Loading...</div>
-  }
   return (
-    <ProtectedRoute role={['SUPERUSER']}>
-      <Row>
-        <Button onClick={() => setAddEditorialModal(true)}>Add New</Button>
-      </Row>
+    <Layout
+      breadcrumbs={[
+        {
+          label: 'Editorial'
+        }
+      ]}
+    >
+      <Button
+        className="mb-2"
+        type="primary"
+        onClick={() => setAddEditorialModal(true)}
+      >
+        Add New
+      </Button>
 
       <Table
+        loading={getEditorialLoading || isRefetching}
         columns={[
           {
             title: 'Sr. No.',
-            dataIndex: 'sr'
+            render: (_, __, index: number) =>
+              (variables.page - 1) * variables.limit + index + 1
           },
           {
             title: 'Title',
@@ -75,29 +73,61 @@ const Editorial: NextPage = () => {
           },
           {
             title: 'Created At',
+            dataIndex: 'createdAt',
             render: (_, row) => new Date(row.createdAt).toLocaleString()
           },
           {
             title: 'Action',
             render: (_, row) => (
-              <Button
-                onClick={async () => {
-                  await deleteEditorial(row.id)
-                }}
-                loading={deleteEditorialLoading}
-              >
-                <DeleteOutlined style={{ color: 'red' }} />
-              </Button>
+              <>
+                <Button
+                  onClick={async () => {
+                    await deleteEditorial(row.id)
+                    messageApi.success('Editorial deleted successfully')
+                    await refetch()
+                  }}
+                  loading={deleteEditorialLoading}
+                  type="link"
+                  danger
+                >
+                  <DeleteOutlined />
+                </Button>
+                <Button onClick={() => setPreviewModal(row)} type="link">
+                  <EyeOutlined />
+                </Button>
+              </>
             )
           }
         ]}
-        dataSource={
-          editorials?.map((editorial: any, index: number) => ({
-            ...editorial,
-            sr: index + 1
-          })) as any[] | []
-        }
-        rowKey="sr"
+        dataSource={editorials?.editorials.map((editorial, index: number) => ({
+          ...editorial,
+          sr: index + 1
+        }))}
+        rowKey="id"
+        pagination={{
+          current: variables.page,
+          pageSize: variables.limit,
+          total: editorials?.count,
+          showSizeChanger: true,
+          pageSizeOptions: [10, 20, 50]
+        }}
+        onChange={(tablePagination, _filters, sorter: any) => {
+          const newVariables = {
+            ...variables,
+            page: tablePagination.current || 1,
+            limit: tablePagination.pageSize || 10
+          }
+
+          if (sorter.column?.dataIndex && sorter.order) {
+            newVariables.sort = {
+              by: sorter.column.dataIndex,
+              order: sorter.order === 'descend' ? 'desc' : 'asc'
+            }
+          } else {
+            newVariables.sort = undefined
+          }
+          setVariables(newVariables)
+        }}
       />
 
       <Modal
@@ -109,23 +139,17 @@ const Editorial: NextPage = () => {
         <Form
           layout="vertical"
           onFinish={async values => {
-            await addEditorial({
-              title: values.title,
-              body: editorValue
-            })
+            await addEditorial(values)
             await refetch()
+            setAddEditorialModal(false)
+            return messageApi.success('Editorial added successfully')
           }}
         >
-          <Form.Item label="Title:" name="title" rules={[{ required: true }]}>
+          <Form.Item label="Title" name="title" rules={[{ required: true }]}>
             <Input type="text" />
           </Form.Item>
-          <Form.Item label="Content:">
-            <Editor
-              key={'editorial'}
-              placeholder={'Write something...'}
-              editorHtml={editorValue}
-              setEditorHtml={setEditorValue}
-            />
+          <Form.Item label="Content" name="body" rules={[{ required: true }]}>
+            <Editor key={'editorial'} placeholder={'Write something...'} />
           </Form.Item>
           <Form.Item>
             <Button
@@ -138,7 +162,16 @@ const Editorial: NextPage = () => {
           </Form.Item>
         </Form>
       </Modal>
-    </ProtectedRoute>
+
+      <Modal
+        open={!!previewModal}
+        footer={null}
+        onCancel={() => setPreviewModal(null)}
+      >
+        <h1>{previewModal?.title}</h1>
+        <div dangerouslySetInnerHTML={{ __html: previewModal?.body || '' }} />
+      </Modal>
+    </Layout>
   )
 }
 

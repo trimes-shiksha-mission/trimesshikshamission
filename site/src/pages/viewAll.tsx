@@ -6,7 +6,6 @@ import { useEffect, useState } from 'react'
 import { IoEyeOutline } from 'react-icons/io5'
 import { useMutation, useQuery } from 'react-query'
 import { Modal } from '../components/Modal'
-import { ProtectedRoute } from '../components/ProtectedRoute'
 import { filters } from './api/user/userfilters'
 
 type UserWithMembers = User & {
@@ -107,7 +106,7 @@ const ViewAll: NextPage = () => {
   }
 
   return (
-    <ProtectedRoute>
+    <>
       <div className="container mx-auto px-4 sm:px-8">
         <div className="py-8">
           <div>
@@ -668,7 +667,7 @@ const ViewAll: NextPage = () => {
           </tbody>
         </table>
       </Modal>
-    </ProtectedRoute>
+    </>
   )
 }
 

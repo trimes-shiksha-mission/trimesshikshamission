@@ -3,7 +3,6 @@ import { Button, Form, Input, Modal, Select, Space, Table } from 'antd'
 import { NextPage } from 'next'
 import { useState } from 'react'
 import { useMutation, useQuery } from 'react-query'
-import { ProtectedRoute } from '../components/ProtectedRoute'
 
 const Users: NextPage = () => {
   const {
@@ -159,7 +158,7 @@ const Users: NextPage = () => {
   ])
 
   return (
-    <ProtectedRoute>
+    <>
       <Select
         mode="multiple"
         style={{
@@ -275,7 +274,7 @@ const Users: NextPage = () => {
           )}
         </Form>
       </Modal>
-    </ProtectedRoute>
+    </>
   )
 }
 

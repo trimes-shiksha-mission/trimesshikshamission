@@ -8,18 +8,15 @@ const ReactQuill = dynamic(() => import('react-quill'), { ssr: false })
  */
 export const Editor: FC<{
   placeholder: string
-  editorHtml: string
-  setEditorHtml: Dispatch<SetStateAction<string>>
-}> = ({ placeholder, editorHtml, setEditorHtml }) => {
-  const handleChange = (html: string) => {
-    setEditorHtml(html)
-  }
+  value?: string
+  onChange?: Dispatch<SetStateAction<string>>
+}> = ({ placeholder, value, onChange }) => {
   return (
     <div>
       <ReactQuill
         theme={'snow'}
-        onChange={handleChange}
-        value={editorHtml}
+        onChange={onChange}
+        value={value}
         modules={{
           toolbar: [
             ['bold', 'italic', 'underline', 'strike', 'blockquote'],
