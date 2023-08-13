@@ -105,10 +105,12 @@ const Admins: NextPage = () => {
               )
             }
           ]}
-          dataSource={admins.map((admin: any, i: number) => ({
-            ...admin,
-            sr: i + 1
-          }))}
+          dataSource={
+            admins.map((admin: any, i: number) => ({
+              ...admin,
+              sr: i + 1
+            })) as any[]
+          }
           rowKey={'sr'}
         />
       )}

@@ -95,7 +95,7 @@ const Editorial: NextPage = () => {
           editorials?.map((editorial: any, index: number) => ({
             ...editorial,
             sr: index + 1
-          })) || []
+          })) as any[] | []
         }
         rowKey="sr"
       />

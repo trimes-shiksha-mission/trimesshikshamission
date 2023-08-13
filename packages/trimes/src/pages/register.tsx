@@ -283,13 +283,22 @@ const Register: NextPage = () => {
               </div>
               <div>
                 <label className="block">Family Annual Income (Optional)</label>
-                <input
-                  type="number"
-                  min={0}
+
+                <select
                   name="familyAnnualIncome"
-                  placeholder="Annual Income"
                   className="w-full px-4 py-2 mt-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-blue-600"
-                />
+                >
+                  {[
+                    'Up to 1 Lakh',
+                    'Above 1 Lakh & Up to 2.5 Lakhs',
+                    'Above 2.5 Lakhs & Up to 5 Lakhs',
+                    'Above 5 Lakhs'
+                  ].map(income => (
+                    <option key={income} value={income}>
+                      {income}
+                    </option>
+                  ))}
+                </select>
               </div>
               <div>
                 <label className="block">
@@ -322,13 +331,40 @@ const Register: NextPage = () => {
                   Gautra
                   <span className="text-red-600">*</span>
                 </label>
-                <input
-                  type="text"
+
+                <select
                   name="gautra"
-                  placeholder="Gautra"
                   required
                   className="w-full px-4 py-2 mt-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-blue-600"
-                />
+                >
+                  {[
+                    'Others',
+                    'पराशर',
+                    'अत्रि',
+                    'भृगु',
+                    'कौशिक',
+                    'गौतम',
+                    'वशिष्ठ',
+                    'भारद्वाज',
+                    'कपिल',
+                    'भार्गव',
+                    'वत्स',
+                    'अगत्स्य',
+                    'मार्कण्डेय',
+                    'कश्यप',
+                    'शांडिल्य',
+                    'कौण्डिन्य',
+                    'अज',
+                    'कुश',
+                    'जम्दग्नि',
+                    'याज्ञवल्क्य',
+                    'पुलत्स्य'
+                  ].map(gautra => (
+                    <option key={gautra} value={gautra}>
+                      {gautra}
+                    </option>
+                  ))}
+                </select>
               </div>
               <div>
                 <label className="block">

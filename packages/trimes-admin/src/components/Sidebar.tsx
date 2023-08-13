@@ -5,8 +5,8 @@ import useUser from '../lib/useUser'
 
 export const Sidebar: FC = () => {
   const [collapsed, setCollapsed] = useState(false)
-  const [selectedKeys, setSelectedKeys] = useState(['1'])
-  const handleSidebarChange = (e: any) => setSelectedKeys([e.key])
+  const [selectedKey, setSelectedKey] = useState('1')
+
   const { user } = useUser()
   const adminRoutes = [
     (user?.role === 'ADMIN' || user?.role === 'SUPERUSER') &&
@@ -14,15 +14,13 @@ export const Sidebar: FC = () => {
         ...{
           type: undefined as any,
           label: <Link href="/admins">Admins</Link>,
-          key: '1-1',
-          onClick: handleSidebarChange
+          key: '1-1'
         }
       } as any),
     {
       type: undefined as any,
       label: <Link href="/editors">Editors</Link>,
-      key: '1-2',
-      onClick: handleSidebarChange
+      key: '1-2'
     }
   ]
   return (
@@ -39,14 +37,17 @@ export const Sidebar: FC = () => {
       }}
     >
       <Menu
-        selectedKeys={selectedKeys}
+        selectedKeys={[selectedKey]}
         mode="inline"
+        onClick={e => {
+          setSelectedKey(e.key)
+        }}
         items={[
           {
             key: '1',
             type: undefined as any,
             label: 'Admin Users',
-            onClick: handleSidebarChange,
+
             children: adminRoutes
           },
           ...((user?.role === 'SUPERUSER' && [
@@ -54,63 +55,23 @@ export const Sidebar: FC = () => {
               key: '2',
               type: undefined as any,
               label: 'SUPER ADMIN',
-              onClick: handleSidebarChange,
               children: [
                 {
                   type: undefined as any,
                   label: <Link href="/editorial">Mann ki Baat</Link>,
-                  key: '2-1',
-                  onClick: handleSidebarChange
+                  key: '2-1'
                 }
               ]
-            }
-          ]) ||
-            []),
-          ...(((user?.role === 'ADMIN' || user?.role === 'SUPERUSER') && [
-            {
-              key: '8',
-              label: <Link href={'/users'}>Users</Link>,
-              onClick: handleSidebarChange
             }
           ]) ||
             []),
           ...(((user?.role === 'ADMIN' || user?.role === 'SUPERUSER') && [
             {
               key: '3',
-              type: undefined as any,
-              label: 'Vidhya Pracharini',
-              onClick: handleSidebarChange,
-              children: [
-                {
-                  type: undefined as any,
-                  label: <Link href="/schools">Schools</Link>,
-                  key: '3-1',
-                  onClick: handleSidebarChange
-                }
-              ]
+              label: <Link href={'/users'}>Users</Link>
             }
           ]) ||
-            []),
-          {
-            key: '4',
-            label: <Link href="/news">News</Link>,
-            onClick: handleSidebarChange
-          },
-          {
-            key: '5',
-            label: <Link href="/student">Student Portal</Link>,
-            onClick: handleSidebarChange
-          },
-          {
-            key: '6',
-            label: <Link href="/gyanganga">Gyan Ganga Manch</Link>,
-            onClick: handleSidebarChange
-          },
-          {
-            key: '7',
-            label: <Link href="/samagri">Samagri</Link>,
-            onClick: handleSidebarChange
-          }
+            [])
         ]}
       />
     </Layout.Sider>

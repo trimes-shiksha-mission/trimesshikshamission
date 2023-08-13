@@ -23,7 +23,7 @@ export const getServerSideProps = async () => {
   }
 }
 
-const Samagri: NextPage<{ samagri: Blog[] }> = ({ samagri }) => {
+const TrimesShikshaMission: NextPage<{ samagri: Blog[] }> = ({ samagri }) => {
   return (
     <>
       {samagri?.map(n => (
@@ -76,4 +76,4 @@ const Samagri: NextPage<{ samagri: Blog[] }> = ({ samagri }) => {
     </>
   )
 }
-export default Samagri
+export default TrimesShikshaMission

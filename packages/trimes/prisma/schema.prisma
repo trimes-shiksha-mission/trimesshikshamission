@@ -27,7 +27,7 @@ model User {
   password           String?
   bloodGroup         String?
   address            String
-  familyAnnualIncome Float?
+  familyAnnualIncome String?
   showInMatrimony    Boolean?
   isPrivateProperty  Boolean?
   areaId             String?  @db.Uuid

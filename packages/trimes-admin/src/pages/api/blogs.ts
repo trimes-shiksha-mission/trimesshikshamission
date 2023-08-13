@@ -69,8 +69,8 @@ async function BlogHandler(req: NextApiRequest, res: NextApiResponse) {
           .upload(path, fileData, {
             contentType: file.headers['content-type']
           })
-        if (url.data?.Key) {
-          fileUrls.push(url.data.Key)
+        if (url.data?.path) {
+          fileUrls.push(url.data.path)
         }
       }
       await prismaClient.blog.create({

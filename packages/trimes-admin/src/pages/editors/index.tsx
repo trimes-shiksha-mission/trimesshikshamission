@@ -135,10 +135,12 @@ const Editors: NextPage = () => {
               )
             }
           ]}
-          dataSource={editors.map((editor: any, i: number) => ({
-            ...editor,
-            sr: i + 1
-          }))}
+          dataSource={
+            editors.map((editor: any, i: number) => ({
+              ...editor,
+              sr: i + 1
+            })) as any[]
+          }
           rowKey={'sr'}
         />
       )}
