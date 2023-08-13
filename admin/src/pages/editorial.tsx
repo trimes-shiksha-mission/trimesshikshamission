@@ -1,11 +1,28 @@
 import { DeleteOutlined, EyeOutlined } from '@ant-design/icons'
 import { Button, Form, Input, Modal, Table } from 'antd'
-import { NextPage } from 'next'
+import { GetServerSideProps, NextPage } from 'next'
 import { useState } from 'react'
 import { Layout } from '~/components/Layout'
 import { useMessageApi } from '~/context/messageApi'
+import { getServerAuthSession } from '~/server/auth'
 import { RouterOutputs, api } from '~/utils/api'
 import { Editor } from '../components/Editor'
+
+export const getServerSideProps: GetServerSideProps = async ctx => {
+  const session = await getServerAuthSession(ctx)
+  return {
+    redirect: !session
+      ? {
+          destination: '/auth'
+        }
+      : session.user.role !== 'SUPERUSER'
+      ? {
+          destination: '/'
+        }
+      : undefined,
+    props: {}
+  }
+}
 
 const Editorial: NextPage = () => {
   type EditorialType = RouterOutputs['editorials']['getAll']['editorials'][0]
@@ -45,6 +62,7 @@ const Editorial: NextPage = () => {
 
   return (
     <Layout
+      title="Mann Ki baat"
       breadcrumbs={[
         {
           label: 'Editorial'
@@ -74,7 +92,8 @@ const Editorial: NextPage = () => {
           {
             title: 'Created At',
             dataIndex: 'createdAt',
-            render: (_, row) => new Date(row.createdAt).toLocaleString()
+            render: (_, row) => new Date(row.createdAt).toLocaleString(),
+            sorter: true
           },
           {
             title: 'Action',
@@ -99,10 +118,7 @@ const Editorial: NextPage = () => {
             )
           }
         ]}
-        dataSource={editorials?.editorials.map((editorial, index: number) => ({
-          ...editorial,
-          sr: index + 1
-        }))}
+        dataSource={editorials?.editorials}
         rowKey="id"
         pagination={{
           current: variables.page,
@@ -140,9 +156,9 @@ const Editorial: NextPage = () => {
           layout="vertical"
           onFinish={async values => {
             await addEditorial(values)
-            await refetch()
             setAddEditorialModal(false)
-            return messageApi.success('Editorial added successfully')
+            messageApi.success('Editorial added successfully')
+            return await refetch()
           }}
         >
           <Form.Item label="Title" name="title" rules={[{ required: true }]}>

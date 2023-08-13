@@ -1,47 +1,53 @@
-import { User } from '@prisma/client'
 import { Button, Form, Input, Modal, Select, Space, Table } from 'antd'
-import { NextPage } from 'next'
+import { GetServerSideProps, NextPage } from 'next'
 import { useState } from 'react'
-import { useMutation, useQuery } from 'react-query'
+import { Layout } from '~/components/Layout'
+import { getServerAuthSession } from '~/server/auth'
+import { RouterOutputs, api } from '~/utils/api'
+
+export const getServerSideProps: GetServerSideProps = async ctx => {
+  const session = await getServerAuthSession(ctx)
+  return {
+    redirect: !session
+      ? {
+          destination: '/auth'
+        }
+      : undefined,
+    props: {}
+  }
+}
 
 const Users: NextPage = () => {
-  const {
-    data: users,
-    isLoading: getUsersLoading,
-    refetch
-  } = useQuery('Users', async () => {
-    const users = await fetch('/api/users')
-    return (await users.json()) as User[]
-  })
+  type UserType = RouterOutputs['users']['getAll']['users'][0]
 
-  const { mutateAsync: deleteUser, isLoading: deleteUserLoading } = useMutation(
-    'deleteUser',
-    async (id: string) => {
-      return await fetch(`/api/users`, {
-        method: 'DELETE',
-        body: JSON.stringify({ id }),
-        headers: {
-          'Content-Type': 'application/json'
-        }
-      }).then(res => res.json())
-    }
+  const filterDropdown = (variableName: string) => (
+    <div className="p-2">
+      <Input.Search
+        placeholder={`Search ${variableName}`}
+        onSearch={searchText => {
+          setVariables({
+            ...variables,
+            [variableName]: searchText
+          })
+        }}
+      />
+      <Button
+        type="primary"
+        onClick={() => {
+          setVariables({
+            ...variables,
+            [variableName]: undefined
+          })
+        }}
+        className="mt-2"
+      >
+        Clear
+      </Button>
+    </div>
   )
 
-  const { mutateAsync: verifyUser, isLoading: verifyUserLoading } = useMutation(
-    'verifyUser',
-    async (id: string) => {
-      return await fetch(`/api/users/verify`, {
-        method: 'PATCH',
-        body: JSON.stringify({ id }),
-        headers: {
-          'Content-Type': 'application/json'
-        }
-      }).then(res => res.json())
-    }
-  )
-
-  const [modalOpen, setModalOpen] = useState<User>()
-
+  //? States
+  const [userModalOpen, setUserModalOpen] = useState<UserType | null>(null)
   const [columns, setColumns] = useState([
     {
       title: 'Email',
@@ -51,7 +57,21 @@ const Users: NextPage = () => {
     {
       title: 'Gender',
       dataIndex: 'gender',
-      show: false
+      show: false,
+      filters: [
+        {
+          text: 'Male',
+          value: 'male'
+        },
+        {
+          text: 'Female',
+          value: 'female'
+        },
+        {
+          text: 'Other',
+          value: 'other'
+        }
+      ]
     },
     {
       title: 'Contact',
@@ -61,7 +81,25 @@ const Users: NextPage = () => {
     {
       title: 'Marital Status',
       dataIndex: 'maritalStatus',
-      show: false
+      show: false,
+      filters: [
+        {
+          text: 'Married',
+          value: 'married'
+        },
+        {
+          text: 'Unmarried',
+          value: 'unmarried'
+        },
+        {
+          text: 'Divorced',
+          value: 'divorced'
+        },
+        {
+          text: 'Widowed',
+          value: 'widowed'
+        }
+      ]
     },
     {
       title: 'Date of Birth',
@@ -92,7 +130,11 @@ const Users: NextPage = () => {
     {
       title: 'Blood Group',
       dataIndex: 'bloodGroup',
-      show: false
+      show: false,
+      filters: ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'].map(bg => ({
+        text: bg,
+        value: bg
+      }))
     },
     {
       title: 'Address',
@@ -136,7 +178,8 @@ const Users: NextPage = () => {
           month: 'long',
           day: 'numeric'
         }),
-      show: false
+      show: false,
+      sorter: true
     },
     {
       title: 'Verified',
@@ -152,13 +195,40 @@ const Users: NextPage = () => {
           text: 'No',
           value: false
         }
-      ],
-      onFilter: (value: boolean, record: any) => record.isVerified === value
+      ]
     }
   ])
+  const [variables, setVariables] = useState<{
+    page: number
+    limit: number
+    sort?: {
+      by: string
+      order: 'asc' | 'desc'
+    }
+    verified?: boolean
+    search?: string
+    gender?: 'male'
+    maritalStatus?: 'married' | 'unmarried' | 'divorced' | 'widowed'
+    bloodGroup?: 'O+' | 'O-' | 'A+' | 'A-' | 'B+' | 'B-' | 'AB+' | 'AB-'
+  }>({
+    page: 1,
+    limit: 10
+  })
+
+  //? Queries
+  const {
+    data: users,
+    isLoading: getUsersLoading,
+    refetch,
+    isRefetching
+  } = api.users.getAll.useQuery(variables)
+
+  //? Mutations
+  const { mutateAsync: verifyUser, isLoading: verifyUserLoading } =
+    api.users.verify.useMutation()
 
   return (
-    <>
+    <Layout title="Users" breadcrumbs={[{ label: 'Users' }]}>
       <Select
         mode="multiple"
         style={{
@@ -182,14 +252,25 @@ const Users: NextPage = () => {
           </Select.Option>
         ))}
       </Select>
+
+      <Input.Search
+        className="mb-2"
+        placeholder="Search Users"
+        onSearch={value => {
+          setVariables({ ...variables, search: value })
+        }}
+      />
+
       <Table
+        loading={getUsersLoading || isRefetching}
         style={{
           overflowX: 'scroll'
         }}
         columns={[
           {
             title: 'Sr. No.',
-            dataIndex: 'index'
+            render: (_, __, index) =>
+              (variables.page - 1) * variables.limit + index + 1
           },
           {
             title: 'Name',
@@ -199,14 +280,10 @@ const Users: NextPage = () => {
           {
             title: 'Action',
             dataIndex: 'action',
-            render: (text, record) => (
+            render: (_, record) => (
               <Space size="middle">
                 {/* view/edit button */}
-                <Button
-                  onClick={() => setModalOpen(record)}
-                  type="primary"
-                  disabled={getUsersLoading}
-                >
+                <Button onClick={() => setUserModalOpen(record)} type="primary">
                   View/Edit
                 </Button>
 
@@ -214,12 +291,12 @@ const Users: NextPage = () => {
                   onClick={async () => {
                     // ask for confirmaion
                     if (confirm('Are you sure you want to delete this user?')) {
-                      await deleteUser(record.id)
+                      // await deleteUser(record.id)
                       await refetch()
                     }
                   }}
                   style={{ cursor: 'pointer' }}
-                  disabled={deleteUserLoading}
+                  // loading={deleteUserLoading}
                   danger
                 >
                   Delete
@@ -228,19 +305,43 @@ const Users: NextPage = () => {
             )
           }
         ]}
-        dataSource={users?.map((user, index: number) => ({
-          ...user,
-          index: index + 1
-        }))}
+        dataSource={users?.users}
         rowKey="id"
+        pagination={{
+          current: variables.page,
+          pageSize: variables.limit,
+          total: users?.count,
+          showSizeChanger: true,
+          pageSizeOptions: [10, 20, 50]
+        }}
+        onChange={(tablePagination, filters, sorter: any) => {
+          const newVariables = {
+            ...variables,
+            page: tablePagination.current || 1,
+            limit: tablePagination.pageSize || 10
+          }
+
+          if (sorter.column?.dataIndex && sorter.order) {
+            newVariables.sort = {
+              by: sorter.column.dataIndex,
+              order: sorter.order === 'descend' ? 'desc' : 'asc'
+            }
+          } else {
+            newVariables.sort = undefined
+          }
+
+          console.log(filters)
+
+          setVariables(newVariables)
+        }}
       />
 
       {/* View/Edit modal */}
 
       <Modal
         title="View/Edit User"
-        open={modalOpen !== undefined}
-        onCancel={() => setModalOpen(undefined)}
+        open={!!userModalOpen}
+        onCancel={() => setUserModalOpen(null)}
         footer={null}
         destroyOnClose
       >
@@ -248,7 +349,7 @@ const Users: NextPage = () => {
         <Form
           layout="vertical"
           onFinish={async values => {}}
-          initialValues={modalOpen}
+          initialValues={userModalOpen ?? {}}
         >
           <Form.Item label="Name" name="name">
             <Input />
@@ -256,15 +357,15 @@ const Users: NextPage = () => {
           <Form.Item label="Email" name="email">
             <Input />
           </Form.Item>
-          {modalOpen && !modalOpen.isVerified && (
+          {userModalOpen && !userModalOpen.isVerified && (
             <Form.Item>
               <Button
                 type="primary"
                 htmlType="button"
                 onClick={async () => {
-                  await verifyUser(modalOpen.id)
+                  await verifyUser(userModalOpen.id)
                   await refetch()
-                  setModalOpen(undefined)
+                  setUserModalOpen(null)
                 }}
                 loading={verifyUserLoading}
               >
@@ -274,7 +375,7 @@ const Users: NextPage = () => {
           )}
         </Form>
       </Modal>
-    </>
+    </Layout>
   )
 }
 

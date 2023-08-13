@@ -10,7 +10,7 @@ export const editorialsRouter = createTRPCRouter({
         sort: z
           .object({
             by: z.string(),
-            order: z.string()
+            order: z.enum(['asc', 'desc'])
           })
           .optional()
       })

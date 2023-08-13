@@ -10,12 +10,13 @@ import { RouterOutputs, api } from '~/utils/api'
 export const getServerSideProps: GetServerSideProps = async ctx => {
   const session = await getServerAuthSession(ctx)
   return {
-    redirect:
-      !session || session.user.role !== 'SUPERUSER'
-        ? {
-            destination: '/auth'
-          }
-        : undefined,
+    redirect: !session
+      ? {
+          destination: '/auth'
+        }
+      : session.user.role !== 'SUPERUSER'
+      ? { destination: '/' }
+      : undefined,
     props: {}
   }
 }
@@ -61,6 +62,7 @@ const Admins: NextPage = () => {
 
   return (
     <Layout
+      title="Admins"
       breadcrumbs={[
         {
           label: 'Admins'
@@ -146,9 +148,7 @@ const Admins: NextPage = () => {
             )
           }
         ]}
-        dataSource={admins?.admins.map(admin => ({
-          ...admin
-        }))}
+        dataSource={admins?.admins}
         rowKey={'id'}
         pagination={{
           current: variables.page,
