@@ -1,6 +1,6 @@
 import { DeleteOutlined, InboxOutlined } from '@ant-design/icons'
 import { Blog } from '@prisma/client'
-import { Button, Form, Input, message, Modal, Space, Table, Upload } from 'antd'
+import { Button, Form, Input, Modal, Space, Table, Upload, message } from 'antd'
 // import FormData from 'form-data'
 import { NextPage } from 'next'
 import { useState } from 'react'
@@ -99,7 +99,7 @@ const Gyanganga: NextPage = () => {
       />
 
       <Modal
-        visible={newsModal}
+        open={newsModal}
         onCancel={() => setNewsModal(false)}
         footer={null}
         destroyOnClose
@@ -112,10 +112,18 @@ const Gyanganga: NextPage = () => {
           }}
           layout={'vertical'}
         >
-          <Form.Item label="Title" name="title" rules = {[{required:true,message:"Title is required"}]}>
+          <Form.Item
+            label="Title"
+            name="title"
+            rules={[{ required: true, message: 'Title is required' }]}
+          >
             <Input type="text" />
           </Form.Item>
-          <Form.Item label="Content" name="body" rules = {[{required:true,message:"Content is required"}]}>
+          <Form.Item
+            label="Content"
+            name="body"
+            rules={[{ required: true, message: 'Content is required' }]}
+          >
             <Input.TextArea />
           </Form.Item>
 

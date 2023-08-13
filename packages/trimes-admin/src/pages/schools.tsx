@@ -100,7 +100,7 @@ const Schools: NextPage = () => {
       />
 
       <Modal
-        visible={addSchoolModal}
+        open={addSchoolModal}
         onCancel={() => setAddSchoolModal(false)}
         footer={null}
       >

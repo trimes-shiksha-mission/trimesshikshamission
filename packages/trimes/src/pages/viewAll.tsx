@@ -575,7 +575,7 @@ const ViewAll: NextPage = () => {
 
       <Modal
         empty
-        visible={membersModal !== undefined}
+        open={membersModal !== undefined}
         onCancel={() => setMembersModal(undefined)}
       >
         <table className="min-w-full leading-normal">

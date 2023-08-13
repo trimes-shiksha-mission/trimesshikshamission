@@ -897,7 +897,7 @@ const Profile: NextPage = () => {
       )}
 
       {memberToDelete ? (
-        <Modal visible={memberToDelete !== undefined}>
+        <Modal open={memberToDelete !== undefined}>
           <div className="sm:flex sm:items-start">
             <div className="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10">
               <svg
@@ -957,7 +957,7 @@ const Profile: NextPage = () => {
       ) : null}
 
       {deleteUserLoading ? (
-        <Modal visible={deleteUserLoading} empty>
+        <Modal open={deleteUserLoading} empty>
           <svg
             className="h-12 w-12 animate-spin"
             fill="none"
@@ -976,7 +976,7 @@ const Profile: NextPage = () => {
 
       {/*  edit profile for member form */}
       {memberProfileEdit ? (
-        <Modal visible={memberProfileEdit !== undefined}>
+        <Modal open={memberProfileEdit !== undefined}>
           <form
             onSubmit={async e => {
               e.preventDefault()
@@ -1272,7 +1272,7 @@ const Profile: NextPage = () => {
       ) : null}
 
       {changePasswordModal ? (
-        <Modal visible={changePasswordModal}>
+        <Modal open={changePasswordModal}>
           <form
             onSubmit={async e => {
               e.preventDefault()

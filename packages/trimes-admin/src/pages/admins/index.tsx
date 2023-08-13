@@ -114,7 +114,7 @@ const Admins: NextPage = () => {
       )}
 
       <Modal
-        visible={addAdminModal || editAdminModal !== ''}
+        open={addAdminModal || editAdminModal !== ''}
         onCancel={() => {
           setEditAdminModal('')
           setAddAdminModal(false)

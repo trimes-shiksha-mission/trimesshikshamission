@@ -240,7 +240,7 @@ const Users: NextPage = () => {
 
       <Modal
         title="View/Edit User"
-        visible={modalOpen !== undefined}
+        open={modalOpen !== undefined}
         onCancel={() => setModalOpen(undefined)}
         footer={null}
         destroyOnClose
@@ -248,8 +248,7 @@ const Users: NextPage = () => {
         {/* form */}
         <Form
           layout="vertical"
-          onFinish={async values => {
-          }}
+          onFinish={async values => {}}
           initialValues={modalOpen}
         >
           <Form.Item label="Name" name="name">

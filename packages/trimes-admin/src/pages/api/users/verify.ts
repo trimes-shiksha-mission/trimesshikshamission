@@ -12,27 +12,44 @@ async function ApproveUser(req: NextApiRequest, res: NextApiResponse) {
   ) {
     if (req.method === 'PATCH') {
       const { id } = req.body
+      return await prismaClient.$transaction(
+        async prisma => {
+          const user = await prisma.user.findFirstOrThrow({
+            where: {
+              id
+            }
+          })
+          if (user.isVerified) {
+            return res.json({
+              message: 'User already verified'
+            })
+          }
+          await prisma.user.update({
+            where: {
+              id
+            },
+            data: {
+              isVerified: true
+            }
+          })
 
-      const user = await prismaClient.user.update({
-        where: {
-          id
+          if (user && user.email && !user.headId) {
+            let source = await readFile('template/approve.html', 'utf8')
+
+            source = source.replace('[User]', user.name)
+            await sendMail({
+              to: user.email,
+              subject: 'Welcome to Trimes',
+              html: source
+            })
+          }
+          return res.json(user)
         },
-        data: {
-          isVerified: true
+        {
+          timeout: 10000,
+          isolationLevel: 'Serializable'
         }
-      })
-
-      if (user && user.email && !user.headId) {
-        let source = await readFile('template/notApproved.html', 'utf8')
-
-        source = source.replace('[User]', user.name)
-        await sendMail({
-          to: user.email,
-          subject: 'Welcome to Trimes',
-          html: source
-        })
-      }
-      return res.json(user)
+      )
     }
   } else {
     res.json({

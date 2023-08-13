@@ -144,7 +144,7 @@ const Editors: NextPage = () => {
       )}
 
       <Modal
-        visible={addEditorModal || editEditorModal !== ''}
+        open={addEditorModal || editEditorModal !== ''}
         onCancel={() => {
           setEditEditorModal('')
           setAddEditorModal(false)

@@ -3,17 +3,17 @@ import { FC, MouseEventHandler, ReactNode, useEffect } from 'react'
 export const Modal: FC<{
   children: ReactNode
   empty?: boolean
-  visible: boolean
+  open: boolean
   onCancel?: MouseEventHandler<HTMLDivElement>
-}> = ({ children, empty, visible, onCancel }) => {
+}> = ({ children, empty, open, onCancel }) => {
   useEffect(() => {
-    if (visible) document.body.style.overflow = 'hidden'
+    if (open) document.body.style.overflow = 'hidden'
     return () => {
       document.body.style.overflow = 'auto'
     }
-  }, [visible])
+  }, [open])
 
-  return visible ? (
+  return open ? (
     <div className="fixed inset-0 px-4 z-[100] pb-4 max-h-screen flex items-center justify-center">
       <div className="fixed inset-0 transition-opacity" onClick={onCancel}>
         <div className="absolute inset-0 bg-gray-500 opacity-75"></div>

@@ -101,7 +101,7 @@ const Editorial: NextPage = () => {
       />
 
       <Modal
-        visible={addEditorialModal}
+        open={addEditorialModal}
         maskClosable
         onCancel={() => setAddEditorialModal(false)}
         footer={null}
