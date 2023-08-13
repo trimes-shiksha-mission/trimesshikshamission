@@ -18,12 +18,12 @@ async function AdminHandler(req: NextApiRequest, res: NextApiResponse) {
         throw new Error('Missing fields')
       }
 
-
-  const isEmailValid= await validate(email)
-  if(!isEmailValid.valid)
-  {
-  throw new Error ('This email address not found,please provide valid email address!')
-  }
+      const isEmailValid = await validate(email)
+      if (!isEmailValid.valid) {
+        throw new Error(
+          'This email address not found,please provide valid email address!'
+        )
+      }
       const hashedPassword = await hash(password, 10)
       await prismaClient.admin.create({
         data: {
@@ -81,12 +81,14 @@ async function AdminHandler(req: NextApiRequest, res: NextApiResponse) {
       if (!id || !name || !email) {
         throw new Error('Missing fields')
       }
-      
-      const isEmailValid= await validate(email)
-      if(!isEmailValid.valid){
-        throw new Error ('This email address not found,please provide valid email address!')
-       }
-    
+
+      const isEmailValid = await validate(email)
+      if (!isEmailValid.valid) {
+        throw new Error(
+          'This email address not found,please provide valid email address!'
+        )
+      }
+
       let hashedPassword = undefined
       if (password) {
         hashedPassword = await hash(password, 10)
