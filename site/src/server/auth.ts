@@ -18,6 +18,7 @@ declare module 'next-auth' {
   interface Session extends DefaultSession {
     user: {
       id: string
+      contact: string
       // ...other properties
     } & DefaultSession['user']
   }
@@ -48,15 +49,14 @@ export const authOptions: NextAuthOptions = {
           // ).role
 
           // handle when user get inactivated
-          const u = await prisma.admin.findFirst({
+          const u = await prisma.user.findFirst({
             where: {
               id: session.user.id
             },
             select: {
               id: true,
               name: true,
-              email: true,
-              role: true
+              email: true
             }
           })
           if (!u) throw new Error('Invalid session')
@@ -79,9 +79,9 @@ export const authOptions: NextAuthOptions = {
       name: 'Credentials',
       credentials: {
         username: {
-          label: 'Email or Mobile',
+          label: 'Email Mobile',
           type: 'text',
-          placeholder: 'Enter email or mobile'
+          placeholder: 'Enter mobile'
         },
         password: {
           label: 'Password',
@@ -91,11 +91,13 @@ export const authOptions: NextAuthOptions = {
       },
       async authorize(credentials) {
         if (!credentials) return null
-        const user = await prisma.admin.findFirst({
+
+        const user = await prisma.user.findFirst({
           where: {
-            email: credentials.username
+            contact: credentials.username
           }
         })
+
         if (
           user &&
           user.password &&
@@ -105,7 +107,7 @@ export const authOptions: NextAuthOptions = {
             id: user.id,
             email: user.email,
             name: user.name,
-            role: user.role
+            contact: user.contact
           }
         } else {
           return null
@@ -136,6 +138,11 @@ export const authOptions: NextAuthOptions = {
   ],
   theme: {
     logo: '../../logo.png'
+  },
+  pages: {
+    signIn: '/login',
+    signOut: '/logout',
+    newUser: '/'
   }
 }
 

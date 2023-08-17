@@ -129,4 +129,5 @@ const enforceUserIsAuthed = () =>
  */
 export const rawProtectedProcedure = () =>
   t.procedure.use(enforceUserIsAuthed())
+export const unProtectedProcedure = t.procedure
 export const protectedProcedure = rawProtectedProcedure()

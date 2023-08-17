@@ -1,9 +1,24 @@
 import { Area } from '@prisma/client'
-import { NextPage } from 'next'
+import { GetServerSideProps, NextPage } from 'next'
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
-import { useMutation, useQuery } from 'react-query'
-import { Loading } from '../components/Loading'
+import { getServerAuthSession } from '~/server/auth'
+
+
+export const getServerSideProps: GetServerSideProps = async (ctx) => {
+  const session = await getServerAuthSession(ctx)
+  if (session) {
+    return {
+      redirect: {
+        destination: '/',
+        permanent: false
+      }
+    }
+  }
+  return {
+    props: {}
+  }
+}
 
 const Register: NextPage = () => {
   const [isverified, setisverified] = useState(true)
@@ -275,10 +290,10 @@ const Register: NextPage = () => {
                   {areasLoading
                     ? 'Loading...'
                     : areas?.map((area: Area) => (
-                        <option key={area.id} value={area.id}>
-                          {area.name}
-                        </option>
-                      ))}
+                      <option key={area.id} value={area.id}>
+                        {area.name}
+                      </option>
+                    ))}
                 </select>
               </div>
               <div>

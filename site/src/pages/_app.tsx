@@ -1,28 +1,27 @@
-import type { AppProps } from 'next/app'
+import { Session } from 'next-auth'
+import { SessionProvider } from 'next-auth/react'
+import type { AppType } from 'next/app'
 import { Router } from 'next/router'
 import Script from 'next/script'
 import NProgress from 'nprogress'
-import { QueryClient, QueryClientProvider } from 'react-query'
 import 'swiper/css'
-import { Footer } from '../components/Footer'
-import { Header } from '../components/Header'
+import { api } from '~/utils/api'
 import '../styles/globals.css'
 
-function MyApp({ Component, pageProps }: AppProps) {
-  const queryClient = new QueryClient()
-  Router.events.on('routeChangeStart', () => NProgress.start())
-  Router.events.on('routeChangeComplete', () => NProgress.done())
-  Router.events.on('routeChangeError', () => NProgress.done())
+Router.events.on('routeChangeStart', () => NProgress.start())
+Router.events.on('routeChangeComplete', () => NProgress.done())
+Router.events.on('routeChangeError', () => NProgress.done())
+
+const MyApp: AppType<{ session: Session | null }> = ({
+  Component,
+  pageProps: { session, ...pageProps }
+}) => {
   return (
-    <QueryClientProvider client={queryClient}>
-      <Header />
-      <div className="pt-20 min-h-[60vh]">
-        <Component {...pageProps} />
-      </div>
+    <SessionProvider session={session}>
+      <Component {...pageProps} />
       <Script src="/chatra.js" />
-      <Footer />
-    </QueryClientProvider>
+    </SessionProvider>
   )
 }
 
-export default MyApp
+export default api.withTRPC(MyApp)

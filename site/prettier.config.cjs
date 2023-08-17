@@ -1,6 +1,6 @@
 /** @type {import("prettier").Config} */
 const config = {
-  plugins: [require.resolve('prettier-plugin-tailwindcss')],
+  plugins: [],
   arrowParens: 'avoid',
   trailingComma: 'none',
   semi: false,

@@ -330,8 +330,6 @@ const Users: NextPage = () => {
             newVariables.sort = undefined
           }
 
-          console.log(filters)
-
           setVariables(newVariables)
         }}
       />

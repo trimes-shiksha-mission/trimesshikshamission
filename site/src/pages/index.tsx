@@ -1,41 +1,17 @@
-import { Editorial } from '@prisma/client'
 import type { NextPage } from 'next'
 import Image from 'next/image'
-import { useEffect, useState } from 'react'
 import 'swiper/css/pagination'
 import { Autoplay, Pagination } from 'swiper/modules'
 import { Swiper, SwiperSlide } from 'swiper/react'
-import { prismaClient } from '../lib/prisma'
+import { Layout } from '~/components/Layout'
+import { api } from '~/utils/api'
 
-export const getServerSideProps = async () => {
-  const editorial = await prismaClient.editorial.findFirst({
-    orderBy: { createdAt: 'desc' }
-  })
-
-  if (!editorial)
-    return {
-      props: {}
-    }
-  return {
-    props: {
-      editorial: {
-        title: editorial?.title,
-        body: editorial?.body,
-        createdAt: new Date(editorial?.createdAt).toLocaleString()
-      }
-    }
-  }
-}
-
-const Home: NextPage<{ editorial: Editorial }> = ({ editorial }) => {
-  const [editorialContent, setEditorialContent] = useState('')
-
-  useEffect(() => {
-    setEditorialContent(editorial?.body)
-  }, [editorial])
+const Home: NextPage = () => {
+  const { data: editorial, isLoading: getEditorialLoading } =
+    api.editorial.get.useQuery()
 
   return (
-    <>
+    <Layout loading={getEditorialLoading}>
       {editorial && (
         <div className=" px-3 py-10 lg:px-48 lg:flex lg:space-x-12 pt-8 shadow-xl m-10 rounded-xl text-center shadow-blue-500/50 border-4 border-black">
           <div className="lg:w-1/4">
@@ -49,48 +25,45 @@ const Home: NextPage<{ editorial: Editorial }> = ({ editorial }) => {
             <h2 className="text-1xs font-semibold italic text-purple-500 text-right px-3">
               ~वाल्तेयर
             </h2>
-            <span className="text-center">
-              {editorial.createdAt.toLocaleString()}
-            </span>
           </div>
           <div className="w-full mt-4 text-center">
-            <h3 className="text-2xl font-semibold text-orange-600 text-center">
+            <div className="text-2xl font-semibold text-orange-600 text-center">
               {editorial.title}
-            </h3>
-            <p
+            </div>
+            <div
               className="mt-2 "
               dangerouslySetInnerHTML={{
-                __html: editorialContent
+                __html: editorial.body
               }}
-            ></p>
+            ></div>
           </div>
         </div>
       )}
 
-      <Swiper
-        className="mt-10"
-        modules={[Pagination, Autoplay]}
-        pagination={{
-          dynamicBullets: true
-        }}
-        autoplay={{
-          delay: 2000
-        }}
-      >
-        {[...Array(10)].map((_, index) => (
-          <SwiperSlide key={index}>
-            <Image
-              src={`/trimes-photos/${index + 1}.jpeg`}
-              alt="trimes-photo"
-              layout="responsive"
-              width={1280}
-              height={720}
-            />
-          </SwiperSlide>
-        ))}
-      </Swiper>
+      <div className="mt-10 p-24">
+        <Swiper
+          modules={[Pagination, Autoplay]}
+          pagination={{
+            dynamicBullets: true
+          }}
+          autoplay
+        >
+          {[...Array(9)].map((_, index) => (
+            <SwiperSlide key={index}>
+              <div className="relative h-[50dvh]">
+                <Image
+                  src={`/trimes-photos/${index + 1}.jpeg`}
+                  alt="trimes-photo"
+                  fill
+                  className="object-contain"
+                />
+              </div>
+            </SwiperSlide>
+          ))}
+        </Swiper>
+      </div>
 
-      <div className="w-full grid md:grid-cols-4 gap-4 px-10 mt-10 ">
+      <div className="grid md:grid-cols-4 gap-4 px-10 mt-10 ">
         <div className="bg-[#FDAE09] px-2 rounded-lg text-center shadow-2xl">
           <div className="text-xl lg:text-2xl text-white mt-2">
             TrimesShikshaMission.org
@@ -123,7 +96,7 @@ const Home: NextPage<{ editorial: Editorial }> = ({ editorial }) => {
           </div>
         </div>
       </div>
-    </>
+    </Layout>
   )
 }
 

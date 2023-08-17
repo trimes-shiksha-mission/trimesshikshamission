@@ -46,8 +46,8 @@ model User {
   bloodGroup         String?
   address            String
   familyAnnualIncome String?
-  showInMatrimony    Boolean?
-  isPrivateProperty  Boolean?
+  showInMatrimony    Boolean       @default(false)
+  isPrivateProperty  Boolean?      @default(false)
   areaId             String?       @db.Uuid
   area               Area?         @relation("areaRelation", fields: [areaId], references: [id])
   relationWithHead   String?

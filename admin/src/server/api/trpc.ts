@@ -113,7 +113,6 @@ const enforceUserIsAuthed = (roles?: string[]) =>
 
     // handle role enforement here
     if (roles && !roles.includes(ctx.session.user.role)) {
-      console.log({ roles, userRole: ctx.session.user.role })
       throw new TRPCError({ code: 'UNAUTHORIZED' })
     }
 

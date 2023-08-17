@@ -8,7 +8,7 @@ import { MdEmail } from 'react-icons/md'
 export const Footer: FC = () => {
   return (
     <div className="mt-10 bottom-0">
-      <div className="w-full p-8 grid md:grid-cols-3 gap-3 md:px-28 bg-[#3d4045] text-white">
+      <div className="p-8 grid md:grid-cols-3 gap-3 md:px-28 bg-[#3d4045] text-white">
         <div>
           <h5 className="text-base">CONTACT</h5>
           <div className="mt-3 text-[0.8rem]">
@@ -91,7 +91,7 @@ export const Footer: FC = () => {
           </div>
         </div>
       </div>
-      <div className="bg-secondary w-full px-8 py-1 text-base flex flex-col sm:flex-row justify-between text-white bg-[#808080]">
+      <div className="bg-secondary px-8 py-1 text-base flex flex-col sm:flex-row justify-between text-white bg-[#808080]">
         <span>
           Copyright &copy; 2022 TRIMES SHIKSHA MISSION. ALL RIGHTS RESERVED
         </span>
