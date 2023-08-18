@@ -10,7 +10,7 @@ export const usersRouter = createTRPCRouter({
       z.object({
         page: z.number().default(1),
         limit: z.number().default(10),
-        verified: z.boolean().optional(),
+        isVerified: z.boolean().optional(),
         search: z.string().optional(),
         gender: z.enum(['male', 'female', 'other']).optional(),
         areaId: z.string().optional(),
@@ -24,16 +24,23 @@ export const usersRouter = createTRPCRouter({
     )
     .query(async ({ ctx: { prisma, session }, input }) => {
       const where: any = {
-        isVerified: input.verified,
-        OR: [
-          { name: { contains: input.search, mode: 'insensitive' as const } },
-          { email: { contains: input.search, mode: 'insensitive' as const } }
-        ],
-        gender: input.gender,
-        areaId: input.areaId,
-        maritalStatus: input.maritalStatus,
-        bloodGroup: input.bloodGroup
+        ...(input.isVerified !== undefined && {
+          isVerified: input.isVerified,
+          headId: null
+        }),
+        ...(input.search && {
+          OR: [
+            { name: { contains: input.search, mode: 'insensitive' as const } },
+            { email: { contains: input.search, mode: 'insensitive' as const } }
+          ]
+        }),
+        ...(input.gender && { gender: input.gender }),
+        ...(input.areaId && { areaId: input.areaId }),
+        ...(input.maritalStatus && { maritalStatus: input.maritalStatus }),
+        ...(input.bloodGroup && { bloodGroup: input.bloodGroup })
       }
+      console.log({ where })
+
       if (session.user.role === 'EDITOR') {
         const editor = await prisma.admin.findUniqueOrThrow({
           where: {
@@ -49,9 +56,7 @@ export const usersRouter = createTRPCRouter({
 
       const [users, count] = await Promise.all([
         prisma.user.findMany({
-          where: {
-            areaId: where.areaId
-          },
+          where,
           skip: (input.page - 1) * input.limit,
           take: input.limit,
           select: {
