@@ -70,7 +70,7 @@ export const userRouter = createTRPCRouter({
   changePassword: protectedProcedure
     .input(
       z.object({
-        oldPassword: z.string().min(8).max(255),
+        oldPassword: z.string(),
         newPassword: z.string().min(8).max(255)
       })
     )
