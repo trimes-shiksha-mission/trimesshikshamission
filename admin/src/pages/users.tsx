@@ -71,7 +71,8 @@ const Users: NextPage = () => {
           text: 'Other',
           value: 'other'
         }
-      ]
+      ],
+      filterMultiple: false
     },
     {
       title: 'Contact',
@@ -99,7 +100,8 @@ const Users: NextPage = () => {
           text: 'Widowed',
           value: 'widowed'
         }
-      ]
+      ],
+      filterMultiple: false
     },
     {
       title: 'Date of Birth',
@@ -134,7 +136,8 @@ const Users: NextPage = () => {
       filters: ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'].map(bg => ({
         text: bg,
         value: bg
-      }))
+      })),
+      filterMultiple: false
     },
     {
       title: 'Address',
@@ -184,7 +187,7 @@ const Users: NextPage = () => {
     {
       title: 'Verified',
       dataIndex: 'isVerified',
-      render: (isVerified: boolean) => (isVerified ? 'Yes' : 'No'),
+      render: (isVerified: boolean, row: any) => !row.head ? (isVerified ? 'Yes' : 'No') : 'N/A',
       show: true,
       filters: [
         {
@@ -195,7 +198,8 @@ const Users: NextPage = () => {
           text: 'No',
           value: false
         }
-      ]
+      ],
+      filterMultiple: false
     }
   ])
   const [variables, setVariables] = useState<{
@@ -222,6 +226,8 @@ const Users: NextPage = () => {
     refetch,
     isRefetching
   } = api.users.getAll.useQuery(variables)
+
+
 
   //? Mutations
   const { mutateAsync: verifyUser, isLoading: verifyUserLoading } =
@@ -314,23 +320,30 @@ const Users: NextPage = () => {
           showSizeChanger: true,
           pageSizeOptions: [10, 20, 50]
         }}
-        onChange={(tablePagination, _, sorter: any) => {
-          const newVariables = {
+        onChange={(pagination, filters, sorter: any) => {
+          setVariables({
             ...variables,
-            page: tablePagination.current || 1,
-            limit: tablePagination.pageSize || 10
-          }
-
-          if (sorter.column?.dataIndex && sorter.order) {
-            newVariables.sort = {
-              by: sorter.column.dataIndex,
-              order: sorter.order === 'descend' ? 'desc' : 'asc'
-            }
-          } else {
-            newVariables.sort = undefined
-          }
-
-          setVariables(newVariables)
+            page: pagination.current || 1,
+            limit: pagination.pageSize || 10,
+            ...Object.entries(filters).reduce((acc, [key, value]) => {
+              if (value)
+                return {
+                  ...acc,
+                  [key]: value[0]
+                }
+              return { ...acc, [key]: undefined }
+            }, {}),
+            ...(sorter && sorter.column
+              ? {
+                sort: {
+                  by: sorter.column.dataIndex,
+                  order: sorter.order === 'ascend' ? 'asc' : 'desc'
+                }
+              }
+              : {
+                sort: undefined
+              })
+          })
         }}
       />
 
@@ -355,7 +368,7 @@ const Users: NextPage = () => {
           <Form.Item label="Email" name="email">
             <Input />
           </Form.Item>
-          {userModalOpen && !userModalOpen.isVerified && (
+          {userModalOpen && !userModalOpen.isVerified && !userModalOpen.head && (
             <Form.Item>
               <Button
                 type="primary"
