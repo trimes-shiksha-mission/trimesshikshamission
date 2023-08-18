@@ -2,6 +2,7 @@ import { GetServerSideProps, NextPage } from 'next'
 import { signIn } from 'next-auth/react'
 import Link from 'next/link'
 import { useState } from 'react'
+import { Layout } from '~/components/Layout'
 import { getServerAuthSession } from '~/server/auth'
 
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
@@ -26,8 +27,8 @@ const Login: NextPage = () => {
   const [showPassword, setShowPassword] = useState(false)
 
   return (
-    <>
-      <div className="flex items-center justify-center min-h-screen bg-gray-100">
+    <Layout>
+      <div className="flex items-center justify-center py-24 bg-gray-100">
         <div className="px-8 py-6 mx-4 mt-4 text-left bg-white shadow-lg md:w-1/3 lg:w-1/3 sm:w-1/3">
           <div className="flex justify-center"></div>
           <h3 className="text-2xl font-bold text-center">
@@ -289,7 +290,7 @@ const Login: NextPage = () => {
           </div>
         </div>
       )}
-    </>
+    </Layout>
   )
 }
 export default Login

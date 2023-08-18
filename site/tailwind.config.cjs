@@ -4,7 +4,8 @@ const config = {
   theme: {
     extend: {
       colors: {
-        primary: '#FDAE09'
+        primary: '#FDAE09',
+        primaryDark: '#F28E0C'
       },
       fontSize: {
         '1xs': '0.5rem'

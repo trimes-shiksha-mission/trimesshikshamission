@@ -22,7 +22,7 @@ export const userRouter = createTRPCRouter({
         qualification: z.string().min(3).max(255),
         gautra: z.string().min(3).max(255),
         nativeTown: z.string().min(3).max(255),
-        bloodGroup: z.string().min(3).max(255),
+        bloodGroup: z.enum(['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-']),
         address: z.string().min(3).max(255),
         isPrivateProperty: z.boolean(),
         areaId: z.string().uuid(),
@@ -159,7 +159,7 @@ export const userRouter = createTRPCRouter({
         qualification: z.string().min(3).max(255),
         gautra: z.string().min(3).max(255),
         nativeTown: z.string().min(3).max(255),
-        bloodGroup: z.string().min(3).max(255),
+        bloodGroup: z.enum(['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-']),
         address: z.string().min(3).max(255),
         isPrivateProperty: z.boolean(),
         relationWithHead: z.string().min(3).max(255)
@@ -177,9 +177,7 @@ export const userRouter = createTRPCRouter({
       const user = await prisma.user.create({
         data: {
           ...input,
-          headId: session.user.id,
-          createdById: session.user.id,
-          updatedById: session.user.id
+          headId: session.user.id
         }
       })
       return user
@@ -232,8 +230,9 @@ export const userRouter = createTRPCRouter({
       })
     )
     .mutation(async ({ ctx: { prisma, session }, input }) => {
-      if (input.email) {
-        const isEmailValid = await validate(input.email)
+      const { userId, ...rest } = input
+      if (rest.email) {
+        const isEmailValid = await validate(rest.email)
         if (!isEmailValid.valid) {
           throw new Error(
             'This email address not found, please provide valid email address!'
@@ -242,14 +241,83 @@ export const userRouter = createTRPCRouter({
       }
       await prisma.user.update({
         where: {
-          id: input.userId,
+          id: userId,
           headId: session.user.id
         },
         data: {
-          ...input,
-          updatedById: session.user.id
+          ...rest
         }
       })
       return 'Member updated successfully!'
+    }),
+
+  getAll: protectedProcedure
+    .input(
+      z.object({
+        page: z.number().default(1),
+        limit: z.number().default(10),
+        name: z.string().optional(),
+        qualification: z.string().optional(),
+        occupation: z.string().optional(),
+        gender: z.enum(['male', 'female', 'other']).optional(),
+        gautra: z.string().optional(),
+        bloodGroup: z
+          .enum(['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'])
+          .optional(),
+        maritalStatus: z
+          .enum(['married', 'unmarried', 'divorced', 'widowed'])
+          .optional(),
+        familyAnnualIncome: z.string().optional(),
+        nativeTown: z.string().optional(),
+        address: z.string().optional()
+      })
+    )
+    .query(async ({ ctx: { prisma }, input }) => {
+      const { page, limit, gender, bloodGroup, maritalStatus, ...filters } =
+        input
+
+      const [users, total] = await Promise.all([
+        prisma.user.findMany({
+          where: {
+            ...Object.keys(filters).reduce((acc, key) => {
+              if ((filters as any)[key]) {
+                return {
+                  ...acc,
+                  [key]: {
+                    contains: (filters as any)[key],
+                    mode: 'insensitive'
+                  }
+                }
+              }
+              return acc
+            }, {}),
+            ...(gender && { gender }),
+            ...(bloodGroup && { bloodGroup }),
+            ...(maritalStatus && { maritalStatus })
+          },
+          skip: (page - 1) * limit,
+          take: limit,
+          orderBy: {
+            name: 'asc'
+          },
+          include: {
+            area: {
+              select: {
+                name: true
+              }
+            },
+            members: true
+          }
+        }),
+        prisma.user.count({
+          where: {
+            ...filters
+          }
+        })
+      ])
+      return {
+        data: users,
+        total
+      }
     })
 })

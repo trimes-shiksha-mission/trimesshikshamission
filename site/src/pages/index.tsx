@@ -64,7 +64,7 @@ const Home: NextPage = () => {
       </div>
 
       <div className="grid md:grid-cols-4 gap-4 px-10 mt-10 ">
-        <div className="bg-[#FDAE09] px-2 rounded-lg text-center shadow-2xl">
+        <div className="bg-primary px-2 rounded-lg text-center shadow-2xl">
           <div className="text-xl lg:text-2xl text-white mt-2">
             TrimesShikshaMission.org
           </div>

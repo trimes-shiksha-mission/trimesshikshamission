@@ -68,12 +68,12 @@ const Profile: NextPage = () => {
       <div className="flex justify-center items-center gap-2 w-full">
         <button
           onClick={() => signOut()}
-          className="rounded-md w-1/4 sm:w-1/5 mt-2 bg-[#FDAE09] text-xl text-white p-1 text-center"
+          className="rounded-md w-1/4 sm:w-1/5 mt-2 bg-primary text-xl text-white p-1 text-center"
         >
           Logout
         </button>
         <button
-          className="rounded-md  md:w-1/5 mt-2 bg-[#FDAE09] text-xl text-white p-1 text-center"
+          className="rounded-md  md:w-1/5 mt-2 bg-primary text-xl text-white p-1 text-center"
           onClick={() => setChangePasswordModal(!changePasswordModal)}
         >
           Change Password
@@ -409,7 +409,7 @@ const Profile: NextPage = () => {
             {userProfileEdit ? (
               <div className="mt-8 flex items-center justify-center">
                 <button
-                  className="rounded-lg flex justify-center gap-2 items-center bg-[#FDAE09] text-white text-xl px-3 py-1"
+                  className="rounded-lg flex justify-center gap-2 items-center bg-primary text-white text-xl px-3 py-1"
                   type="submit"
                 >
                   Update
@@ -421,7 +421,7 @@ const Profile: NextPage = () => {
         </div>
         <div className="w-full my-10 flex justify-center gap-4">
           <button
-            className="w-1/2 lg:w-1/4 bg-[#FDAE09] text-white rounded-md p-3 items-center text-xl"
+            className="w-1/2 lg:w-1/4 bg-primary text-white rounded-md p-3 items-center text-xl"
             onClick={() => {
               setMembersVisible(false)
               setAddMemberForm(!addMemberForm)
@@ -563,14 +563,15 @@ const Profile: NextPage = () => {
             onSubmit={async e => {
               e.preventDefault()
               const target = e.currentTarget as any
+
               try {
                 await registerMember({
                   name: target.name.value,
-                  email: target.email.value,
+                  email: target.email.value || undefined,
                   maritalStatus: target.maritalStatus.value,
                   gender: target.gender.value,
-                  birthday: target.birthday.value,
-                  contact: target.contact.value,
+                  birthday: new Date(target.birthday.value),
+                  contact: target.contact.value || undefined,
                   occupation: target.occupation.value,
                   qualification: target.qualification.value,
                   gautra: target.gautra.value,
@@ -979,11 +980,11 @@ const Profile: NextPage = () => {
             await updateMember({
               userId: memberProfileEdit.id,
               name: target.name.value,
-              email: target.email.value,
+              email: target.email.value || undefined,
               maritalStatus: target.maritalStatus.value,
               gender: target.gender.value,
-              birthday: target.birthday.value,
-              contact: target.contact.value,
+              birthday: new Date(target.birthday.value),
+              contact: target.contact.value || undefined,
               occupation: target.occupation.value,
               qualification: target.qualification.value,
               gautra: target.gautra.value,
@@ -1272,7 +1273,7 @@ const Profile: NextPage = () => {
               className="px-6 py-2 mt-4 flex items-center justify-center gap-2 text-white w-64 bg-blue-600 rounded-lg hover:bg-blue-900"
               type="submit"
             >
-              <span>Updaet</span>
+              <span>Update</span>
               <Spinner loading={updateMemberLoading} />
             </button>
             <button
@@ -1383,7 +1384,7 @@ const Profile: NextPage = () => {
               <Spinner loading={changePasswordLoading} />
             </button>
             <button
-              className="px-6 py-2 mt-4 text-white w-64 bg-[#FDAE09] rounded-lg hover:bg-[#FDA000]"
+              className="px-6 py-2 mt-4 text-white w-64 bg-primary rounded-lg hover:bg-primaryDark"
               type="button"
               onClick={() => {
                 setChangePasswordModal(false)

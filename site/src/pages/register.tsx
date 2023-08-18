@@ -1,8 +1,12 @@
 import { Area } from '@prisma/client'
 import { GetServerSideProps, NextPage } from 'next'
 import Link from 'next/link'
-import { useEffect, useState } from 'react'
+import { useRouter } from 'next/router'
+import { useState } from 'react'
+import { Layout } from '~/components/Layout'
+import { Spinner } from '~/components/Spinner'
 import { getServerAuthSession } from '~/server/auth'
+import { api } from '~/utils/api'
 
 
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
@@ -21,44 +25,18 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
 }
 
 const Register: NextPage = () => {
-  const [isverified, setisverified] = useState(true)
-  const [isbuttonclicked, setisbuttonclicked] = useState(false)
+  const [registered, setIsRegistered] = useState(false)
+  const router = useRouter()
 
-  const {
-    data: user,
-    mutateAsync: register,
-    isLoading: registerLoading
-  } = useMutation(async (values: any) => {
-    try {
-      const user = await fetch('/api/user', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(values)
-      })
-      return (await user.json()) || []
-    } catch (error) {
-      alert('Phone or Email already exists')
-    }
-  })
+  //? Queries
+  const { data: areas, isLoading: getAreasLoading } = api.area.getAll.useQuery()
 
-  const { data: areas, isLoading: areasLoading } = useQuery(
-    'getAreas',
-    async () => {
-      const areas = await fetch('/api/area')
-      return await areas.json()
-    }
-  )
+  //? Mutations
+  const { mutateAsync: register, isLoading: registerLoading } = api.user.register.useMutation()
 
-  useEffect(() => {
-    if (user?.id) {
-      window.location.href = '/registeredSuccessfully'
-    }
-  }, [user])
+  return <Layout>
+    {!registered ? (
 
-  return isverified ? (
-    <>
       <div className="flex items-center justify-center py-8 bg-gray-100">
         <div className="px-8 py-6 mx-4 mt-4 text-left bg-white shadow-lg md:w-1/2 rounded-lg">
           <div className="flex justify-center"></div>
@@ -81,28 +59,29 @@ const Register: NextPage = () => {
                 alert('Password must be at least 4 characters')
                 return
               }
-              await register({
-                name: target.name.value,
-                email: target.email.value,
-                password: target.password.value,
-                maritalStatus: target.maritalStatus.value,
-                gender: target.gender.value,
-                birthday: target.birthday.value,
-                contact: target.contact.value,
-                occupation: target.occupation.value,
-                qualification: target.qualification.value,
-                gautra: target.gautra.value,
-                nativeTown: target.nativeTown.value,
-                bloodGroup: target.bloodGroup.value,
-                address: target.address.value,
-                isPrivateProperty: target.isPrivateProperty.checked,
-                areaId: target.areaId.value,
-                ...(target.familyAnnualIncome.value && {
-                  familyAnnualIncome: parseFloat(
-                    target.familyAnnualIncome.value
-                  )
+              try {
+                await register({
+                  name: target.name.value,
+                  email: target.email.value,
+                  password: target.password.value,
+                  maritalStatus: target.maritalStatus.value,
+                  gender: target.gender.value,
+                  birthday: new Date(target.birthday.value),
+                  contact: target.contact.value,
+                  occupation: target.occupation.value,
+                  qualification: target.qualification.value,
+                  gautra: target.gautra.value,
+                  nativeTown: target.nativeTown.value,
+                  bloodGroup: target.bloodGroup.value,
+                  address: target.address.value,
+                  isPrivateProperty: target.isPrivateProperty.checked,
+                  areaId: target.areaId.value,
+                  familyAnnualIncome: target.familyAnnualIncome.value
                 })
-              })
+                setIsRegistered(true)
+              } catch (error: any) {
+                alert(error.message.includes('Unique') ? 'Email or Contact already exists!' : error.message || 'Something went wrong, please contact administrator')
+              }
             }}
           >
             <div className="grid md:grid-cols-2 gap-4">
@@ -287,7 +266,7 @@ const Register: NextPage = () => {
                   required
                 >
                   <option value="">Select Area</option>
-                  {areasLoading
+                  {getAreasLoading
                     ? 'Loading...'
                     : areas?.map((area: Area) => (
                       <option key={area.id} value={area.id}>
@@ -438,12 +417,13 @@ const Register: NextPage = () => {
             <div className="flex">
               <button
                 disabled={registerLoading}
-                className="w-full px-6 py-2 mt-4 text-white bg-blue-600 rounded-lg hover:bg-blue-900"
+                className="w-full flex justify-center gap-2 items-center px-6 py-2 mt-4 text-white bg-blue-600 rounded-lg hover:bg-blue-900"
               >
-                Create Account {registerLoading ? 'Loading...' : null}
+                <span>Create Account</span>
+                <Spinner loading={registerLoading} />
               </button>
             </div>
-            <div className="mt-6 text-grey-dark">
+            <div className="mt-6 text-grey-dark flex gap-2">
               Already have an account?
               <Link href="/login" className="text-blue-600 hover:underline">
                 Log in
@@ -452,50 +432,30 @@ const Register: NextPage = () => {
           </form>
         </div>
       </div>
-      {registerLoading && <Loading />}
-    </>
-  ) : (
-    <>
-      <div className="flex items-center justify-center min-h-screen bg-gray-100">
+
+    ) : (
+
+      <div className="flex items-center justify-center py-24 bg-gray-100">
         <div className="px-8 py-6 mx-4 mt-4 text-left bg-white shadow-lg md:w-1/3 lg:w-1/3 sm:w-1/3">
           <div className="flex justify-center"></div>
           <h3 className="text-2xl font-bold text-center">
-            Enter Your Phone Number
+            Thank you for registering!
           </h3>
-          <form onSubmit={e => e.preventDefault()}>
-            <div className="mt-4">
-              <div className="mt-4">
-                <label className="block">Phone Number</label>
-                <input
-                  type="text"
-                  placeholder="Number"
-                  className="w-full px-4 py-2 mt-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-blue-600"
-                />
-              </div>
-              {isbuttonclicked ? (
-                <div className="mt-4">
-                  <label className="block">OTP</label>
-                  <input
-                    type="text"
-                    placeholder="OTP"
-                    className="w-full px-4 py-2 mt-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-blue-600"
-                  />
-                </div>
-              ) : null}
-
-              <div className="flex">
-                <button
-                  className="w-full px-6 py-2 mt-4 text-white bg-blue-600 rounded-lg hover:bg-blue-900 "
-                  onClick={() => setisbuttonclicked(true)}
-                >
-                  Send OTP
-                </button>
-              </div>
-            </div>
-          </form>
+          <h3 className="text-xl text-red-500 font-bold text-center">
+            Your account will be activated soon.
+          </h3>
+          <div className="flex">
+            <button
+              onClick={() => router.push('/')}
+              className="w-full flex justify-center gap-2 items-center px-6 py-2 mt-4 text-white bg-blue-600 rounded-lg hover:bg-blue-900"
+            >
+              <span>Home</span>
+            </button>
+          </div>
         </div>
       </div>
-    </>
-  )
+
+    )}
+  </Layout>
 }
 export default Register

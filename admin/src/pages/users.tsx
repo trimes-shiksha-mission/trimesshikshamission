@@ -10,8 +10,8 @@ export const getServerSideProps: GetServerSideProps = async ctx => {
   return {
     redirect: !session
       ? {
-          destination: '/auth'
-        }
+        destination: '/auth'
+      }
       : undefined,
     props: {}
   }
@@ -314,7 +314,7 @@ const Users: NextPage = () => {
           showSizeChanger: true,
           pageSizeOptions: [10, 20, 50]
         }}
-        onChange={(tablePagination, filters, sorter: any) => {
+        onChange={(tablePagination, _, sorter: any) => {
           const newVariables = {
             ...variables,
             page: tablePagination.current || 1,

@@ -1,112 +1,52 @@
-import { User } from '@prisma/client'
-import { NextPage } from 'next'
-import Link from 'next/link'
-import { useRouter } from 'next/router'
-import { useEffect, useState } from 'react'
+import { GetServerSideProps, NextPage } from 'next'
+import { useState } from 'react'
 import { IoEyeOutline } from 'react-icons/io5'
-import { useMutation, useQuery } from 'react-query'
+import { Layout } from '~/components/Layout'
+import { getServerAuthSession } from '~/server/auth'
+import { RouterOutputs, api } from '~/utils/api'
 import { Modal } from '../components/Modal'
-import { filters } from './api/user/userfilters'
 
-type UserWithMembers = User & {
-  members?: User[]
-  area?: {
-    name: string
-  }
-}
-const pageSize = 10
-const ViewAll: NextPage = () => {
-  const { data: filters, isLoading: getFiltersLoading } = useQuery(
-    'filters',
-    async () => {
-      const data = await fetch('/api/user/userfilters')
-      return (await data.json()) as filters
-    }
-  )
-  const [membersModal, setMembersModal] = useState<UserWithMembers>()
-  const router = useRouter()
-  const queryPage = parseInt((router.query.page as string) || '1')
-  const [page, setPage] = useState(queryPage)
-  const { data: userData, isLoading: getUsersLoading } = useQuery(
-    [page],
-    async () => {
-      if (page === -1) return
-      if (selectedFilters !== null) return
-      const data = await fetch('/api/allusers', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          page: page ? page : 1
-        })
-      })
-      const { heads, totalHeads, totalUsers } = (await data.json()) as {
-        heads: UserWithMembers[]
-        totalHeads: number
-        totalUsers: number
+
+export const getServerSideProps: GetServerSideProps = async (ctx) => {
+  const session = await getServerAuthSession(ctx)
+  if (!session) {
+    return {
+      redirect: {
+        destination: '/login',
+        permanent: false
       }
-      return { heads, totalHeads, totalUsers }
     }
-  )
-  const [filteredUsers, setFilteredUsers] = useState<{
-    users: any[]
-    count: number
-  }>()
-  const { mutateAsync: getFilteredUsers } = useMutation(
-    async (filters: {
-      name: string
-      qualification: string
-      occupation: string
-      gender: string
-      gautra: string
-      currPage: number
-      bloodGroup: string
-      maritalStatus: string
-    }) => {
-      const data = await fetch('/api/user/userfilters', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(filters)
-      })
-      return await data.json()
-    }
-  )
-  const [selectedFilters, setSelectedFilters] = useState<{
-    name: string
-    qualification: string
-    occupation: string
-    gender: string
-    gautra: string
-    currPage: number
-    bloodGroup: string
-    maritalStatus: string
-  } | null>(null)
-  useEffect(() => {
-    if (queryPage !== -1) {
-      setPage(queryPage)
-    }
-  }, [page, queryPage])
-
-  useEffect(() => {
-    if (page >= 1 && selectedFilters !== null) {
-      getFilteredUsers({ ...selectedFilters, currPage: page }).then(data => {
-        setFilteredUsers({
-          users: data.filteredUsers,
-          count: data.count
-        })
-      })
-    }
-  }, [getFilteredUsers, page, selectedFilters])
-
-  if (getUsersLoading) {
-    return <div>Loading...</div>
   }
+  return { props: {} }
+}
+
+const ViewAll: NextPage = () => {
+
+  //? States
+  const [membersModal, setMembersModal] = useState<RouterOutputs['user']['getAll']['data'][0] | null>(null)
+  const [variables, setVariables] = useState<{
+    page: number
+    limit: number
+    name?: string
+    qualification?: string
+    occupation?: string
+    gender?: 'male' | 'female' | 'other'
+    gautra?: string
+    bloodGroup?: 'O-' | 'O+' | 'A+' | 'A-' | 'B+' | 'B-' | 'AB+' | 'AB-'
+    maritalStatus?: 'married' | 'unmarried' | 'divorced' | 'widowed'
+    familyAnnualIncome?: string
+    nativeTown?: string
+    address?: string
+  }>({
+    page: 1,
+    limit: 10
+  })
+
+  //? Queries
+  const { data: users, isLoading: getUsersLoading } = api.user.getAll.useQuery(variables)
 
   return (
-    <>
+    <Layout loading={getUsersLoading}>
       <div className="container mx-auto px-4 sm:px-8">
         <div className="py-8">
           <div>
@@ -117,30 +57,20 @@ const ViewAll: NextPage = () => {
           <form
             onSubmit={async e => {
               e.preventDefault()
-              router.push(
-                {
-                  pathname: '/viewAll'
-                },
-                undefined,
-                { shallow: true }
-              )
-              setPage(1)
               const form = e.currentTarget as any
-              const tempFilters = {
-                name: form.name.value,
-                qualification: form.qualification.value,
-                occupation: form.occupation.value,
-                gender: form.gender.value,
-                gautra: form.gautra.value,
-                currPage: 0,
-                bloodGroup: form.bloodGroup.value,
-                maritalStatus: form.maritalStatus.value
-              }
-              const data = await getFilteredUsers(tempFilters)
-              setSelectedFilters(tempFilters)
-              setFilteredUsers({
-                users: data.filteredUsers,
-                count: data.count
+              setVariables({
+                ...variables,
+                name: form.name.value || undefined,
+                qualification: form.qualification.value || undefined,
+                occupation: form.occupation.value || undefined,
+                gender: form.gender.value || undefined,
+                gautra: form.gautra.value || undefined,
+                bloodGroup: form.bloodGroup.value || undefined,
+                maritalStatus: form.maritalStatus.value || undefined,
+                address: form.address.value || undefined,
+                familyAnnualIncome: form.familyAnnualIncome.value || undefined,
+                nativeTown: form.nativeTown.value || undefined,
+                page: 1
               })
             }}
             className="grid grid-cols-2 gap-4 p-6"
@@ -150,7 +80,7 @@ const ViewAll: NextPage = () => {
                 Name
               </label>
               <input
-                defaultValue={selectedFilters?.name}
+                defaultValue={variables.name}
                 className="appearance-none block w-full border rounded py-3 px-4 mb-3 leading-tight focus:outline-none"
                 type="text"
                 name="name"
@@ -161,42 +91,32 @@ const ViewAll: NextPage = () => {
               <label className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">
                 Qualification
               </label>
-              <select
-                defaultValue={selectedFilters?.qualification}
-                className="block appearance-none w-full border py-3 px-4 pr-8 rounded leading-tight focus:outline-none"
+              <input
+                defaultValue={variables.qualification}
+                className="appearance-none block w-full border rounded py-3 px-4 mb-3 leading-tight focus:outline-none"
+                type="text"
                 name="qualification"
-              >
-                <option value="">Choose...</option>
-                {filters?.qualification.map(qualification => (
-                  <option key={qualification} value={qualification}>
-                    {qualification}
-                  </option>
-                ))}
-              </select>
+                placeholder="Qualification"
+              />
             </div>
             <div>
               <label className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">
                 Occupation
               </label>
-              <select
-                defaultValue={selectedFilters?.occupation}
-                className="block appearance-none w-full border py-3 px-4 pr-8 rounded leading-tight focus:outline-none"
+              <input
+                defaultValue={variables.occupation}
+                className="appearance-none block w-full border rounded py-3 px-4 mb-3 leading-tight focus:outline-none"
+                type="text"
                 name="occupation"
-              >
-                <option value="">Choose...</option>
-                {filters?.occupation.map(occupation => (
-                  <option key={occupation} value={occupation}>
-                    {occupation}
-                  </option>
-                ))}
-              </select>
+                placeholder="Occupation"
+              />
             </div>
             <div>
               <label className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">
                 Gender
               </label>
               <select
-                defaultValue={selectedFilters?.gender}
+                defaultValue={variables.gender}
                 className="block appearance-none w-full border py-3 px-4 pr-8 rounded leading-tight focus:outline-none"
                 name="gender"
               >
@@ -211,12 +131,34 @@ const ViewAll: NextPage = () => {
                 Gautra
               </label>
               <select
-                defaultValue={selectedFilters?.gautra}
+                defaultValue={variables.gautra}
                 className="block appearance-none w-full border py-3 px-4 pr-8 rounded leading-tight focus:outline-none"
                 name="gautra"
               >
                 <option value="">Choose...</option>
-                {filters?.gautra.map(gautra => (
+                {[
+                  'Others',
+                  'पराशर',
+                  'अत्रि',
+                  'भृगु',
+                  'कौशिक',
+                  'गौतम',
+                  'वशिष्ठ',
+                  'भारद्वाज',
+                  'कपिल',
+                  'भार्गव',
+                  'वत्स',
+                  'अगत्स्य',
+                  'मार्कण्डेय',
+                  'कश्यप',
+                  'शांडिल्य',
+                  'कौण्डिन्य',
+                  'अज',
+                  'कुश',
+                  'जम्दग्नि',
+                  'याज्ञवल्क्य',
+                  'पुलत्स्य'
+                ].map(gautra => (
                   <option key={gautra} value={gautra}>
                     {gautra}
                   </option>
@@ -228,7 +170,7 @@ const ViewAll: NextPage = () => {
                 Blood Group
               </label>
               <select
-                defaultValue={selectedFilters?.bloodGroup}
+                defaultValue={variables.bloodGroup}
                 className="block appearance-none w-full border py-3 px-4 pr-8 rounded leading-tight focus:outline-none"
                 name="bloodGroup"
               >
@@ -248,7 +190,7 @@ const ViewAll: NextPage = () => {
                 Marital Status
               </label>
               <select
-                defaultValue={selectedFilters?.maritalStatus}
+                defaultValue={variables.maritalStatus}
                 className="block appearance-none w-full border py-3 px-4 pr-8 rounded leading-tight focus:outline-none"
                 name="maritalStatus"
               >
@@ -259,6 +201,52 @@ const ViewAll: NextPage = () => {
                 <option value="widowed">Widowed</option>
               </select>
             </div>
+            <div>
+              <label className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">
+                Family Annual Income
+              </label>
+              <select
+                defaultValue={variables.familyAnnualIncome}
+                className="block appearance-none w-full border py-3 px-4 pr-8 rounded leading-tight focus:outline-none"
+                name="familyAnnualIncome"
+              >
+                <option value="">Choose...</option>
+                {[
+                  'Up to 1 Lakh',
+                  'Above 1 Lakh & Up to 2.5 Lakhs',
+                  'Above 2.5 Lakhs & Up to 5 Lakhs',
+                  'Above 5 Lakhs'
+                ].map(income => (
+                  <option key={income} value={income}>
+                    {income}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">
+                Native Town
+              </label>
+              <input
+                defaultValue={variables.nativeTown}
+                className="appearance-none block w-full border rounded py-3 px-4 mb-3 leading-tight focus:outline-none"
+                type="text"
+                name="nativeTown"
+                placeholder="Native Town"
+              />
+            </div>
+            <div>
+              <label className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">
+                Address
+              </label>
+              <input
+                defaultValue={variables.address}
+                className="appearance-none block w-full border rounded py-3 px-4 mb-3 leading-tight focus:outline-none"
+                type="text"
+                name="address"
+                placeholder="Address"
+              />
+            </div>
             <div className="grid grid-cols-8 gap-8 col-span-2">
               <button className="col-span-2 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2  rounded">
                 Search
@@ -268,9 +256,14 @@ const ViewAll: NextPage = () => {
                 type="reset"
                 className="col-span-2 bg-red-500 hover:bg-red-700 text-white font-bold py-2 rounded"
                 onClick={() => {
-                  setPage(1)
-                  setSelectedFilters(null)
-                  setFilteredUsers(undefined)
+                  setVariables({
+                    ...Object.keys(variables).reduce((acc, key) => {
+                      (acc as any)[key] = undefined
+                      return acc
+                    }, {}),
+                    page: 1,
+                    limit: 10,
+                  })
                 }}
               >
                 Reset
@@ -280,293 +273,187 @@ const ViewAll: NextPage = () => {
 
           <div className="-mx-4 sm:-mx-8 px-4 sm:px-8 py-4 overflow-x-auto">
             <div className="inline-block min-w-full shadow rounded-lg overflow-hidden">
-              {filteredUsers?.users.length ? (
-                <table className="min-w-full leading-normal">
-                  <thead>
-                    <tr>
-                      <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-50 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                        Sr. No.
-                      </th>
-                      <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-50 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                        Name
-                      </th>
-                      <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-50 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                        Gautra
-                      </th>
-                      <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-50 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                        Gender
-                      </th>
-                      <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-50 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                        Qualification
-                      </th>
-                      <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-50 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                        Occupation
-                      </th>
-                      <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-50 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                        Marital Status
-                      </th>
-                      <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-50 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                        Family Head
-                      </th>
-                      <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-50 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                        Relation with Head
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {filteredUsers?.users.map((user: any, index: number) => (
-                      <tr key={user.id}>
-                        <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                          <div className="flex items-center">
-                            <div className="ml-3">
-                              <p className="text-gray-900 whitespace-no-wrap">
-                                {(page - 1) * 10 + index + 1}
-                              </p>
-                            </div>
-                          </div>
-                        </td>
-                        <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                          <p className="text-gray-900 whitespace-no-wrap">
-                            {user.name}
-                          </p>
-                        </td>
-                        <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                          <p className="text-gray-900 whitespace-no-wrap">
-                            {user.gautra}
-                          </p>
-                        </td>
-                        <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                          <p className="text-gray-900 whitespace-no-wrap">
-                            {user.gender}
-                          </p>
-                        </td>
-
-                        <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                          <p className="text-gray-900 whitespace-no-wrap">
-                            {user.qualification}
-                          </p>
-                        </td>
-                        <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                          <p className="text-gray-900 whitespace-no-wrap">
-                            {user.occupation}
-                          </p>
-                        </td>
-                        <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                          <p className="text-gray-900 whitespace-no-wrap">
-                            {user.maritalStatus}
-                          </p>
-                        </td>
-                        <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                          <p className="text-gray-900 whitespace-no-wrap">
-                            {user.head?.name}
-                          </p>
-                        </td>
-                        <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                          <p className="text-gray-900 whitespace-no-wrap">
-                            {user.relationWithHead}
-                          </p>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              ) : (
-                <table className="min-w-full leading-normal">
-                  <thead>
-                    <tr>
-                      <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-50 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                        Sr. No.
-                      </th>
-                      <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-50 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                        Name
-                      </th>
-                      <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-50 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                        Gautra
-                      </th>
-                      <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-50 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                        Gender
-                      </th>
-                      <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-50 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                        Area
-                      </th>
-                      <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-50 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                        Qualification
-                      </th>
-                      <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-50 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                        Occupation
-                      </th>
-                      <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-50 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                        Marital Status
-                      </th>
-                      <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-50 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                        Contact
-                      </th>
-                      <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-50 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                        View Members
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {userData?.heads?.map((user, index) => (
-                      <tr key={user.id}>
-                        <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                          <div className="flex items-center">
-                            {/* <div className="flex-shrink-0 w-5 h-5">
-                          <img
-                            className="w-full h-full rounded-full"
-                            src="https://images.unsplash.com/photo-149479058377-be9c29b29330?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2.2&w=160&h=160&q=80"
-                            alt=""
-                          />
-                        </div> */}
-                            <div className="ml-3">
-                              <p className="text-gray-900 whitespace-no-wrap">
-                                {/* calculate sr. no. according to page */}
-                                {index + 1 + (page - 1) * 10}
-                              </p>
-                            </div>
-                          </div>
-                        </td>
-                        <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                          <p className="text-gray-900 whitespace-no-wrap">
-                            {user.name}
-                          </p>
-                        </td>
-                        <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                          <p className="text-gray-900 whitespace-no-wrap">
-                            {user.gautra}
-                          </p>
-                        </td>
-                        <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                          <p className="text-gray-900 whitespace-no-wrap">
-                            {user.gender}
-                          </p>
-                        </td>
-                        <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                          <p className="text-gray-900 whitespace-no-wrap">
-                            {user.area?.name}
-                          </p>
-                        </td>
-                        <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                          <p className="text-gray-900 whitespace-no-wrap">
-                            {user.qualification}
-                          </p>
-                        </td>
-                        <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                          <p className="text-gray-900 whitespace-no-wrap">
-                            {user.occupation}
-                          </p>
-                        </td>
-                        <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                          <p className="text-gray-900 whitespace-no-wrap">
-                            {user.maritalStatus}
-                          </p>
-                        </td>
-                        <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                          <p className="text-gray-900 whitespace-no-wrap">
-                            {user.contact}
-                          </p>
-                        </td>
-                        <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                          <button
-                            onClick={() => setMembersModal(user)}
-                            className={`${
-                              user.members?.length === 0
-                                ? 'cursor-not-allowed text-gray-500'
-                                : 'text-blue-500'
+              <table className="min-w-full leading-normal">
+                <thead>
+                  <tr>
+                    <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-50 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                      Sr. No.
+                    </th>
+                    <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-50 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                      Name
+                    </th>
+                    <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-50 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                      Gautra
+                    </th>
+                    <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-50 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                      Gender
+                    </th>
+                    <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-50 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                      Blood Group
+                    </th>
+                    <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-50 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                      Area
+                    </th>
+                    <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-50 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                      Qualification
+                    </th>
+                    <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-50 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                      Occupation
+                    </th>
+                    <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-50 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                      Family Annual Income
+                    </th>
+                    <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-50 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                      Marital Status
+                    </th>
+                    <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-50 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                      Contact
+                    </th>
+                    <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-50 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                      Native Town
+                    </th>
+                    <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-50 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                      View Members
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {users?.data.map((user, index) => (
+                    <tr key={user.id}>
+                      <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                        <p className="text-gray-900 whitespace-no-wrap">
+                          {/* {console.log({ index, page: variables.page, limit: variables.limit })} */}
+                          {index + 1 + (variables.page - 1) * variables.limit}
+                        </p>
+                      </td>
+                      <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                        <p className="text-gray-900 whitespace-no-wrap">
+                          {user.name}
+                        </p>
+                      </td>
+                      <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                        <p className="text-gray-900 whitespace-no-wrap">
+                          {user.gautra}
+                        </p>
+                      </td>
+                      <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                        <p className="text-gray-900 whitespace-no-wrap">
+                          {user.gender}
+                        </p>
+                      </td>
+                      <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                        <p className="text-gray-900 whitespace-no-wrap">
+                          {user.bloodGroup}
+                        </p>
+                      </td>
+                      <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                        <p className="text-gray-900 whitespace-no-wrap">
+                          {user.area?.name}
+                        </p>
+                      </td>
+                      <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                        <p className="text-gray-900 whitespace-no-wrap">
+                          {user.qualification}
+                        </p>
+                      </td>
+                      <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                        <p className="text-gray-900 whitespace-no-wrap">
+                          {user.occupation}
+                        </p>
+                      </td>
+                      <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                        <p className="text-gray-900 whitespace-no-wrap">
+                          {user.familyAnnualIncome}
+                        </p>
+                      </td>
+                      <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                        <p className="text-gray-900 whitespace-no-wrap">
+                          {user.maritalStatus}
+                        </p>
+                      </td>
+                      <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                        <p className="text-gray-900 whitespace-no-wrap">
+                          {user.contact}
+                        </p>
+                      </td>
+                      <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                        <p className="text-gray-900 whitespace-no-wrap">
+                          {user.nativeTown}
+                        </p>
+                      </td>
+                      <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                        <button
+                          onClick={() => setMembersModal(user)}
+                          className={`${user.members?.length === 0
+                            ? 'cursor-not-allowed text-gray-500'
+                            : 'text-blue-500'
                             } flex items-center justify-center gap-1 bg-white border border-blue-500 rounded-md px-2 py-1 whitespace-no-wrap`}
-                            disabled={user.members?.length === 0}
-                          >
-                            <span>{user.members?.length}&nbsp;View</span>{' '}
-                            <IoEyeOutline />
-                          </button>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              )}
+                          disabled={user.members?.length === 0}
+                        >
+                          <span>{user.members?.length}&nbsp;View</span>{' '}
+                          <IoEyeOutline />
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
           </div>
 
           <div className="px-5 py-5 bg-white border-t flex flex-col xs:flex-row items-center xs:justify-between">
-            {filteredUsers?.users.length ? (
-              <span className="text-xs xs:text-sm text-gray-900">
-                Showing {(page - 1) * pageSize + 1} to{' '}
-                {page >=
-                parseInt(((filteredUsers.count || 0) / pageSize + 1).toString())
-                  ? filteredUsers.count
-                  : (page - 1) * pageSize + pageSize}{' '}
-                of {filteredUsers.count} Members using search criteria
-                <br />
-              </span>
-            ) : (
-              <span className="text-xs xs:text-sm text-gray-900">
-                Showing {(page - 1) * pageSize + 1} to{' '}
-                {page >=
+
+            <span className="text-xs xs:text-sm text-gray-900">
+              Showing {users?.data.length} to{' '}
+              {variables.page >=
                 parseInt(
-                  ((userData?.totalHeads || 0) / pageSize + 1).toString()
+                  ((users?.total || 0) / variables.limit + 1).toString()
                 )
-                  ? userData?.totalHeads
-                  : (page - 1) * pageSize + pageSize}{' '}
-                of {userData?.totalHeads} Head Members
-                <br />
-                Total Users (including members): {userData?.totalUsers}
-              </span>
-            )}
+                ? users?.total
+                : (variables.page - 1) * variables.limit + variables.limit}{' '}
+              of {users?.total} total Users: {users?.total}
+            </span>
+
             <div className="inline-flex mt-2 xs:mt-0">
-              <Link
-                href={`${page <= 1 ? '#' : `/viewAll?page=${page - 1}`}`}
-                className={`text-sm bg-primary hover:opacity-80  text-white font-semibold py-2 px-4 rounded-l ${
-                  page <= 1
-                    ? 'pointer-events-none opacity-50'
-                    : 'cursor-pointer'
-                }`}
+              <button
+                onClick={() => {
+                  if (variables.page <= 1) return
+                  setVariables({
+                    ...variables,
+                    page: variables.page - 1
+                  })
+                }
+                }
+                disabled={variables.page <= 1}
+                className={`text-sm bg-primary hover:opacity-80  text-white font-semibold py-2 px-4 rounded-l ${variables.page <= 1
+                  ? 'pointer-events-none opacity-50'
+                  : 'cursor-pointer'
+                  }`}
               >
                 Prev
-              </Link>
-              {filteredUsers?.users.length ? (
-                <Link
-                  href={`${
-                    page >=
+              </ button>
+              {users?.total && users.total > variables.limit ? (
+                <button
+                  onClick={() => {
+                    if (variables.page >= parseInt(((users?.total || 0) / variables.limit + 1).toString())) return
+                    setVariables({
+                      ...variables,
+                      page: variables.page + 1
+                    })
+                  }}
+                  disabled={variables.page >= parseInt(((users?.total || 0) / variables.limit + 1).toString())}
+                  className={`text-sm bg-primary hover:opacity-80 text-white font-semibold py-2 px-4 rounded-r ${variables.page >=
                     parseInt(
-                      ((filteredUsers.count || 0) / pageSize + 1).toString()
+                      ((users.total || 0) / variables.limit + 1).toString()
                     )
-                      ? '#'
-                      : `/viewAll?page=${page + 1}`
-                  }`}
-                  className={`text-sm bg-primary hover:opacity-80 text-white font-semibold py-2 px-4 rounded-r ${
-                    page >=
-                    parseInt(
-                      ((filteredUsers.count || 0) / pageSize + 1).toString()
-                    )
-                      ? 'pointer-events-none opacity-50'
-                      : 'cursor-pointer'
-                  }`}
+                    ? 'pointer-events-none opacity-50'
+                    : 'cursor-pointer'
+                    }`}
                 >
                   Next
-                </Link>
-              ) : userData?.totalHeads && userData?.totalHeads > pageSize ? (
-                <Link
-                  href={`${
-                    page >=
-                    parseInt(
-                      ((userData?.totalHeads || 0) / pageSize + 1).toString()
-                    )
-                      ? '#'
-                      : `/viewAll?page=${page + 1}`
-                  }`}
-                  className={`text-sm bg-primary hover:opacity-80 text-white font-semibold py-2 px-4 rounded-r ${
-                    page >=
-                    parseInt(
-                      ((userData.totalHeads || 0) / pageSize + 1).toString()
-                    )
-                      ? 'pointer-events-none opacity-50'
-                      : 'cursor-pointer'
-                  }`}
-                >
-                  Next
-                </Link>
-              ) : null}
+                </button>
+              ) : null
+              }
             </div>
           </div>
         </div>
@@ -574,8 +461,8 @@ const ViewAll: NextPage = () => {
 
       <Modal
         empty
-        open={membersModal !== undefined}
-        onCancel={() => setMembersModal(undefined)}
+        open={!!membersModal}
+        onCancel={() => setMembersModal(null)}
       >
         <table className="min-w-full leading-normal">
           <thead>
@@ -667,7 +554,7 @@ const ViewAll: NextPage = () => {
           </tbody>
         </table>
       </Modal>
-    </>
+    </Layout>
   )
 }
 

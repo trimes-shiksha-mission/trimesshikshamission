@@ -19,7 +19,7 @@ export const Modal: FC<{
         <div className="absolute inset-0 bg-gray-500 opacity-75"></div>
       </div>
       {empty ? (
-        <div className="transform bg-white rounded-lg p-2 w-full max-h-[90vh] overflow-auto lg:max-w-6xl">
+        <div className="transform flex items-center justify-center rounded-lg p-2 w-full min-h-[50dvh] max-h-[90dvh] overflow-auto lg:max-w-6xl">
           {children}
         </div>
       ) : (
