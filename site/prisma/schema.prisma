@@ -1,0 +1,129 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  ADMIN
+  EDITOR
+  SUPERUSER
+}
+
+enum Gender {
+  male
+  female
+  other
+}
+
+enum MaritalStatus {
+  married
+  unmarried
+  divorced
+  widowed
+}
+
+model User {
+  id                 String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name               String
+  email              String?       @unique
+  gender             Gender
+  maritalStatus      MaritalStatus
+  contact            String?       @unique
+  isVerified         Boolean       @default(false)
+  birthday           DateTime
+  occupation         String
+  qualification      String
+  gautra             String
+  nativeTown         String
+  password           String?
+  bloodGroup         String?
+  address            String
+  familyAnnualIncome String?
+  showInMatrimony    Boolean       @default(false)
+  isPrivateProperty  Boolean?      @default(false)
+  areaId             String?       @db.Uuid
+  area               Area?         @relation("areaRelation", fields: [areaId], references: [id])
+  relationWithHead   String?
+  headId             String?       @db.Uuid
+  head               User?         @relation("head", fields: [headId], references: [id])
+  members            User[]        @relation("head")
+  createdById        String?       @db.Uuid
+  createdBy          Admin?        @relation("createdByUsers", fields: [createdById], references: [id])
+  updatedById        String?       @db.Uuid
+  updatedBy          Admin?        @relation("updatedByUsers", fields: [updatedById], references: [id])
+  createdAt          DateTime      @default(now()) @db.Timestamptz()
+  updatedAt          DateTime      @default(now()) @updatedAt @db.Timestamptz()
+}
+
+model Admin {
+  id             String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name           String
+  email          String
+  password       String
+  role           Role
+  areaId         String?  @db.Uuid
+  area           Area?    @relation(fields: [areaId], references: [id])
+  createdAt      DateTime @default(now()) @db.Timestamptz()
+  updatedAt      DateTime @default(now()) @updatedAt @db.Timestamptz()
+  createdById    String?  @db.Uuid
+  createdBy      Admin?   @relation(name: "createdBy", fields: [createdById], references: [id])
+  createdAdmins  Admin[]  @relation(name: "createdBy")
+  updatedById    String?  @db.Uuid
+  updatedBy      Admin?   @relation(name: "updatedBy", fields: [updatedById], references: [id])
+  updatedAdmins  Admin[]  @relation(name: "updatedBy")
+  createdSchools School[] @relation(name: "createdBySchools")
+  updatedSchools School[] @relation(name: "updatedBySchools")
+  createdUsers   User[]   @relation(name: "createdByUsers")
+  updatedUsers   User[]   @relation(name: "updatedByUsers")
+  Blog           Blog[]   @relation(name: "createdByBlogs")
+
+  @@unique([email, role])
+}
+
+model Area {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name      String
+  createdAt DateTime @default(now()) @db.Timestamptz()
+  updatedAt DateTime @default(now()) @updatedAt @db.Timestamptz()
+  Admin     Admin[]
+  User      User[]   @relation("areaRelation")
+}
+
+model Editorial {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  title     String
+  body      String
+  createdAt DateTime @default(now()) @db.Timestamptz()
+}
+
+model School {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name        String
+  address     String
+  createdById String   @db.Uuid
+  createdBy   Admin    @relation("createdBySchools", fields: [createdById], references: [id])
+  updatedById String   @db.Uuid
+  updatedBy   Admin    @relation("updatedBySchools", fields: [updatedById], references: [id])
+  createdAt   DateTime @default(now()) @db.Timestamptz()
+  updatedAt   DateTime @default(now()) @updatedAt @db.Timestamptz()
+
+  @@unique([name, address])
+}
+
+model Blog {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  title       String
+  body        String
+  type        String
+  images      String[]
+  createdAt   DateTime @default(now()) @db.Timestamptz()
+  createdById String   @db.Uuid
+  createdBy   Admin    @relation("createdByBlogs", fields: [createdById], references: [id])
+}

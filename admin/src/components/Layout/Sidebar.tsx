@@ -1,0 +1,88 @@
+import { Layout, Menu } from 'antd'
+import { useSession } from 'next-auth/react'
+import Link from 'next/link'
+import { FC, useEffect, useState } from 'react'
+import { BsPencilSquare } from 'react-icons/bs'
+import { FaUserShield } from 'react-icons/fa'
+import { FaUserPen, FaUsersGear, FaUsersLine } from 'react-icons/fa6'
+import { useDarkMode } from '~/context/darkMode'
+
+export const Sidebar: FC<{
+  collapsed: boolean
+  breadcrumbs?: { label: string; link?: string }[]
+}> = ({ collapsed, breadcrumbs }) => {
+  const { data: sessionData } = useSession()
+  const [collapsedWidth, setCollapsedWidth] = useState(80)
+  const { isDarkMode } = useDarkMode()
+
+  useEffect(() => {
+    const fn = () => setCollapsedWidth(window.innerWidth >= 768 ? 80 : 0)
+    fn()
+    window.addEventListener('resize', fn)
+    return () => window.removeEventListener('resize', fn)
+  }, [])
+
+  return (
+    <Layout.Sider
+      style={{
+        position: 'fixed',
+        zIndex: 1000,
+        overflow: 'auto',
+        height: '100dvh'
+      }}
+      trigger={null}
+      collapsible
+      breakpoint="md"
+      collapsedWidth={collapsedWidth}
+      collapsed={collapsed}
+      theme={isDarkMode ? 'light' : 'dark'}
+    >
+      <Menu
+        mode="inline"
+        defaultSelectedKeys={
+          breadcrumbs?.length && breadcrumbs[breadcrumbs.length - 1]?.label
+            ? [breadcrumbs[breadcrumbs.length - 1]?.label!]
+            : []
+        }
+        theme={isDarkMode ? 'light' : 'dark'}
+        items={[
+          ...(sessionData?.user?.role === 'SUPERUSER'
+            ? [
+                {
+                  key: '1',
+                  label: 'SUPER ADMIN',
+                  icon: <FaUserShield />,
+                  children: [
+                    {
+                      label: <Link href="/editorial">Mann ki Baat</Link>,
+                      key: '2-1',
+                      icon: <BsPencilSquare />
+                    }
+                  ]
+                },
+                {
+                  label: <Link href="/admins">Admins</Link>,
+                  key: '2',
+                  icon: <FaUsersGear />
+                }
+              ]
+            : []),
+          ...(['ADMIN', 'SUPERUSER'].includes(sessionData?.user.role || '')
+            ? [
+                {
+                  label: <Link href="/editors">Editors</Link>,
+                  key: '3',
+                  icon: <FaUserPen />
+                },
+                {
+                  key: '4',
+                  label: <Link href={'/users'}>Users</Link>,
+                  icon: <FaUsersLine />
+                }
+              ]
+            : [])
+        ]}
+      />
+    </Layout.Sider>
+  )
+}
