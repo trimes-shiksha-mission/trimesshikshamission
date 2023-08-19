@@ -1,6 +1,7 @@
 import { GetServerSideProps, NextPage } from 'next'
 import { signIn } from 'next-auth/react'
 import Link from 'next/link'
+import { useRouter } from 'next/router'
 import { useState } from 'react'
 import { Layout } from '~/components/Layout'
 import { getServerAuthSession } from '~/server/auth'
@@ -22,8 +23,9 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
 }
 
 const Login: NextPage = () => {
+  const router = useRouter()
   const [loginLoading, setLoginLoading] = useState(false)
-  const [errorMsg, setErrorMsg] = useState('')
+  const [errorMsg, setErrorMsg] = useState(router.query.error as string)
   const [showPassword, setShowPassword] = useState(false)
 
   return (
@@ -42,11 +44,9 @@ const Login: NextPage = () => {
                 username: e.currentTarget.contact.value,
                 password: e.currentTarget.password.value
               }
-              try {
-                await signIn('credentials', { ...body, callbackUrl: '/' })
-              } catch (error: any) {
-                setErrorMsg(error.data.message)
-              }
+
+              await signIn('credentials', { ...body, callbackUrl: '/' })
+
               setLoginLoading(false)
             }}
           >
@@ -151,7 +151,7 @@ const Login: NextPage = () => {
         </div>
       </div>
 
-      {errorMsg === 'User not verified!' && (
+      {errorMsg && (
         <div className="fixed inset-0 z-10 flex items-center justify-center bg-black bg-opacity-50">
           <div className="w-1/2 p-4 bg-white rounded-lg shadow-lg">
             <div className="flex justify-end">
@@ -162,20 +162,27 @@ const Login: NextPage = () => {
                 &times;
               </button>
             </div>
-            <h3 className="text-2xl font-bold text-center">
-              Your account is not verified yet.
-            </h3>
-            <p className="mt-4 text-center">
-              Please wait for the admin to verify your account.
-            </p>
-            <div className="flex justify-center mt-4">
-              <Link
-                href="/"
-                className="px-4 py-2 text-white bg-blue-600 rounded-lg hover:bg-blue-900"
-              >
-                Go to Home
-              </Link>
-            </div>
+            {errorMsg === 'User not verified!' ?
+              <>
+                <h3 className="text-2xl font-bold text-center">
+                  Your account is not verified yet.
+                </h3>
+                <p className="mt-4 text-center">
+                  Please wait for the admin to verify your account.
+                </p>
+                <div className="flex justify-center mt-4">
+                  <Link
+                    href="/"
+                    className="px-4 py-2 text-white bg-blue-600 rounded-lg hover:bg-blue-900"
+                  >
+                    Go to Home
+                  </Link>
+                </div>
+              </> :
+              <h3 className="text-2xl font-bold text-center">
+                {errorMsg}
+              </h3>
+            }
           </div>
         </div>
       )}

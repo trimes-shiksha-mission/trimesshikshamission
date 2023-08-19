@@ -98,19 +98,25 @@ export const authOptions: NextAuthOptions = {
           }
         })
 
-        if (
-          user &&
-          user.password &&
-          (await compare(credentials.password, user.password))
-        ) {
-          return {
-            id: user.id,
-            email: user.email,
-            name: user.name,
-            contact: user.contact
+        if (user) {
+          if (
+            user.password &&
+            (await compare(credentials.password, user.password))
+          ) {
+            if (!user.isVerified) {
+              throw new Error('User not verified!')
+            }
+            return {
+              id: user.id,
+              email: user.email,
+              name: user.name,
+              contact: user.contact
+            }
+          } else {
+            throw new Error('Invalid Password')
           }
         } else {
-          return null
+          throw new Error('Invalid User')
         }
       }
     })
@@ -142,7 +148,7 @@ export const authOptions: NextAuthOptions = {
   pages: {
     signIn: '/login',
     signOut: '/logout',
-    newUser: '/'
+    error: '/login'
   }
 }
 
