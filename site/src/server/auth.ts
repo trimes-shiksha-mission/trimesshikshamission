@@ -103,6 +103,9 @@ export const authOptions: NextAuthOptions = {
             user.password &&
             (await compare(credentials.password, user.password))
           ) {
+            if (!user.email) {
+              throw new Error('User email not found!')
+            }
             if (!user.isVerified) {
               throw new Error('User not verified!')
             }

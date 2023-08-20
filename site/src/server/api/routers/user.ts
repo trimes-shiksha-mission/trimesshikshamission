@@ -319,5 +319,45 @@ export const userRouter = createTRPCRouter({
         data: users,
         total
       }
+    }),
+
+  registerEmail: unProtectedProcedure
+    .input(
+      z.object({
+        email: z.string().email(),
+        contact: z.string().min(10).max(10),
+        password: z.string()
+      })
+    )
+    .mutation(async ({ ctx: { prisma }, input }) => {
+      const { password, ...rest } = input
+
+      const user = await prisma.user.findUniqueOrThrow({
+        where: {
+          contact: rest.contact
+        }
+      })
+      if (user.headId || !user.password) {
+        throw new Error('You are not allowed to register email!')
+      }
+      const isPasswordValid = await compare(password, user.password)
+      if (!isPasswordValid) {
+        throw new Error('Password is not correct!')
+      }
+      const { valid } = await validate(input.email)
+      if (!valid) {
+        throw new Error(
+          'This email address not found,please provide valid email address!'
+        )
+      }
+      await prisma.user.update({
+        where: {
+          contact: rest.contact
+        },
+        data: {
+          email: rest.email
+        }
+      })
+      return 'Email updated successfully!'
     })
 })

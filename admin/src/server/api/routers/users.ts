@@ -39,7 +39,6 @@ export const usersRouter = createTRPCRouter({
         ...(input.maritalStatus && { maritalStatus: input.maritalStatus }),
         ...(input.bloodGroup && { bloodGroup: input.bloodGroup })
       }
-      console.log({ where })
 
       if (session.user.role === 'EDITOR') {
         const editor = await prisma.admin.findUniqueOrThrow({
@@ -141,7 +140,7 @@ export const usersRouter = createTRPCRouter({
             }
           })
           if (user.email) {
-            const template = await readFile('./template/approve.html', 'utf-8')
+            const template = await readFile('template/approve.html', 'utf-8')
             const html = Handlebars.compile(template)({
               Name: user.name
             })
