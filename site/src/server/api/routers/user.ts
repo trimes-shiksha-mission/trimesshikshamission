@@ -1,6 +1,8 @@
 import { compare, hash } from 'bcryptjs'
 import validate from 'deep-email-validator'
 import { z } from 'zod'
+import { env } from '~/env.mjs'
+import { sendMail } from '~/lib/nodemailer'
 import {
   createTRPCRouter,
   protectedProcedure,
@@ -359,5 +361,80 @@ export const userRouter = createTRPCRouter({
         }
       })
       return 'Email updated successfully!'
+    }),
+
+  forgotPassword: unProtectedProcedure
+    .input(
+      z.object({
+        email: z.string().email()
+      })
+    )
+    .mutation(async ({ ctx: { prisma }, input }) => {
+      const { email } = input
+      const user = await prisma.user.findUnique({
+        where: {
+          email,
+          headId: null
+        }
+      })
+      if (!user) throw new Error('User not found!')
+
+      if (!user.email) throw new Error('Email not found!')
+
+      const token = await prisma.forgotPasswordToken.create({
+        data: { userId: user.id }
+      })
+
+      await sendMail({
+        to: user.email,
+        subject: 'Reset Trimes Password',
+        html: `
+          <div>
+            <p>Hi ${user.name},</p>
+            <p>Click on the below link to reset your password</p>
+            <a href="${env.NEXTAUTH_URL}/reset-password/${token.id}">Reset Password</a>
+          </div>
+          `
+      })
+
+      return 'Password reset link sent to your email address!'
+    }),
+
+  resetPassword: unProtectedProcedure
+    .input(
+      z.object({
+        token: z.string(),
+        password: z.string().min(8).max(255)
+      })
+    )
+    .mutation(async ({ ctx: { prisma }, input }) => {
+      const { token, password } = input
+      const forgotPasswordToken = await prisma.forgotPasswordToken.findUnique({
+        where: {
+          id: token
+        }
+      })
+
+      if (!forgotPasswordToken) throw new Error('Token not found!')
+      if (
+        forgotPasswordToken.createdAt.getTime() + 1000 * 60 * 100 <
+        Date.now()
+      )
+        throw new Error('Link expired!')
+      const hashedPassword = await hash(password, 10)
+      await prisma.user.update({
+        where: {
+          id: forgotPasswordToken.userId
+        },
+        data: {
+          password: hashedPassword
+        }
+      })
+      await prisma.forgotPasswordToken.delete({
+        where: {
+          id: token
+        }
+      })
+      return 'Password reset successfully!'
     })
 })

@@ -60,6 +60,9 @@ model User {
   updatedBy          Admin?        @relation("updatedByUsers", fields: [updatedById], references: [id])
   createdAt          DateTime      @default(now()) @db.Timestamptz()
   updatedAt          DateTime      @default(now()) @updatedAt @db.Timestamptz()
+
+  // forgotPasswordToken join
+  forgotPasswordToken forgotPasswordToken? @relation("userForgotPasswordToken")
 }
 
 model Admin {
@@ -126,4 +129,15 @@ model Blog {
   createdAt   DateTime @default(now()) @db.Timestamptz()
   createdById String   @db.Uuid
   createdBy   Admin    @relation("createdByBlogs", fields: [createdById], references: [id])
+}
+
+model forgotPasswordToken {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId    String   @db.Uuid
+  createdAt DateTime @default(now()) @db.Timestamptz()
+  updatedAt DateTime @default(now()) @updatedAt @db.Timestamptz()
+
+  user User @relation("userForgotPasswordToken", fields: [userId], references: [id])
+
+  @@unique([userId])
 }

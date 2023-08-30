@@ -2,6 +2,7 @@ import { readFile } from 'fs/promises'
 import Handlebars from 'handlebars'
 import path from 'path'
 import { z } from 'zod'
+import { env } from '~/env.mjs'
 import { sendMail } from '~/lib/nodemailer'
 import { createTRPCRouter, protectedProcedure } from '../trpc'
 
@@ -142,10 +143,13 @@ export const usersRouter = createTRPCRouter({
           })
           if (user.email) {
             const myPath = path.resolve('./template')
-            const template = await readFile(
-              path.join('/', myPath, 'approve.html'),
-              'utf-8'
-            )
+            let template
+            if (env.NODE_ENV === 'production')
+              template = await readFile(
+                path.join('/', myPath, 'approve.html'),
+                'utf-8'
+              )
+            else template = await readFile('template/approve.html', 'utf-8')
             const html = Handlebars.compile(template)({
               Name: user.name
             })

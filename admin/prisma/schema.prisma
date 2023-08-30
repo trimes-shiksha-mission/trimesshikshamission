@@ -127,3 +127,10 @@ model Blog {
   createdById String   @db.Uuid
   createdBy   Admin    @relation("createdByBlogs", fields: [createdById], references: [id])
 }
+
+model forgotPasswordToken {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  token     String
+  createdAt DateTime @default(now()) @db.Timestamptz()
+  updatedAt DateTime @default(now()) @updatedAt @db.Timestamptz()
+}
