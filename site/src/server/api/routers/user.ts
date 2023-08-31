@@ -133,12 +133,12 @@ export const userRouter = createTRPCRouter({
           id: session.user.id
         }
       })
-      const isEmailValid = await validate(input.email)
-      if (!isEmailValid.valid) {
-        throw new Error(
-          'This email address not found,please provide valid email address!'
-        )
-      }
+      // const isEmailValid = await validate(input.email)
+      // if (!isEmailValid.valid) {
+      //   throw new Error(
+      //     'This email address not found,please provide valid email address!'
+      //   )
+      // }
       await prisma.user.update({
         where: {
           id: session.user.id
