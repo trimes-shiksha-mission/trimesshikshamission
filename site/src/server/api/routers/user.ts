@@ -128,11 +128,6 @@ export const userRouter = createTRPCRouter({
       })
     )
     .mutation(async ({ ctx: { session, prisma }, input }) => {
-      await prisma.user.findUniqueOrThrow({
-        where: {
-          id: session.user.id
-        }
-      })
       // const isEmailValid = await validate(input.email)
       // if (!isEmailValid.valid) {
       //   throw new Error(
