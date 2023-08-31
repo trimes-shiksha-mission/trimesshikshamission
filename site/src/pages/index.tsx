@@ -40,7 +40,7 @@ const Home: NextPage = () => {
         </div>
       )}
 
-      <div className="mt-10 p-24">
+      <div className="mt-10 sm:p-24">
         <Swiper
           modules={[Pagination, Autoplay]}
           pagination={{
