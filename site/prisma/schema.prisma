@@ -43,6 +43,7 @@ model User {
   gautra             String
   nativeTown         String
   password           String?
+  fatherName         String?
   bloodGroup         String?
   address            String
   familyAnnualIncome String?

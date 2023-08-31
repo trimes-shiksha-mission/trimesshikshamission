@@ -76,7 +76,8 @@ const Register: NextPage = () => {
                   address: target.address.value,
                   isPrivateProperty: target.isPrivateProperty.checked,
                   areaId: target.areaId.value,
-                  familyAnnualIncome: target.familyAnnualIncome.value
+                  familyAnnualIncome: target.familyAnnualIncome.value,
+                  fatherName: target.fatherName.value
                 })
                 setIsRegistered(true)
               } catch (error: any) {
@@ -128,6 +129,7 @@ const Register: NextPage = () => {
                   required
                 />
               </div>
+
               <div>
                 <label className="block">
                   Confirm Password
@@ -144,6 +146,18 @@ const Register: NextPage = () => {
               <span className="text-xs text-red-400 hidden">
                 Password must be same!
               </span>
+              <div>
+                <label className="block">
+                  Father&apos;s / Husband&apos;s name<span className="text-red-600">*</span>
+                </label>
+                <input
+                  type="text"
+                  name="fatherName"
+                  placeholder="Father's/Husband's Name"
+                  className="w-full px-4 py-2 mt-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-blue-600"
+                  required
+                />
+              </div>
               <div>
                 <div className="block">
                   Marital Status

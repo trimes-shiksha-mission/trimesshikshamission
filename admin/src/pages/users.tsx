@@ -80,6 +80,11 @@ const Users: NextPage = () => {
       show: true
     },
     {
+      title: "Father's / Husband's Name",
+      dataIndex: 'fatherName',
+      show: true
+    },
+    {
       title: 'Marital Status',
       dataIndex: 'maritalStatus',
       show: false,

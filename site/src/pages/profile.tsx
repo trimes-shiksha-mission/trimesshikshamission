@@ -120,7 +120,8 @@ const Profile: NextPage = () => {
                 areaId: target.areaId.value,
                 maritalStatus: target.maritalStatus.value,
                 isPrivateProperty: target.isPrivateProperty.checked,
-                occupation: target.occupation.value
+                occupation: target.occupation.value,
+                fatherName: target.fatherName.value
               })
               await refetch()
               await update()
@@ -138,6 +139,19 @@ const Profile: NextPage = () => {
                     type="text"
                     disabled={!userProfileEdit}
                     defaultValue={user?.name}
+                  />
+                ) : (
+                  <span>{user?.name}</span>
+                )}
+                <label>Father&apos;s / Husband&apos;s Name</label>
+                {userProfileEdit ? (
+                  <input
+                    name="fatherName"
+                    required
+                    className="border border-gray-400 rounded-md px-2"
+                    type="text"
+                    disabled={!userProfileEdit}
+                    defaultValue={user?.fatherName || ''}
                   />
                 ) : (
                   <span>{user?.name}</span>

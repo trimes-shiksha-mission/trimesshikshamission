@@ -18,6 +18,7 @@ export const userRouter = createTRPCRouter({
         password: z.string().min(8).max(255),
         maritalStatus: z.enum(['married', 'unmarried', 'divorced', 'widowed']),
         gender: z.enum(['male', 'female', 'other']),
+        fatherName: z.string(),
         birthday: z.date(),
         contact: z.string().min(3).max(255),
         occupation: z.string().min(3).max(255),
@@ -122,7 +123,8 @@ export const userRouter = createTRPCRouter({
         address: z.string(),
         isPrivateProperty: z.boolean().default(false),
         familyAnnualIncome: z.string(),
-        areaId: z.string().uuid()
+        areaId: z.string().uuid(),
+        fatherName: z.string()
       })
     )
     .mutation(async ({ ctx: { session, prisma }, input }) => {
