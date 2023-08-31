@@ -1,5 +1,4 @@
 import { compare, hash } from 'bcryptjs'
-import validate from 'deep-email-validator'
 import { z } from 'zod'
 import { env } from '~/env.mjs'
 import { sendMail } from '~/lib/nodemailer'
@@ -35,12 +34,6 @@ export const userRouter = createTRPCRouter({
     .mutation(async ({ ctx: { prisma }, input }) => {
       const { password, ...rest } = input
       const hashedPassword = await hash(password, 10)
-      const isEmailValid = await validate(input.email)
-      if (!isEmailValid.valid) {
-        throw new Error(
-          'This email address not found,please provide valid email address!'
-        )
-      }
       const user = await prisma.user.create({
         data: {
           ...rest,
@@ -128,12 +121,6 @@ export const userRouter = createTRPCRouter({
       })
     )
     .mutation(async ({ ctx: { session, prisma }, input }) => {
-      // const isEmailValid = await validate(input.email)
-      // if (!isEmailValid.valid) {
-      //   throw new Error(
-      //     'This email address not found,please provide valid email address!'
-      //   )
-      // }
       await prisma.user.update({
         where: {
           id: session.user.id
@@ -165,14 +152,6 @@ export const userRouter = createTRPCRouter({
       })
     )
     .mutation(async ({ ctx: { prisma, session }, input }) => {
-      if (input.email) {
-        const isEmailValid = await validate(input.email)
-        if (!isEmailValid.valid) {
-          throw new Error(
-            'This email address not found, please provide valid email address!'
-          )
-        }
-      }
       const user = await prisma.user.create({
         data: {
           ...input,
@@ -230,14 +209,6 @@ export const userRouter = createTRPCRouter({
     )
     .mutation(async ({ ctx: { prisma, session }, input }) => {
       const { userId, ...rest } = input
-      if (rest.email) {
-        const isEmailValid = await validate(rest.email)
-        if (!isEmailValid.valid) {
-          throw new Error(
-            'This email address not found, please provide valid email address!'
-          )
-        }
-      }
       await prisma.user.update({
         where: {
           id: userId,
@@ -343,12 +314,7 @@ export const userRouter = createTRPCRouter({
       if (!isPasswordValid) {
         throw new Error('Password is not correct!')
       }
-      const { valid } = await validate(input.email)
-      if (!valid) {
-        throw new Error(
-          'This email address not found,please provide valid email address!'
-        )
-      }
+
       await prisma.user.update({
         where: {
           contact: rest.contact
