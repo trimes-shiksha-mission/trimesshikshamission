@@ -67,7 +67,7 @@ const Profile: NextPage = () => {
     <Layout loading={getUserLoading}>
       <div className="flex justify-center items-center gap-2 w-full">
         <button
-          onClick={() => signOut()}
+          onClick={() => signOut({ callbackUrl: '/logout' })}
           className="rounded-md w-1/4 sm:w-1/5 mt-2 bg-primary text-xl text-white p-1 text-center"
         >
           Logout
