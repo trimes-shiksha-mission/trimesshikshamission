@@ -154,7 +154,7 @@ const Profile: NextPage = () => {
                     defaultValue={user?.fatherName || ''}
                   />
                 ) : (
-                  <span>{user?.name}</span>
+                  <span>{user?.fatherName}</span>
                 )}
                 <label>Date of Birth</label>
                 {userProfileEdit ? (
