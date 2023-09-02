@@ -1,7 +1,8 @@
 import { createClient } from '@supabase/supabase-js'
+import { env } from '~/env.mjs'
 
-const SUPABASE_URL = process.env.SUPABASE_URL
-const SUPABASE_KEY = process.env.SUPABASE_KEY
+const SUPABASE_URL = env.SUPABASE_URL
+const SUPABASE_KEY = env.SUPABASE_KEY
 
 if (!SUPABASE_URL || !SUPABASE_KEY) {
   throw new Error('Missing SUPABASE_URL or SUPABASE_KEY')

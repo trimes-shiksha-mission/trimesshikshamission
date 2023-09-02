@@ -9,9 +9,10 @@ import { api } from '~/utils/api'
 const Home: NextPage = () => {
   const { data: editorial, isLoading: getEditorialLoading } =
     api.editorial.get.useQuery()
+  const { data: banners, isLoading: getBannersLoading } = api.banners.getAll.useQuery()
 
   return (
-    <Layout loading={getEditorialLoading}>
+    <Layout loading={getEditorialLoading || getBannersLoading}>
       {editorial && (
         <div className=" px-3 py-10 lg:px-48 lg:flex lg:space-x-12 pt-8 shadow-xl m-10 rounded-xl text-center shadow-blue-500/50 border-4 border-black">
           <div className="lg:w-1/4">
@@ -48,11 +49,11 @@ const Home: NextPage = () => {
           }}
           autoplay
         >
-          {[...Array(9)].map((_, index) => (
-            <SwiperSlide key={index}>
+          {banners?.map((banner) => (
+            <SwiperSlide key={banner.id}>
               <div className="relative h-[50dvh]">
                 <Image
-                  src={`/trimes-photos/${index + 1}.jpeg`}
+                  src={banner.url}
                   alt="trimes-photo"
                   fill
                   className="object-contain"

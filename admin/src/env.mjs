@@ -23,7 +23,10 @@ export const env = createEnv({
     EMAIL_SERVER_HOST: z.string().min(1),
     EMAIL_SERVER_PORT: z.number(),
     EMAIL_SERVER_PASSWORD: z.string().min(1),
-    EMAIL_FROM: z.string().email()
+    EMAIL_FROM: z.string().email(),
+    SUPABASE_URL: z.string().url(),
+    SUPABASE_KEY: z.string().min(1),
+    SUPABASE_BUCKET: z.string().min(1)
   },
 
   /**
@@ -47,7 +50,10 @@ export const env = createEnv({
     EMAIL_SERVER_HOST: process.env.EMAIL_SERVER_HOST,
     EMAIL_SERVER_PORT: parseInt(process.env.EMAIL_SERVER_PORT || ''),
     EMAIL_SERVER_PASSWORD: process.env.EMAIL_SERVER_PASSWORD,
-    EMAIL_FROM: process.env.EMAIL_FROM
+    EMAIL_FROM: process.env.EMAIL_FROM,
+    SUPABASE_URL: process.env.SUPABASE_URL,
+    SUPABASE_KEY: process.env.SUPABASE_KEY,
+    SUPABASE_BUCKET: process.env.SUPABASE_BUCKET
   },
   /**
    * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation.

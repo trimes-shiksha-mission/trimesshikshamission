@@ -17,6 +17,9 @@ const config = {
   i18n: {
     locales: ['en'],
     defaultLocale: 'en'
+  },
+  images: {
+    domains: ['ouxhzdpqobsbmkghalxf.supabase.co']
   }
 }
 

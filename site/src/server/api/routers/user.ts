@@ -239,7 +239,8 @@ export const userRouter = createTRPCRouter({
           .optional(),
         familyAnnualIncome: z.string().optional(),
         nativeTown: z.string().optional(),
-        address: z.string().optional()
+        address: z.string().optional(),
+        fatherName: z.string().optional()
       })
     )
     .query(async ({ ctx: { prisma }, input }) => {
@@ -263,7 +264,8 @@ export const userRouter = createTRPCRouter({
             }, {}),
             ...(gender && { gender }),
             ...(bloodGroup && { bloodGroup }),
-            ...(maritalStatus && { maritalStatus })
+            ...(maritalStatus && { maritalStatus }),
+            isVerified: true
           },
           skip: (page - 1) * limit,
           take: limit,
@@ -281,7 +283,8 @@ export const userRouter = createTRPCRouter({
         }),
         prisma.user.count({
           where: {
-            ...filters
+            ...filters,
+            isVerified: true
           }
         })
       ])

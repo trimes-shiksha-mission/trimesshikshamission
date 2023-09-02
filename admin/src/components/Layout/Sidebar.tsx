@@ -2,7 +2,7 @@ import { Layout, Menu } from 'antd'
 import { useSession } from 'next-auth/react'
 import Link from 'next/link'
 import { FC, useEffect, useState } from 'react'
-import { BsPencilSquare } from 'react-icons/bs'
+import { BsImages, BsPencilSquare } from 'react-icons/bs'
 import { FaUserShield } from 'react-icons/fa'
 import { FaUserPen, FaUsersGear, FaUsersLine } from 'react-icons/fa6'
 import { useDarkMode } from '~/context/darkMode'
@@ -48,38 +48,43 @@ export const Sidebar: FC<{
         items={[
           ...(sessionData?.user?.role === 'SUPERUSER'
             ? [
-                {
-                  key: '1',
-                  label: 'SUPER ADMIN',
-                  icon: <FaUserShield />,
-                  children: [
-                    {
-                      label: <Link href="/editorial">Mann ki Baat</Link>,
-                      key: '2-1',
-                      icon: <BsPencilSquare />
-                    }
-                  ]
-                },
-                {
-                  label: <Link href="/admins">Admins</Link>,
-                  key: '2',
-                  icon: <FaUsersGear />
-                }
-              ]
+              {
+                key: '1',
+                label: 'SUPER ADMIN',
+                icon: <FaUserShield />,
+                children: [
+                  {
+                    label: <Link href="/editorial">Mann ki Baat</Link>,
+                    key: '2-1',
+                    icon: <BsPencilSquare />
+                  },
+                  {
+                    label: <Link href="/home-banner">Home Banner</Link>,
+                    key: '2-2',
+                    icon: <BsImages />
+                  }
+                ]
+              },
+              {
+                label: <Link href="/admins">Admins</Link>,
+                key: '2',
+                icon: <FaUsersGear />
+              }
+            ]
             : []),
           ...(['ADMIN', 'SUPERUSER'].includes(sessionData?.user.role || '')
             ? [
-                {
-                  label: <Link href="/editors">Editors</Link>,
-                  key: '3',
-                  icon: <FaUserPen />
-                },
-                {
-                  key: '4',
-                  label: <Link href={'/users'}>Users</Link>,
-                  icon: <FaUsersLine />
-                }
-              ]
+              {
+                label: <Link href="/editors">Editors</Link>,
+                key: '3',
+                icon: <FaUserPen />
+              },
+              {
+                key: '4',
+                label: <Link href={'/users'}>Users</Link>,
+                icon: <FaUsersLine />
+              }
+            ]
             : [])
         ]}
       />

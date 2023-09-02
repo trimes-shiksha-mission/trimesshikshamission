@@ -126,7 +126,6 @@ model Blog {
   title       String
   body        String
   type        String
-  images      String[]
   createdAt   DateTime @default(now()) @db.Timestamptz()
   createdById String   @db.Uuid
   createdBy   Admin    @relation("createdByBlogs", fields: [createdById], references: [id])
@@ -141,4 +140,14 @@ model forgotPasswordToken {
   user User @relation("userForgotPasswordToken", fields: [userId], references: [id])
 
   @@unique([userId])
+}
+
+model Resource {
+  id   String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name String
+  url  String
+  path String
+  type String?
+
+  @@map("Resources")
 }

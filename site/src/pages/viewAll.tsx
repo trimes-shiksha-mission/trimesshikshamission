@@ -37,6 +37,7 @@ const ViewAll: NextPage = () => {
     familyAnnualIncome?: string
     nativeTown?: string
     address?: string
+    fatherName?: string
   }>({
     page: 1,
     limit: 10
@@ -70,6 +71,7 @@ const ViewAll: NextPage = () => {
                 address: form.address.value || undefined,
                 familyAnnualIncome: form.familyAnnualIncome.value || undefined,
                 nativeTown: form.nativeTown.value || undefined,
+                fatherName: form.fatherName.value || undefined,
                 page: 1
               })
             }}
@@ -85,6 +87,18 @@ const ViewAll: NextPage = () => {
                 type="text"
                 name="name"
                 placeholder="Name"
+              />
+            </div>
+            <div>
+              <label className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">
+                Father&apos;s Name
+              </label>
+              <input
+                defaultValue={variables.fatherName}
+                className="appearance-none block w-full border rounded py-3 px-4 mb-3 leading-tight focus:outline-none"
+                type="text"
+                name="fatherName"
+                placeholder="Father's Name"
               />
             </div>
             <div>
@@ -283,6 +297,9 @@ const ViewAll: NextPage = () => {
                       Name
                     </th>
                     <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-50 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                      Father&apos;s Name
+                    </th>
+                    <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-50 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                       Gautra
                     </th>
                     <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-50 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
@@ -329,6 +346,11 @@ const ViewAll: NextPage = () => {
                       <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
                         <p className="text-gray-900 whitespace-no-wrap">
                           {user.name}
+                        </p>
+                      </td>
+                      <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                        <p className="text-gray-900 whitespace-no-wrap">
+                          {user.fatherName}
                         </p>
                       </td>
                       <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
