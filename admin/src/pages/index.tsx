@@ -7,15 +7,16 @@ export const getServerSideProps: GetServerSideProps = async ctx => {
   return {
     redirect: !session
       ? {
-          destination: '/auth'
-        }
+        destination: '/auth'
+      }
       : undefined,
     props: {}
   }
 }
 
 const Home: NextPage = () => {
-  return <Layout>Welcome to Trimes Shiksha Mission Admin Panel</Layout>
+  return <Layout breadcrumbs={[{ label: 'Welcome to Trimes Shiksha Mission Admin Panel' }]}>
+  </Layout>
 }
 
 export default Home

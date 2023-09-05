@@ -91,7 +91,7 @@ const ViewAll: NextPage = () => {
             </div>
             <div>
               <label className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">
-                Father&apos;s Name
+                Father&apos;s/Husband&apos;s Name
               </label>
               <input
                 defaultValue={variables.fatherName}

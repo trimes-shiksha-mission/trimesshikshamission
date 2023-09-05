@@ -43,7 +43,7 @@ export const Header: FC<{ sidebarCollapsed: boolean; toggleSidebar: any }> = ({
             sidebarCollapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />
           }
         />
-        <h1>Trimes Shiksha Mission</h1>
+        <Link href={'/'}>Trimes Shiksha Mission</Link>
       </Space>
       <Space>
         <Button

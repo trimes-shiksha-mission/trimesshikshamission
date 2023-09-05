@@ -150,6 +150,9 @@ const Register: NextPage = () => {
                 <label className="block">
                   Father&apos;s / Husband&apos;s name<span className="text-red-600">*</span>
                 </label>
+                <span className="text-red-600">
+                  विवाहित मातृशक्ति,इस कॉलम में कृपया अपने पति का ही नाम लिखें।
+                </span>
                 <input
                   type="text"
                   name="fatherName"
