@@ -1,25 +1,27 @@
 import { DeleteOutlined, EyeOutlined } from '@ant-design/icons'
 import { Button, Form, Input, Modal, Table } from 'antd'
 import { GetServerSideProps, NextPage } from 'next'
+import dynamic from 'next/dynamic'
 import { useState } from 'react'
 import { Layout } from '~/components/Layout'
 import { useMessageApi } from '~/context/messageApi'
 import { getServerAuthSession } from '~/server/auth'
 import { RouterOutputs, api } from '~/utils/api'
-import { Editor } from '../components/Editor'
+
+const Editor = dynamic(() => import('~/components/Editor/Editor'), { ssr: false })
 
 export const getServerSideProps: GetServerSideProps = async ctx => {
   const session = await getServerAuthSession(ctx)
   return {
     redirect: !session
       ? {
-          destination: '/auth'
-        }
+        destination: '/auth'
+      }
       : session.user.role !== 'SUPERUSER'
-      ? {
+        ? {
           destination: '/'
         }
-      : undefined,
+        : undefined,
     props: {}
   }
 }
@@ -165,7 +167,7 @@ const Editorial: NextPage = () => {
             <Input type="text" />
           </Form.Item>
           <Form.Item label="Content" name="body" rules={[{ required: true }]}>
-            <Editor key={'editorial'} placeholder={'Write something...'} />
+            <Editor type='Editorial' key={'editorial'} placeholder={'Write something...'} />
           </Form.Item>
           <Form.Item>
             <Button
