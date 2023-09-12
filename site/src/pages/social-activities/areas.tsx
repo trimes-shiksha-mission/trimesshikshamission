@@ -8,7 +8,7 @@ export const getServerSideProps: GetServerSideProps = async ctx => {
   return {
     redirect: !session
       ? {
-          destination: '/auth'
+          destination: '/login'
         }
       : undefined,
     props: {}
