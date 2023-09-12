@@ -4,7 +4,10 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { FC, useEffect, useState } from 'react'
+import { BsArrowRight } from 'react-icons/bs'
 import { CgClose, CgMenuRightAlt } from 'react-icons/cg'
+import { navLinks } from '~/data/navLinks'
+import type { NavLinkChild, NavLinkSubChild } from '../../data/navLinks'
 
 const checkRoute = (currRoute: string, link: string) => {
   return '/' + currRoute.split('/')[1] === link
@@ -52,49 +55,51 @@ export const Header: FC = () => {
             </Link>
             <CgMenuRightAlt
               className={`${phoneMenuOpen ? 'invisible' : 'visible'}
-              text-black  lg:hidden mr-4`}
+              text-black  md:hidden mr-4`}
               size={32}
               onClick={() => setPhoneMenuOpen(true)}
             />
-            <ul className="hidden lg:flex items-center justify-center lg:mr-8">
-              <li
-                className={`opacity-95 relative cursor-pointer py-2 text-base font-medium mx-4 hover:text-primary transition-all duration-200 text-black`}
-              >
-                <Link href="/">HOME</Link>
-                {checkRoute(currRoute, '/') && (
-                  <div
-                    className={`bg-black w-full h-[2px] absolute mt-1`}
-                  ></div>
-                )}
-              </li>
+            <ul className="hidden md:flex items-center justify-center lg:mr-8">
+              {navLinks.map((item, i) =>
+                item.protected && !session?.user ? null : (
+                  <li
+                    key={i}
+                    className={`opacity-95 relative cursor-pointer py-4 text-lg font-medium mx-4 ${
+                      item.link && checkRoute(currRoute, item.link)
+                        ? 'text-primary'
+                        : 'text-gray-900'
+                    } hover:text-primary transition-all duration-200 ${
+                      item.children?.length ? 'group' : ''
+                    }`}
+                  >
+                    {item.link ? (
+                      <Link href={item.link} passHref>
+                        {item.title}
+                      </Link>
+                    ) : (
+                      <span>{item.title}</span>
+                    )}
 
-              {session?.user ? (
-                <li
-                  className={`opacity-95 relative cursor-pointer py-2 text-base font-medium mx-4 text-black hover:text-primary transition-all duration-200  `}
-                >
-                  <Link href="/viewAll">View Members</Link>
-                  {checkRoute(currRoute, '/viewAll') && (
-                    <div
-                      className={`bg-black w-full h-[2px] absolute mt-1`}
-                    ></div>
-                  )}
-                </li>
-              ) : null}
-
+                    <div className="invisible group-hover:flex h-0 group-hover:h-auto overflow-y-hidden group-hover:overflow-y-visible  group-hover:visible opacity-0 transition-all duration-300 group-hover:opacity-100 top-full flex-col absolute right-1/2 rounded-lg translate-x-1/2 bg-white text-gray-800 shadow-lg w-80">
+                      <ul className="py-4 px-4">
+                        {item.children?.map((childItem, j) => (
+                          <DropdownMenu key={j} item={childItem} />
+                        ))}
+                      </ul>
+                    </div>
+                  </li>
+                )
+              )}
               <li
-                className={`opacity-95 relative cursor-pointer py-2 text-base font-medium mx-4 text-black hover:text-primary transition-all duration-200  `}
+                className={`opacity-95 relative cursor-pointer py-4 text-lg font-medium mx-4 ${
+                  checkRoute(currRoute, session?.user ? '/profile' : '/login')
+                    ? 'text-primary'
+                    : 'text-gray-900'
+                } hover:text-primary transition-all duration-200`}
               >
-                <Link href={session?.user?.id ? '/profile' : '/login'}>
-                  {session?.user?.id ? session?.user.name : 'Register/Login'}
+                <Link href={session?.user ? '/profile' : '/login'} passHref>
+                  {session?.user ? session?.user.name : 'Register/Login'}
                 </Link>
-                {checkRoute(
-                  currRoute,
-                  session?.user?.id ? '/profile' : '/login'
-                ) && (
-                  <div
-                    className={`bg-black w-full h-[2px] absolute mt-1`}
-                  ></div>
-                )}
               </li>
             </ul>
           </div>
@@ -102,7 +107,7 @@ export const Header: FC = () => {
         <AnimatePresence>
           {phoneMenuOpen && (
             <motion.div
-              className="lg:hidden absolute top-0 left-0 overflow-x-auto w-screen h-screen bg-white py-2 px-4  items-end"
+              className="md:hidden absolute top-0 left-0 overflow-x-auto w-screen h-screen bg-white py-2 px-4  items-end"
               initial={{
                 x: '100%',
                 opacity: 0
@@ -188,5 +193,91 @@ export const Header: FC = () => {
         </AnimatePresence>
       </header>
     </>
+  )
+}
+
+const DropdownMenu: FC<{ item: NavLinkChild }> = ({ item }) => {
+  const [activeMenuChildren, setActiveMenuChildren] = useState<
+    NavLinkSubChild[]
+  >([])
+
+  return (
+    <li className="hover:bg-gray-200 animated rounded-md nav-link-item-child flex items-center px-2">
+      {item.link ? (
+        <Link
+          href={item.link}
+          className="py-3 flex text-md items-center leading-snug mx-2"
+        >
+          {item.title}
+        </Link>
+      ) : (
+        <span className="py-3 flex text-md items-center leading-snug mx-2">
+          {item.title}
+        </span>
+      )}
+      <AnimatePresence>
+        {activeMenuChildren.length ? (
+          <motion.div
+            initial={{
+              x: '-10%',
+              opacity: 0
+            }}
+            whileInView={{
+              x: '0',
+              opacity: 1
+            }}
+            transition={{
+              duration: 0.3
+            }}
+            exit={{
+              x: '-10%',
+              opacity: 0
+            }}
+            className="absolute min-h-full w-full top-0 left-0 z-20 rounded-lg bg-white shadow-lg"
+            onMouseLeave={() => setActiveMenuChildren([])}
+          >
+            <ul className="p-4">
+              {activeMenuChildren.map((child, i) => (
+                <li
+                  key={i}
+                  className="hover:bg-gray-200 animated rounded-md nav-link-item-sub-child flex items-center px-2"
+                >
+                  {child.link ? (
+                    <Link
+                      href={child.link}
+                      className="py-3 flex items-center leading-snug mx-2 text-md"
+                    >
+                      {child.title}
+                    </Link>
+                  ) : (
+                    <span className="py-3 flex items-center leading-snug mx-2 text-md">
+                      {child.title}
+                    </span>
+                  )}
+                  {child.link ? (
+                    <Link
+                      href={child.link}
+                      className="flex flex-1 items-center justify-end"
+                    >
+                      <BsArrowRight
+                        className="opacity-0 nav-link-item-sub-child-arrow animated -translate-x-2 text-black"
+                        size="20"
+                      />
+                    </Link>
+                  ) : (
+                    <span className="flex flex-1 items-center justify-end">
+                      <BsArrowRight
+                        className="opacity-0 nav-link-item-sub-child-arrow animated -translate-x-2 text-black"
+                        size="20"
+                      />
+                    </span>
+                  )}
+                </li>
+              ))}
+            </ul>
+          </motion.div>
+        ) : null}
+      </AnimatePresence>
+    </li>
   )
 }
