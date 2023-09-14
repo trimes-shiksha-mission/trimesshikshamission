@@ -29,7 +29,6 @@ export const navLinks: NavLink[] = [
   },
   {
     title: 'त्रिमेस शिक्षा मिशन',
-    disableRedirectOnMobile: true,
     children: [
       {
         title: 'त्रिमेस विद्या प्रचारिणी संस्थान',

@@ -15,6 +15,7 @@ const checkRoute = (currRoute: string, link: string) => {
 
 export const Header: FC = () => {
   const [phoneMenuOpen, setPhoneMenuOpen] = useState(false)
+  const [accordionOpen, setAccordionOpen] = useState(-1)
   const router = useRouter()
   const currRoute = router.route
   const { data: session } = useSession()
@@ -107,7 +108,7 @@ export const Header: FC = () => {
         <AnimatePresence>
           {phoneMenuOpen && (
             <motion.div
-              className="md:hidden absolute top-0 left-0 overflow-x-auto w-screen h-screen bg-white py-2 px-4  items-end"
+              className="md:hidden absolute top-0 left-0 w-screen h-screen bg-white py-2 px-4 flex flex-col items-end"
               initial={{
                 x: '100%',
                 opacity: 0
@@ -125,68 +126,78 @@ export const Header: FC = () => {
               }}
             >
               <CgClose
-                className="float-right"
-                size={32}
+                size="32"
                 onClick={() => {
                   setPhoneMenuOpen(false)
+                  setAccordionOpen(-1)
                 }}
               />
-              <ul className="flex flex-col py-8 px-1 w-full">
-                <li
-                  className={`relative text-2xl w-full font-bold px-4 text-center py-4 animated hover:text-primary ${
-                    checkRoute(currRoute, '/')
-                      ? 'text-primary'
-                      : 'text-gray-800'
-                  }`}
-                >
-                  <Link
-                    href={'/'}
-                    className="nav-link-item-mobile"
-                    onClick={() => {
-                      setPhoneMenuOpen(false)
-                    }}
-                  >
-                    Home
-                  </Link>
-                </li>
-
-                <li
-                  className={`relative text-2xl w-full font-bold px-4 text-center py-4 animated hover:text-primary ${
-                    checkRoute(currRoute, '/viewAll')
-                      ? 'text-primary'
-                      : 'text-gray-800'
-                  }`}
-                >
-                  <Link
-                    href={'/viewAll'}
-                    className="nav-link-item-mobile"
-                    onClick={() => {
-                      setPhoneMenuOpen(false)
-                    }}
-                  >
-                    View Members
-                  </Link>
-                </li>
-                <li
-                  className={`relative text-2xl w-full font-bold px-4 text-center py-4 animated hover:text-primary ${
-                    checkRoute(
-                      currRoute,
-                      session?.user?.id ? '/profile' : '/login'
-                    )
-                      ? 'text-primary'
-                      : 'text-gray-800'
-                  }`}
-                >
-                  <Link
-                    href={session?.user?.id ? '/profile' : '/login'}
-                    className="nav-link-item-mobile"
-                    onClick={() => {
-                      setPhoneMenuOpen(false)
-                    }}
-                  >
-                    {session?.user?.id ? session?.user?.name : 'Register/Login'}
-                  </Link>
-                </li>
+              <ul className="flex flex-col py-8 px-1">
+                {navLinks.map((item, i) =>
+                  item.protected && !session?.user ? null : (
+                    <li
+                      key={i}
+                      className={`relative text-2xl font-bold px-4 py-4 animated  text-right hover:text-secondary ${
+                        item.link && checkRoute(currRoute, item.link)
+                          ? 'text-secondary'
+                          : 'text-gray-800'
+                      }`}
+                    >
+                      {item.link ? (
+                        <Link
+                          href={item.link}
+                          className="nav-link-item-mobile"
+                          onClick={() => {
+                            setPhoneMenuOpen(false)
+                            setAccordionOpen(-1)
+                          }}
+                        >
+                          {item.title}
+                        </Link>
+                      ) : (
+                        <div
+                          className={
+                            accordionOpen === i ? '' : 'nav-link-item-mobile'
+                          }
+                        >
+                          <span
+                            className="w-full"
+                            onClick={() =>
+                              item.children &&
+                              setAccordionOpen(prev => (prev === i ? -1 : i))
+                            }
+                          >
+                            {item.title}
+                          </span>
+                          <ul
+                            className={`mt-2 ${
+                              item.children && i === accordionOpen
+                                ? 'max-h-96 opacity-100'
+                                : 'max-h-0 overflow-hidden opacity-0'
+                            } animated`}
+                          >
+                            {item.children?.map((child, j) => (
+                              <li
+                                key={j}
+                                className={`relative text-lg font-medium py-2 animated text-gray-700 text-right hover:text-primary `}
+                              >
+                                <Link
+                                  href={child.link || ''}
+                                  onClick={() => {
+                                    setPhoneMenuOpen(false)
+                                    setAccordionOpen(-1)
+                                  }}
+                                >
+                                  {child.title} -
+                                </Link>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
+                    </li>
+                  )
+                )}
               </ul>
             </motion.div>
           )}
