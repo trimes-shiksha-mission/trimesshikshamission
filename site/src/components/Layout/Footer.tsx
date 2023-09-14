@@ -45,23 +45,11 @@ export const Footer: FC = () => {
               </li>
               <hr />
               <li>
-                <Link href="/news">NEWS</Link>
+                <Link href="/employment-news">EMPLOYMENT NEWS</Link>
               </li>
               <hr />
               <li>
-                <Link href="/gyanganga">GYAN GANGA</Link>
-              </li>
-              <hr />
-              <li>
-                <Link href="/students">STUDENTS</Link>
-              </li>
-              <hr />
-              <li>
-                <Link href="/matrimonial">MATRIMONIAL</Link>
-              </li>
-              <hr />
-              <li>
-                <Link href="/jobs">JOB PORTAL</Link>
+                <Link href="/tsm/gyan-ganga">GYAN GANGA</Link>
               </li>
               <hr />
             </ul>
@@ -74,30 +62,13 @@ export const Footer: FC = () => {
               <FaHeart className="inline mr-1 text-red-500" /> MADE IN INDIA
             </div>
             <hr />
-            <ul className="flex flex-col text-[0.8rem] space-y-1">
-              <li>
-                <Link href="/privacy">PRIVACY POLICY</Link>
-              </li>
-              <hr />
-              <li>
-                <Link href="/terms">TERMS OF USE</Link>
-              </li>
-              <hr />
-              <li>
-                <Link href="/faq">FAQS</Link>
-              </li>
-              <hr />
-            </ul>
           </div>
         </div>
       </div>
       <div className="bg-secondary px-8 py-1 text-base flex flex-col sm:flex-row justify-between text-white bg-[#808080]">
         <span>
-          Copyright &copy; 2022 TRIMES SHIKSHA MISSION. ALL RIGHTS RESERVED
-        </span>
-        <span>
-          <Link href="/terms">TERMS OF USE</Link> |
-          <Link href="/privacy"> PRIVACY POLICY</Link>
+          Copyright &copy; {new Date().getFullYear()} TRIMES SHIKSHA MISSION.
+          ALL RIGHTS RESERVED
         </span>
       </div>
     </div>
