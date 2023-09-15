@@ -137,10 +137,10 @@ export const Header: FC = () => {
                   item.protected && !session?.user ? null : (
                     <li
                       key={i}
-                      className={`relative text-2xl font-bold px-4 py-4 animated  text-right hover:text-secondary ${
+                      className={`relative text-2xl font-bold px-4 py-4 animated  text-right hover:text-primary ${
                         item.link && checkRoute(currRoute, item.link)
-                          ? 'text-secondary'
-                          : 'text-gray-800'
+                          ? 'text-primary'
+                          : 'text-gray-900'
                       }`}
                     >
                       {item.link ? (
@@ -179,7 +179,7 @@ export const Header: FC = () => {
                             {item.children?.map((child, j) => (
                               <li
                                 key={j}
-                                className={`relative text-lg font-medium py-2 animated text-gray-700 text-right hover:text-primary `}
+                                className={`relative text-lg font-medium py-2 animated text-gray-900 text-right hover:text-primary `}
                               >
                                 <Link
                                   href={child.link || ''}
@@ -198,6 +198,24 @@ export const Header: FC = () => {
                     </li>
                   )
                 )}
+                <li
+                  className={`relative text-2xl font-bold px-4 py-4 animated  text-right hover:text-primary ${
+                    checkRoute(currRoute, session?.user ? '/profile' : '/login')
+                      ? 'text-primary'
+                      : 'text-gray-900'
+                  }`}
+                >
+                  <Link
+                    href={session?.user ? '/profile' : '/login'}
+                    className="nav-link-item-mobile"
+                    onClick={() => {
+                      setPhoneMenuOpen(false)
+                      setAccordionOpen(-1)
+                    }}
+                  >
+                    {session?.user ? session?.user.name : 'Register/Login'}
+                  </Link>
+                </li>
               </ul>
             </motion.div>
           )}
