@@ -69,8 +69,7 @@ const Editor: FC<{
       clipboard: {
         matchVisual: false
       },
-      blotFormatter: {},
-      htmlEditButton: {}
+      blotFormatter: {}
     }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     []
