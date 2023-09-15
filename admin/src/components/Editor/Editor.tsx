@@ -1,13 +1,11 @@
 // @ts-ignore
 import BlotFormatter from 'quill-blot-formatter/dist/BlotFormatter'
-import htmlEditButton from 'quill-html-edit-button'
 import { FC, useCallback, useMemo, useRef } from 'react'
 import ReactQuill, { Quill } from 'react-quill'
 import 'react-quill/dist/quill.snow.css'
 import CustomImage from './CustomImageFormat'
 
 Quill.register('modules/blotFormatter', BlotFormatter)
-Quill.register('modules/htmlEditButton', htmlEditButton)
 Quill.register({
   'formats/image': CustomImage
 })
@@ -40,18 +38,11 @@ const Editor: FC<{
       if (!uploadedUrl) return
       let quillObj = quillRef.current.getEditor()
       const range = quillObj.getSelection()
-      quillObj.editor.insertEmbed(
-        range.index,
-        'image',
-        uploadedUrl
-      )
+      quillObj.editor.insertEmbed(range.index, 'image', uploadedUrl)
       const currentValue = quillRef.current.props.value
       quillObj.setSelection(range.index + 2)
 
-      onChange!(
-        (currentValue || '') +
-        `<img src="${uploadedUrl}" />`
-      )
+      onChange!((currentValue || '') + `<img src="${uploadedUrl}" />`)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
