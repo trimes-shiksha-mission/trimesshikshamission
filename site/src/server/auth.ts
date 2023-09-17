@@ -152,6 +152,9 @@ export const authOptions: NextAuthOptions = {
     signIn: '/login',
     signOut: '/logout',
     error: '/login'
+  },
+  session: {
+    maxAge: 15 * 60
   }
 }
 
