@@ -99,7 +99,7 @@ export const Header: FC = () => {
                 } hover:text-primary transition-all duration-200`}
               >
                 <Link href={session?.user ? '/profile' : '/login'} passHref>
-                  {session?.user ? session?.user.name : 'Register/Login'}
+                  {session?.user ? session?.user.name : 'Registration/Login'}
                 </Link>
               </li>
             </ul>
@@ -213,7 +213,7 @@ export const Header: FC = () => {
                       setAccordionOpen(-1)
                     }}
                   >
-                    {session?.user ? session?.user.name : 'Register/Login'}
+                    {session?.user ? session?.user.name : 'Registration/Login'}
                   </Link>
                 </li>
               </ul>
