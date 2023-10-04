@@ -62,6 +62,11 @@ export const Footer: FC = () => {
               <FaHeart className="inline mr-1 text-red-500" /> MADE IN INDIA
             </div>
             <hr />
+            <div className="text-base flex flex-col gap-2 mt-2 items-center">
+              <div>संयोजक: Mehul Bharat Ji Joshi</div>
+              <div>सहसंयोजक: Eakansh Virendra Ji Jain</div>
+              <div>सहसंयोजक: Jayesh Prabhulal Ji Kugsiya</div>
+            </div>
           </div>
         </div>
       </div>
