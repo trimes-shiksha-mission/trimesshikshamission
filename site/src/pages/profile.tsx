@@ -15,25 +15,28 @@ export const getServerSideProps: GetServerSideProps = async ctx => {
   return {
     redirect: !session
       ? {
-        destination: '/login'
-      }
+          destination: '/login'
+        }
       : undefined,
     props: {}
   }
 }
 
 const Profile: NextPage = () => {
-
   //? Session
   const { data: session, update } = useSession()
 
   //? States
   const [otherRelation, setOtherRelation] = useState(false)
   const [membersVisible, setMembersVisible] = useState(false)
-  const [memberToDelete, setMemberToDelete] = useState<RouterOutputs['user']['getMembers'][0] | null>(null)
+  const [memberToDelete, setMemberToDelete] = useState<
+    RouterOutputs['user']['getMembers'][0] | null
+  >(null)
   const [addMemberForm, setAddMemberForm] = useState(false)
   const [userProfileEdit, setUserProfileEdit] = useState(false)
-  const [memberProfileEdit, setMemberProfileEdit] = useState<RouterOutputs['user']['getMembers'][0] | null>(null)
+  const [memberProfileEdit, setMemberProfileEdit] = useState<
+    RouterOutputs['user']['getMembers'][0] | null
+  >(null)
   const [changePasswordModal, setChangePasswordModal] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
 
@@ -45,9 +48,7 @@ const Profile: NextPage = () => {
   } = api.user.profile.useQuery(undefined, {
     enabled: !!session?.user
   })
-  const {
-    data: areas,
-  } = api.area.getAll.useQuery()
+  const { data: areas } = api.area.getAll.useQuery()
   const {
     data: members,
     isLoading: getMembersLoading,
@@ -57,11 +58,16 @@ const Profile: NextPage = () => {
   })
 
   //? Mutations
-  const { mutateAsync: changePassword, isLoading: changePasswordLoading } = api.user.changePassword.useMutation()
-  const { mutateAsync: updateProfile, isLoading: updateProfileLoading } = api.user.updateProfile.useMutation()
-  const { mutateAsync: registerMember, isLoading: registerMemberLoading } = api.user.registerMember.useMutation()
-  const { mutateAsync: deleteMember, isLoading: deleteMemberLoading } = api.user.deleteMember.useMutation()
-  const { mutateAsync: updateMember, isLoading: updateMemberLoading } = api.user.updateMember.useMutation()
+  const { mutateAsync: changePassword, isLoading: changePasswordLoading } =
+    api.user.changePassword.useMutation()
+  const { mutateAsync: updateProfile, isLoading: updateProfileLoading } =
+    api.user.updateProfile.useMutation()
+  const { mutateAsync: registerMember, isLoading: registerMemberLoading } =
+    api.user.registerMember.useMutation()
+  const { mutateAsync: deleteMember, isLoading: deleteMemberLoading } =
+    api.user.deleteMember.useMutation()
+  const { mutateAsync: updateMember, isLoading: updateMemberLoading } =
+    api.user.updateMember.useMutation()
 
   return (
     <Layout loading={getUserLoading}>
@@ -167,14 +173,14 @@ const Profile: NextPage = () => {
                     defaultValue={
                       user
                         ? new Date(user.birthday).getFullYear() +
-                        '-' +
-                        (new Date(user.birthday).getMonth() + 1 < 10
-                          ? '0'
-                          : '') +
-                        (new Date(user.birthday).getMonth() + 1) +
-                        '-' +
-                        (new Date(user.birthday).getDate() < 10 ? '0' : '') +
-                        new Date(user.birthday).getDate()
+                          '-' +
+                          (new Date(user.birthday).getMonth() + 1 < 10
+                            ? '0'
+                            : '') +
+                          (new Date(user.birthday).getMonth() + 1) +
+                          '-' +
+                          (new Date(user.birthday).getDate() < 10 ? '0' : '') +
+                          new Date(user.birthday).getDate()
                         : ''
                     }
                   />
@@ -182,10 +188,10 @@ const Profile: NextPage = () => {
                   <span>
                     {user
                       ? new Date(user.birthday).getDate() +
-                      '-' +
-                      (new Date(user.birthday).getMonth() + 1) +
-                      '-' +
-                      new Date(user.birthday).getFullYear()
+                        '-' +
+                        (new Date(user.birthday).getMonth() + 1) +
+                        '-' +
+                        new Date(user.birthday).getFullYear()
                       : ''}
                   </span>
                 )}
@@ -475,6 +481,9 @@ const Profile: NextPage = () => {
                       Relation
                     </th>
                     <th scope="col" className="py-3 px-6">
+                      Father&apos;s/Husband&apos;s Name
+                    </th>
+                    <th scope="col" className="py-3 px-6">
                       Age
                     </th>
                     <th scope="col" className="py-3 px-6">
@@ -524,6 +533,7 @@ const Profile: NextPage = () => {
                       <td className="py-4 px-6">
                         {member.relationWithHead || 'Not Specified'}
                       </td>
+                      <td className="py-4 px-6">{member.fatherName || ''}</td>
                       <td className="py-4 px-6">
                         {new Date(Date.now()).getFullYear() -
                           new Date(member.birthday).getFullYear()}{' '}
@@ -593,13 +603,17 @@ const Profile: NextPage = () => {
                   bloodGroup: target.bloodGroup.value,
                   address: target.address.value,
                   isPrivateProperty: target.isPrivateProperty.checked,
-                  relationWithHead: target.relationWithHead.value
+                  relationWithHead: target.relationWithHead.value,
+                  fatherName: target.fatherName.value
                 })
                 await refetchMembers()
                 alert('Member added successfully!')
                 setAddMemberForm(false)
               } catch (error: any) {
-                alert(error.message || 'Some error occurred! Please report to administrator')
+                alert(
+                  error.message ||
+                    'Some error occurred! Please report to administrator'
+                )
               }
             }}
           >
@@ -612,6 +626,19 @@ const Profile: NextPage = () => {
                   type="text"
                   name="name"
                   placeholder="Name"
+                  className="w-full px-4 py-2 mt-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-blue-600"
+                  required
+                />
+              </div>
+              <div>
+                <label className="block">
+                  Father&apos;s/Husband&apos;s Name
+                  <span className="text-red-600">*</span>
+                </label>
+                <input
+                  type="text"
+                  name="fatherName"
+                  placeholder="Father's Name"
                   className="w-full px-4 py-2 mt-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-blue-600"
                   required
                 />
@@ -906,7 +933,6 @@ const Profile: NextPage = () => {
         ) : null}
       </div>
 
-
       <Modal open={!!memberToDelete}>
         <div className="sm:flex sm:items-start">
           <div className="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10">
@@ -966,8 +992,6 @@ const Profile: NextPage = () => {
         </div>
       </Modal>
 
-
-
       <Modal open={deleteMemberLoading} empty>
         <svg
           className="h-12 w-12 animate-spin"
@@ -983,7 +1007,6 @@ const Profile: NextPage = () => {
           />
         </svg>
       </Modal>
-
 
       <Modal open={!!memberProfileEdit}>
         <form
@@ -1006,7 +1029,8 @@ const Profile: NextPage = () => {
               bloodGroup: target.bloodGroup.value,
               address: target.address.value,
               isPrivateProperty: target.isPrivateProperty.checked,
-              relationWithHead: target.relationWithHead.value
+              relationWithHead: target.relationWithHead.value,
+              fatherName: target.fatherName.value
             })
             await refetchMembers()
             setMemberProfileEdit(null)
@@ -1022,6 +1046,20 @@ const Profile: NextPage = () => {
                 defaultValue={memberProfileEdit?.name}
                 name="name"
                 placeholder="Name"
+                className="w-full px-4 py-2 mt-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-blue-600"
+                required
+              />
+            </div>
+            <div>
+              <label className="block">
+                Father&apos;s/Husband&apos;s Name
+                <span className="text-red-600">*</span>
+              </label>
+              <input
+                type="text"
+                defaultValue={memberProfileEdit?.fatherName || ''}
+                name="fatherName"
+                placeholder="Father's/Husband's Name"
                 className="w-full px-4 py-2 mt-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-blue-600"
                 required
               />
@@ -1121,17 +1159,19 @@ const Profile: NextPage = () => {
               </label>
               <input
                 defaultValue={
-                  memberProfileEdit ? new Date(memberProfileEdit.birthday).getFullYear() +
-                    '-' +
-                    (new Date(memberProfileEdit.birthday).getMonth() + 1 < 10
-                      ? '0'
-                      : '') +
-                    (new Date(memberProfileEdit.birthday).getMonth() + 1) +
-                    '-' +
-                    (new Date(memberProfileEdit.birthday).getDate() < 10
-                      ? '0'
-                      : '') +
-                    new Date(memberProfileEdit.birthday).getDate() : ''
+                  memberProfileEdit
+                    ? new Date(memberProfileEdit.birthday).getFullYear() +
+                      '-' +
+                      (new Date(memberProfileEdit.birthday).getMonth() + 1 < 10
+                        ? '0'
+                        : '') +
+                      (new Date(memberProfileEdit.birthday).getMonth() + 1) +
+                      '-' +
+                      (new Date(memberProfileEdit.birthday).getDate() < 10
+                        ? '0'
+                        : '') +
+                      new Date(memberProfileEdit.birthday).getDate()
+                    : ''
                 }
                 type="date"
                 id="birthday"
@@ -1271,9 +1311,7 @@ const Profile: NextPage = () => {
               <label>
                 <input
                   type="checkbox"
-                  defaultChecked={
-                    memberProfileEdit?.isPrivateProperty || false
-                  }
+                  defaultChecked={memberProfileEdit?.isPrivateProperty || false}
                   name="isPrivateProperty"
                   className="mr-2"
                 />
@@ -1281,30 +1319,29 @@ const Profile: NextPage = () => {
               </label>
             </div>
           </div>
-          {<div className="flex gap-2 pt-2 justify-center items-center">
-            <button
-              disabled={updateMemberLoading}
-              className="px-6 py-2 mt-4 flex items-center justify-center gap-2 text-white w-64 bg-blue-600 rounded-lg hover:bg-blue-900"
-              type="submit"
-            >
-              <span>Update</span>
-              <Spinner loading={updateMemberLoading} />
-            </button>
-            <button
-              className="px-6 py-2 mt-4 text-white w-64 bg-orange-600 rounded-lg hover:bg-orange-900"
-              type="button"
-              onClick={() => {
-                setMemberProfileEdit(null)
-              }}
-            >
-              Cancel
-            </button>
-          </div>}
+          {
+            <div className="flex gap-2 pt-2 justify-center items-center">
+              <button
+                disabled={updateMemberLoading}
+                className="px-6 py-2 mt-4 flex items-center justify-center gap-2 text-white w-64 bg-blue-600 rounded-lg hover:bg-blue-900"
+                type="submit"
+              >
+                <span>Update</span>
+                <Spinner loading={updateMemberLoading} />
+              </button>
+              <button
+                className="px-6 py-2 mt-4 text-white w-64 bg-orange-600 rounded-lg hover:bg-orange-900"
+                type="button"
+                onClick={() => {
+                  setMemberProfileEdit(null)
+                }}
+              >
+                Cancel
+              </button>
+            </div>
+          }
         </form>
       </Modal>
-
-
-
 
       <Modal open={changePasswordModal}>
         <form
@@ -1409,7 +1446,6 @@ const Profile: NextPage = () => {
           </div>
         </form>
       </Modal>
-
     </Layout>
   )
 }

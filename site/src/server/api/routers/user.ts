@@ -148,7 +148,8 @@ export const userRouter = createTRPCRouter({
         bloodGroup: z.enum(['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-']),
         address: z.string().min(3).max(255),
         isPrivateProperty: z.boolean(),
-        relationWithHead: z.string().min(3).max(255)
+        relationWithHead: z.string().min(3).max(255),
+        fatherName: z.string()
       })
     )
     .mutation(async ({ ctx: { prisma, session }, input }) => {
@@ -204,7 +205,8 @@ export const userRouter = createTRPCRouter({
           .optional(),
         address: z.string(),
         isPrivateProperty: z.boolean().default(false),
-        relationWithHead: z.string()
+        relationWithHead: z.string(),
+        fatherName: z.string()
       })
     )
     .mutation(async ({ ctx: { prisma, session }, input }) => {
