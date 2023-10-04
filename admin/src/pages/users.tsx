@@ -331,7 +331,8 @@ const Users: NextPage = () => {
           pageSize: variables.limit,
           total: users?.count,
           showSizeChanger: true,
-          pageSizeOptions: [10, 20, 50]
+          pageSizeOptions: [10, 20, 50],
+          showQuickJumper: true
         }}
         onChange={(pagination, filters, sorter: any) => {
           setVariables({
