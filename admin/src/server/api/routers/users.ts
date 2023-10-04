@@ -102,6 +102,9 @@ export const usersRouter = createTRPCRouter({
             qualification: true,
             relationWithHead: true,
             showInMatrimony: true
+          },
+          orderBy: {
+            name: 'asc'
           }
         }),
         prisma.user.count({ where })

@@ -1,4 +1,13 @@
-import { Button, Form, Input, Modal, Select, Space, Table } from 'antd'
+import {
+  Button,
+  Form,
+  Input,
+  Modal,
+  Select,
+  Space,
+  Table,
+  Typography
+} from 'antd'
 import { GetServerSideProps, NextPage } from 'next'
 import { useState } from 'react'
 import { Layout } from '~/components/Layout'
@@ -10,8 +19,8 @@ export const getServerSideProps: GetServerSideProps = async ctx => {
   return {
     redirect: !session
       ? {
-        destination: '/auth'
-      }
+          destination: '/auth'
+        }
       : undefined,
     props: {}
   }
@@ -192,7 +201,8 @@ const Users: NextPage = () => {
     {
       title: 'Verified',
       dataIndex: 'isVerified',
-      render: (isVerified: boolean, row: any) => !row.head ? (isVerified ? 'Yes' : 'No') : 'N/A',
+      render: (isVerified: boolean, row: any) =>
+        !row.head ? (isVerified ? 'Yes' : 'No') : 'N/A',
       show: true,
       filters: [
         {
@@ -231,8 +241,6 @@ const Users: NextPage = () => {
     refetch,
     isRefetching
   } = api.users.getAll.useQuery(variables)
-
-
 
   //? Mutations
   const { mutateAsync: verifyUser, isLoading: verifyUserLoading } =
@@ -340,14 +348,14 @@ const Users: NextPage = () => {
             }, {}),
             ...(sorter && sorter.column
               ? {
-                sort: {
-                  by: sorter.column.dataIndex,
-                  order: sorter.order === 'ascend' ? 'asc' : 'desc'
+                  sort: {
+                    by: sorter.column.dataIndex,
+                    order: sorter.order === 'ascend' ? 'asc' : 'desc'
+                  }
                 }
-              }
               : {
-                sort: undefined
-              })
+                  sort: undefined
+                })
           })
         }}
       />
@@ -373,7 +381,7 @@ const Users: NextPage = () => {
           <Form.Item label="Email" name="email">
             <Input />
           </Form.Item>
-          {userModalOpen && !userModalOpen.isVerified && !userModalOpen.head && (
+          {userModalOpen && !userModalOpen.isVerified && !userModalOpen.head ? (
             <Form.Item>
               <Button
                 type="primary"
@@ -388,6 +396,10 @@ const Users: NextPage = () => {
                 Verify User
               </Button>
             </Form.Item>
+          ) : (
+            <Typography.Text className="bg-blue-600 text-white p-2 rounded-sm">
+              User Verified
+            </Typography.Text>
           )}
         </Form>
       </Modal>
