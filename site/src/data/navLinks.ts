@@ -44,11 +44,11 @@ export const navLinks: NavLink[] = [
     title: 'Social Activities',
     children: [
       {
-        title: 'पंजीकृत संस्थाएं',
+        title: 'पंजीकृत संस्थाओं से',
         link: '/social-activities/institutions'
       },
       {
-        title: 'चोखलों से',
+        title: 'चौखलों/इकाइयों से',
         link: '/social-activities/areas'
       }
     ]
