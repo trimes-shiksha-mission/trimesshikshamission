@@ -635,6 +635,9 @@ const Profile: NextPage = () => {
                   Father&apos;s/Husband&apos;s Name
                   <span className="text-red-600">*</span>
                 </label>
+                <span className="text-red-600">
+                  विवाहित मातृशक्ति,इस कॉलम में कृपया अपने पति का ही नाम लिखें।
+                </span>
                 <input
                   type="text"
                   name="fatherName"
@@ -1055,6 +1058,9 @@ const Profile: NextPage = () => {
                 Father&apos;s/Husband&apos;s Name
                 <span className="text-red-600">*</span>
               </label>
+              <span className="text-red-600">
+                विवाहित मातृशक्ति,इस कॉलम में कृपया अपने पति का ही नाम लिखें।
+              </span>
               <input
                 type="text"
                 defaultValue={memberProfileEdit?.fatherName || ''}

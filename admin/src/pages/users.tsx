@@ -282,9 +282,8 @@ const Users: NextPage = () => {
 
       <Table
         loading={getUsersLoading || isRefetching}
-        style={{
-          overflowX: 'scroll'
-        }}
+        size="small"
+        scroll={{ x: 1000 }}
         columns={[
           {
             title: 'Sr. No.',
@@ -332,7 +331,9 @@ const Users: NextPage = () => {
           total: users?.count,
           showSizeChanger: true,
           pageSizeOptions: [10, 20, 50],
-          showQuickJumper: true
+          simple: true,
+          responsive: true,
+          showTotal: total => `${total} Total Users`
         }}
         onChange={(pagination, filters, sorter: any) => {
           setVariables({

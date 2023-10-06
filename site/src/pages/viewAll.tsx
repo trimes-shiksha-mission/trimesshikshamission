@@ -6,8 +6,7 @@ import { getServerAuthSession } from '~/server/auth'
 import { RouterOutputs, api } from '~/utils/api'
 import { Modal } from '../components/Modal'
 
-
-export const getServerSideProps: GetServerSideProps = async (ctx) => {
+export const getServerSideProps: GetServerSideProps = async ctx => {
   const session = await getServerAuthSession(ctx)
   if (!session) {
     return {
@@ -21,9 +20,10 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
 }
 
 const ViewAll: NextPage = () => {
-
   //? States
-  const [membersModal, setMembersModal] = useState<RouterOutputs['user']['getAll']['data'][0] | null>(null)
+  const [membersModal, setMembersModal] = useState<
+    RouterOutputs['user']['getAll']['data'][0] | null
+  >(null)
   const [variables, setVariables] = useState<{
     page: number
     limit: number
@@ -44,7 +44,8 @@ const ViewAll: NextPage = () => {
   })
 
   //? Queries
-  const { data: users, isLoading: getUsersLoading } = api.user.getAll.useQuery(variables)
+  const { data: users, isLoading: getUsersLoading } =
+    api.user.getAll.useQuery(variables)
 
   return (
     <Layout loading={getUsersLoading}>
@@ -272,11 +273,11 @@ const ViewAll: NextPage = () => {
                 onClick={() => {
                   setVariables({
                     ...Object.keys(variables).reduce((acc, key) => {
-                      (acc as any)[key] = undefined
+                      ;(acc as any)[key] = undefined
                       return acc
                     }, {}),
                     page: 1,
-                    limit: 10,
+                    limit: 10
                   })
                 }}
               >
@@ -406,10 +407,11 @@ const ViewAll: NextPage = () => {
                       <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
                         <button
                           onClick={() => setMembersModal(user)}
-                          className={`${user.members?.length === 0
-                            ? 'cursor-not-allowed text-gray-500'
-                            : 'text-blue-500'
-                            } flex items-center justify-center gap-1 bg-white border border-blue-500 rounded-md px-2 py-1 whitespace-no-wrap`}
+                          className={`${
+                            user.members?.length === 0
+                              ? 'cursor-not-allowed text-gray-500'
+                              : 'text-blue-500'
+                          } flex items-center justify-center gap-1 bg-white border border-blue-500 rounded-md px-2 py-1 whitespace-no-wrap`}
                           disabled={user.members?.length === 0}
                         >
                           <span>{user.members?.length}&nbsp;View</span>{' '}
@@ -424,13 +426,10 @@ const ViewAll: NextPage = () => {
           </div>
 
           <div className="px-5 py-5 bg-white border-t flex flex-col xs:flex-row items-center xs:justify-between">
-
             <span className="text-xs xs:text-sm text-gray-900">
-              Showing {users?.data.length} to{' '}
+              Showing {(variables.page - 1) * variables.limit + 1} to{' '}
               {variables.page >=
-                parseInt(
-                  ((users?.total || 0) / variables.limit + 1).toString()
-                )
+              parseInt(((users?.total || 0) / variables.limit + 1).toString())
                 ? users?.total
                 : (variables.page - 1) * variables.limit + variables.limit}{' '}
               of {users?.total} total Users: {users?.total}
@@ -444,48 +443,107 @@ const ViewAll: NextPage = () => {
                     ...variables,
                     page: variables.page - 1
                   })
-                }
-                }
+                }}
                 disabled={variables.page <= 1}
-                className={`text-sm bg-primary hover:opacity-80  text-white font-semibold py-2 px-4 rounded-l ${variables.page <= 1
-                  ? 'pointer-events-none opacity-50'
-                  : 'cursor-pointer'
-                  }`}
+                className={`text-sm bg-primary hover:opacity-80  text-white font-semibold py-2 px-4 rounded-l ${
+                  variables.page <= 1
+                    ? 'pointer-events-none opacity-50'
+                    : 'cursor-pointer'
+                }`}
               >
                 Prev
-              </ button>
+              </button>
+              <input
+                className="text-center w-10 border border-gray-300 mx-2 rounded-md"
+                type="number"
+                min={1}
+                max={parseInt(
+                  ((users?.total || 0) / variables.limit + 1).toString()
+                )}
+                maxLength={parseInt(
+                  ((users?.total || 0) / variables.limit + 1).toString()
+                )}
+                onChange={e => {
+                  const value = parseInt(e.target.value)
+                  if (value < 1) {
+                    e.target.value = '1'
+                    return
+                  }
+                  if (
+                    value >
+                    parseInt(
+                      ((users?.total || 0) / variables.limit + 1).toString()
+                    )
+                  ) {
+                    e.target.value = parseInt(
+                      ((users?.total || 0) / variables.limit + 1).toString()
+                    ).toString()
+                    return
+                  }
+                }}
+                defaultValue={variables.page}
+                onBlur={e => {
+                  const value = parseInt(e.target.value)
+                  if (
+                    value >
+                    parseInt(
+                      ((users?.total || 0) / variables.limit + 1).toString()
+                    )
+                  ) {
+                    e.target.value = parseInt(
+                      ((users?.total || 0) / variables.limit + 1).toString()
+                    ).toString()
+                    return
+                  }
+                  if (value < 1) {
+                    e.target.value = '1'
+                    return
+                  }
+                  setVariables({
+                    ...variables,
+                    page: value
+                  })
+                }}
+              ></input>
               {users?.total && users.total > variables.limit ? (
                 <button
                   onClick={() => {
-                    if (variables.page >= parseInt(((users?.total || 0) / variables.limit + 1).toString())) return
+                    if (
+                      variables.page >=
+                      parseInt(
+                        ((users?.total || 0) / variables.limit + 1).toString()
+                      )
+                    )
+                      return
                     setVariables({
                       ...variables,
                       page: variables.page + 1
                     })
                   }}
-                  disabled={variables.page >= parseInt(((users?.total || 0) / variables.limit + 1).toString())}
-                  className={`text-sm bg-primary hover:opacity-80 text-white font-semibold py-2 px-4 rounded-r ${variables.page >=
+                  disabled={
+                    variables.page >=
+                    parseInt(
+                      ((users?.total || 0) / variables.limit + 1).toString()
+                    )
+                  }
+                  className={`text-sm bg-primary hover:opacity-80 text-white font-semibold py-2 px-4 rounded-r ${
+                    variables.page >=
                     parseInt(
                       ((users.total || 0) / variables.limit + 1).toString()
                     )
-                    ? 'pointer-events-none opacity-50'
-                    : 'cursor-pointer'
-                    }`}
+                      ? 'pointer-events-none opacity-50'
+                      : 'cursor-pointer'
+                  }`}
                 >
                   Next
                 </button>
-              ) : null
-              }
+              ) : null}
             </div>
           </div>
         </div>
       </div>
 
-      <Modal
-        empty
-        open={!!membersModal}
-        onCancel={() => setMembersModal(null)}
-      >
+      <Modal empty open={!!membersModal} onCancel={() => setMembersModal(null)}>
         <table className="min-w-full leading-normal">
           <thead>
             <tr>

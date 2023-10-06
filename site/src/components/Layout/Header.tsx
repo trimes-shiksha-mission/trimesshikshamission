@@ -36,7 +36,13 @@ export const Header: FC = () => {
         id="header"
         className={`w-full block fixed z-50 animated transition-all duration-300 bg-white backdrop-filter backdrop-blur-md text-black bg-transparent`}
       >
-        <Marquee className="bg-primary font-bold">
+        <Marquee
+          delay={2}
+          autoFill={false}
+          pauseOnClick
+          pauseOnHover
+          className="pl-[50%] bg-primary font-bold"
+        >
           युवाओं के लिए रोजगार उत्पन्न करने एवं उन्हें स्वरोजगार हेतु
           प्रोत्साहित करने हेतु निर्मित &quot;Trimes Vidhya Pracharini Sansthan
           (TVS)&quot; से आप सक्रिय रूप से अवश्य जुड़ें तथा किसी भी प्रकार का
