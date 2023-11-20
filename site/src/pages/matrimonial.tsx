@@ -141,7 +141,7 @@ const matrimonial: NextPage = () => {
             </div>
             <div className="mt-4">
               <label className="block mb-2 text-sm font-bold text-gray-700">
-                Graduation
+                Graduation (if any)
               </label>
               <input
                 className="w-full px-3 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline"
@@ -238,6 +238,30 @@ const matrimonial: NextPage = () => {
                 type="text"
                 placeholder="Address"
               />
+            </div>
+            <div className="mt-4">
+              <label className="block mb-2 text-sm font-bold text-gray-700">
+                Mangal Dos
+              </label>
+              <input
+                className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                type="checkbox"
+                placeholder="Address"
+              />
+            </div>
+            <div className="mt-4">
+              <label className="block mb-2 text-sm font-bold text-gray-700">
+                Marital Status
+              </label>
+              <select
+                id="dietaryHabits"
+                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+              >
+                <option selected>choose your Marital status</option>
+                <option value="veg">Single (अविवाहित)</option>
+                <option value="non-veg">Divorced (तलाक शुदा)</option>
+                <option value="vegna">Widow/Widower</option>
+              </select>
             </div>
             <div className="mt-4">
               <label className="block mb-2 text-sm font-bold text-gray-700">

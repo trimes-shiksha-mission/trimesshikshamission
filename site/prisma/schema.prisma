@@ -151,3 +151,31 @@ model Resource {
 
   @@map("Resources")
 }
+
+model Matrimonial {
+  id String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name String
+  nativePlace String
+  currentCity String
+  height String
+  bloodGroup  String
+  complexion String
+  dietaryHabits String
+  dob DateTime
+  birthPlace String
+  religion  String
+  caste String
+  graduation String?
+  postGraduation String?
+  currentJobProfile String
+  fatherName String
+  fatherOccupation String
+  motherName String
+  motherOccupation String
+  siblings String
+  phoneNumber String
+  address String
+  manglic Boolean
+  maritalSatus String
+
+}
