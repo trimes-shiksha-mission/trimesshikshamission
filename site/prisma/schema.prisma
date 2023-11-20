@@ -29,6 +29,14 @@ enum MaritalStatus {
   widowed
 }
 
+enum DietaryHabits {
+  vegetarian
+  nonVegetarian
+  vegan
+}
+
+
+
 model User {
   id                 String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   name               String
@@ -160,7 +168,7 @@ model Matrimonial {
   height String
   bloodGroup  String
   complexion String
-  dietaryHabits String
+  dietaryHabits DietaryHabits
   dob DateTime
   birthPlace String
   religion  String
@@ -176,6 +184,6 @@ model Matrimonial {
   phoneNumber String
   address String
   manglic Boolean
-  maritalSatus String
+  maritalSatus MaritalStatus
 
 }
