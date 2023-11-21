@@ -544,7 +544,7 @@ const ViewAll: NextPage = () => {
       </div>
 
       <Modal empty open={!!membersModal} onCancel={() => setMembersModal(null)}>
-        <table className="min-w-full leading-normal">
+        <table className="w-full leading-normal overflow-auto">
           <thead>
             <tr>
               <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-50 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
