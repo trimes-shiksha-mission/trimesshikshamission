@@ -10,11 +10,14 @@ export const getServerSideProps: GetServerSideProps = async ctx => {
       ? {
           destination: '/auth'
         }
+      : session.user.role !== 'SUPERUSER'
+      ? {
+          destination: '/'
+        }
       : undefined,
     props: {}
   }
 }
-
 const VidhyaPracharini: NextPage = () => {
   return (
     <Layout

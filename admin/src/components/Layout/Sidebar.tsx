@@ -62,6 +62,12 @@ export const Sidebar: FC<{
                       label: <Link href="/home-banner">Home Banner</Link>,
                       key: '2-2',
                       icon: <BsImages />
+                    },
+                    {
+                      label: (
+                        <Link href={'/advertisements'}>Advertisements</Link>
+                      ),
+                      key: '7'
                     }
                   ]
                 },
@@ -107,10 +113,6 @@ export const Sidebar: FC<{
                 {
                   label: <Link href={'/employment-news'}>Employment News</Link>,
                   key: '6'
-                },
-                {
-                  label: <Link href={'/advertisements'}>Advertisements</Link>,
-                  key: '7'
                 }
               ]
             : []),
