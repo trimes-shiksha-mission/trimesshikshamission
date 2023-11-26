@@ -54,7 +54,7 @@ export const Sidebar: FC<{
                   icon: <FaUserShield />,
                   children: [
                     {
-                      label: <Link href="/editorial">Mann ki Baat</Link>,
+                      label: <Link href="/editorial">Apano Se Apani Baat</Link>,
                       key: '2-1',
                       icon: <BsPencilSquare />
                     },
