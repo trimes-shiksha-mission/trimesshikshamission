@@ -29,32 +29,6 @@ export const getServerSideProps: GetServerSideProps = async ctx => {
 const Users: NextPage = () => {
   type UserType = RouterOutputs['users']['getAll']['users'][0]
 
-  // const filterDropdown = (variableName: string) => (
-  //   <div className="p-2">
-  //     <Input.Search
-  //       placeholder={`Search ${variableName}`}
-  //       onSearch={searchText => {
-  //         setVariables({
-  //           ...variables,
-  //           [variableName]: searchText
-  //         })
-  //       }}
-  //     />
-  //     <Button
-  //       type="primary"
-  //       onClick={() => {
-  //         setVariables({
-  //           ...variables,
-  //           [variableName]: undefined
-  //         })
-  //       }}
-  //       className="mt-2"
-  //     >
-  //       Clear
-  //     </Button>
-  //   </div>
-  // )
-
   //? States
   const [userModalOpen, setUserModalOpen] = useState<UserType | null>(null)
   const [columns, setColumns] = useState([
@@ -245,6 +219,8 @@ const Users: NextPage = () => {
   //? Mutations
   const { mutateAsync: verifyUser, isLoading: verifyUserLoading } =
     api.users.verify.useMutation()
+  const { mutateAsync: deleteUser, isLoading: deleteUserLoading } =
+    api.users.deleteOne.useMutation()
 
   return (
     <Layout title="Users" breadcrumbs={[{ label: 'Users' }]}>
@@ -307,14 +283,13 @@ const Users: NextPage = () => {
 
                 <Button
                   onClick={async () => {
-                    // ask for confirmaion
                     if (confirm('Are you sure you want to delete this user?')) {
-                      // await deleteUser(record.id)
+                      await deleteUser(record.id)
                       await refetch()
                     }
                   }}
                   style={{ cursor: 'pointer' }}
-                  // loading={deleteUserLoading}
+                  loading={deleteUserLoading}
                   danger
                 >
                   Delete

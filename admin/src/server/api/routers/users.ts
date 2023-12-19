@@ -170,5 +170,39 @@ export const usersRouter = createTRPCRouter({
           timeout: 10000
         }
       )
+    }),
+
+  deleteOne: protectedProcedure
+    .input(z.string().uuid())
+    .mutation(async ({ ctx: { prisma, session }, input }) => {
+      return await prisma.$transaction(
+        async tx => {
+          const user = await tx.user.findUniqueOrThrow({ where: { id: input } })
+          if (session.user.role === 'EDITOR') {
+            const admin = await tx.admin.findUniqueOrThrow({
+              where: {
+                role: 'EDITOR',
+                id: session.user.id
+              },
+              select: {
+                areaId: true
+              }
+            })
+            if (user.areaId !== admin.areaId) throw new Error('Not allowed')
+          }
+
+          await tx.user.delete({
+            where: {
+              id: input
+            }
+          })
+
+          return true
+        },
+        {
+          isolationLevel: 'Serializable',
+          timeout: 10000
+        }
+      )
     })
 })
