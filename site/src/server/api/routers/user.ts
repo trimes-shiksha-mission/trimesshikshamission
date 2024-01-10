@@ -348,7 +348,11 @@ export const userRouter = createTRPCRouter({
       if (!user) throw new Error('User not found!')
 
       if (!user.email) throw new Error('Email not found!')
-
+      await prisma.forgotPasswordToken.deleteMany({
+        where: {
+          userId: user.id
+        }
+      })
       const token = await prisma.forgotPasswordToken.create({
         data: { userId: user.id }
       })
