@@ -102,7 +102,7 @@ const Home: NextPage = () => {
       <div className="grid md:grid-cols-4 gap-4 px-10 mt-10 ">
         <div className="bg-primary px-2 rounded-lg text-center shadow-2xl">
           <div className="text-xl lg:text-2xl text-white mt-2">
-            TrimesShikshaMission.org
+            TrimesShikshaMission.in
           </div>
           <div className="mt-4 text-white py-4">
             Trimes Shiksha Mission is a small initiative in the direction of
