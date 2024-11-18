@@ -158,24 +158,24 @@ export const usersRouter = createTRPCRouter({
             })
 
             // Send Mail
-            // if (user.email) {
-            //   const myPath = path.resolve('./template')
-            //   let template
-            //   if (env.NODE_ENV === 'production')
-            //     template = await readFile(
-            //       path.join('/', myPath, 'approve.html'),
-            //       'utf-8'
-            //     )
-            //   else template = await readFile('template/approve.html', 'utf-8')
-            //   const html = Handlebars.compile(template)({
-            //     Name: user.name
-            //   })
-            //   await sendMail({
-            //     to: user.email,
-            //     subject: 'Congratulations! Your account has been approved',
-            //     html
-            //   })
-            // }
+            if (user.email) {
+              const myPath = path.resolve('./template')
+              let template
+              if (env.NODE_ENV === 'production')
+                template = await readFile(
+                  path.join('/', myPath, 'approve.html'),
+                  'utf-8'
+                )
+              else template = await readFile('template/approve.html', 'utf-8')
+              const html = Handlebars.compile(template)({
+                Name: user.name
+              })
+              await sendMail({
+                to: user.email,
+                subject: 'Congratulations! Your account has been approved',
+                html
+              })
+            }
           }
 
           return true
