@@ -373,10 +373,27 @@ const Users: NextPage = () => {
                 Verify User
               </Button>
             </Form.Item>
+          ) : userModalOpen && userModalOpen?.isVerified ? (
+            <Form.Item>
+              <Button
+                type="primary"
+                htmlType="button"
+                onClick={async () => {
+                  await verifyUser(userModalOpen.id)
+                  await refetch()
+                  setUserModalOpen(null)
+                }}
+                loading={verifyUserLoading}
+              >
+                Unverify User
+              </Button>
+            </Form.Item>
           ) : (
-            <Typography.Text className="bg-blue-600 text-white p-2 rounded-sm">
-              User Verified
-            </Typography.Text>
+            <>
+              <Typography.Text className="bg-blue-600 text-white p-2 rounded-sm">
+                N/A
+              </Typography.Text>
+            </>
           )}
         </Form>
       </Modal>

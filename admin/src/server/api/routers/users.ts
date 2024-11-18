@@ -122,7 +122,8 @@ export const usersRouter = createTRPCRouter({
       return await prisma.$transaction(
         async tx => {
           const user = await tx.user.findUniqueOrThrow({ where: { id: input } })
-          if (user.isVerified) throw new Error('User already verified')
+
+          // Check for permissions
           if (session.user.role === 'EDITOR') {
             const admin = await tx.admin.findUniqueOrThrow({
               where: {
@@ -135,32 +136,46 @@ export const usersRouter = createTRPCRouter({
             })
             if (user.areaId !== admin.areaId) throw new Error('Not allowed')
           }
+          if (user.isVerified) {
+            // Unverify User
+            await tx.user.update({
+              where: {
+                id: input
+              },
+              data: {
+                isVerified: false
+              }
+            })
+          } else {
+            // Verify User
+            await tx.user.update({
+              where: {
+                id: input
+              },
+              data: {
+                isVerified: true
+              }
+            })
 
-          await tx.user.update({
-            where: {
-              id: input
-            },
-            data: {
-              isVerified: true
-            }
-          })
-          if (user.email) {
-            const myPath = path.resolve('./template')
-            let template
-            if (env.NODE_ENV === 'production')
-              template = await readFile(
-                path.join('/', myPath, 'approve.html'),
-                'utf-8'
-              )
-            else template = await readFile('template/approve.html', 'utf-8')
-            const html = Handlebars.compile(template)({
-              Name: user.name
-            })
-            await sendMail({
-              to: user.email,
-              subject: 'Congratulations! Your account has been approved',
-              html
-            })
+            // Send Mail
+            // if (user.email) {
+            //   const myPath = path.resolve('./template')
+            //   let template
+            //   if (env.NODE_ENV === 'production')
+            //     template = await readFile(
+            //       path.join('/', myPath, 'approve.html'),
+            //       'utf-8'
+            //     )
+            //   else template = await readFile('template/approve.html', 'utf-8')
+            //   const html = Handlebars.compile(template)({
+            //     Name: user.name
+            //   })
+            //   await sendMail({
+            //     to: user.email,
+            //     subject: 'Congratulations! Your account has been approved',
+            //     html
+            //   })
+            // }
           }
 
           return true
