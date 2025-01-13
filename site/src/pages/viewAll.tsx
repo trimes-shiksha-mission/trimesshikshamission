@@ -426,15 +426,18 @@ const ViewAll: NextPage = () => {
           </div>
 
           <div className="px-5 py-5 bg-white border-t flex flex-col xs:flex-row items-center xs:justify-between">
-            <span className="text-xs xs:text-sm text-gray-900">
+            <span className="text-sm xs:text-sm text-gray-900">
               Showing {(variables.page - 1) * variables.limit + 1} to{' '}
               {variables.page >=
               parseInt(((users?.total || 0) / variables.limit + 1).toString())
                 ? users?.total
                 : (variables.page - 1) * variables.limit + variables.limit}{' '}
-              of {users?.total} total Users: {users?.total}
+              of {users?.total}
             </span>
-
+            <div className="text-lg xs:text-xl text-gray-900 mt-1">
+              Total Verified Members: {users?.total} & Total Verified Head
+              Member: {users?.totalHeadMembers}
+            </div>
             <div className="inline-flex mt-2 xs:mt-0">
               <button
                 onClick={() => {

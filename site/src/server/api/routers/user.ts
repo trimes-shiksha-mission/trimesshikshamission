@@ -249,7 +249,7 @@ export const userRouter = createTRPCRouter({
       const { page, limit, gender, bloodGroup, maritalStatus, ...filters } =
         input
 
-      const [users, total] = await Promise.all([
+      const [users, total, totalHeadMembers] = await Promise.all([
         prisma.user.findMany({
           where: {
             ...Object.keys(filters).reduce((acc, key) => {
@@ -288,11 +288,19 @@ export const userRouter = createTRPCRouter({
             ...filters,
             isVerified: true
           }
+        }),
+        prisma.user.count({
+          where:{
+            ...filters,
+            isVerified: true,
+            headId: null
+          }
         })
       ])
       return {
         data: users,
-        total
+        total,
+        totalHeadMembers
       }
     }),
 
