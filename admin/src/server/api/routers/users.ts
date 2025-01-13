@@ -1,9 +1,9 @@
-import { readFile } from 'fs/promises'
-import Handlebars from 'handlebars'
-import path from 'path'
+// import { readFile } from 'fs/promises'
+// import Handlebars from 'handlebars'
+// import path from 'path'
+// import { env } from '~/env.mjs'
+// import { sendMail } from '~/lib/nodemailer'
 import { z } from 'zod'
-import { env } from '~/env.mjs'
-import { sendMail } from '~/lib/nodemailer'
 import { createTRPCRouter, protectedProcedure } from '../trpc'
 
 export const usersRouter = createTRPCRouter({
