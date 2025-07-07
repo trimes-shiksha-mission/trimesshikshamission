@@ -23,10 +23,36 @@ enum Gender {
 }
 
 enum MaritalStatus {
-  married
   unmarried
   divorced
   widowed
+  married
+}
+
+enum BloodGroup {
+  A_Positive
+  A_Negative
+  B_Positive
+  B_Negative
+  AB_Positive
+  AB_Negative
+  O_Positive
+  O_Negative
+}
+
+enum Complexion {
+  Fair
+  Wheatish
+  Dark
+}
+
+enum IncomeBracket {
+  BELOW_3_LAKHS
+  Three_TO_Five_LAKHS
+  Five_TO_Ten_LAKHS
+  Ten_TO_Fifteen_LAKHS
+  Fifteen_TO_TwentyFive_LAKHS
+  ABOVE_25_LAKHS
 }
 
 model User {
@@ -143,11 +169,47 @@ model forgotPasswordToken {
 }
 
 model Resource {
-  id   String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  name String
-  url  String
-  path String
-  type String?
+  id        String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name      String
+  url       String
+  path      String
+  type      String?
+  createdAt DateTime?
 
   @@map("Resources")
+}
+
+model MarriageProfile {
+  id                String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name              String
+  nativePlace       String
+  currentCity       String
+  height            String
+  bloodGroup        BloodGroup
+  complexion        Complexion?
+  dob               DateTime
+  birthPlace        String
+  qualification     String
+  currentJobProfile String?
+  annualIncome      IncomeBracket
+  fatherName        String
+  fatherOccupation  String
+  motherName        String
+  motherOccupation  String
+  siblings          Siblings?     @relation(fields: [siblingsId], references: [id])
+  siblingsId        String?       @unique @db.Uuid
+  parentsContact    BigInt
+  address           String
+  manglic           Boolean
+  maritalStatus     MaritalStatus
+  gender            Gender
+  createdAt         DateTime      @default(now()) @db.Timestamptz()
+  updatedAt         DateTime      @default(now()) @updatedAt @db.Timestamptz()
+}
+
+model Siblings {
+  id       String           @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  brothers Int
+  sisters  Int
+  user     MarriageProfile?
 }

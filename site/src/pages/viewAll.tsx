@@ -340,7 +340,6 @@ const ViewAll: NextPage = () => {
                     <tr key={user.id}>
                       <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
                         <p className="text-gray-900 whitespace-no-wrap">
-                          {/* {console.log({ index, page: variables.page, limit: variables.limit })} */}
                           {index + 1 + (variables.page - 1) * variables.limit}
                         </p>
                       </td>

@@ -60,5 +60,10 @@ export const navLinks: NavLink[] = [
   {
     title: 'Advertisements',
     link: '/advertisements'
+  },
+  {
+    title: 'Matrimonial',
+    link: '/marriageProfile'
   }
 ]
+

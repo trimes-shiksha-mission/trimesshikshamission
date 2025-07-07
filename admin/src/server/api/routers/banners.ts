@@ -5,6 +5,9 @@ export const bannersRouter = createTRPCRouter({
     return await prisma.resource.findMany({
       where: {
         type: 'banner'
+      },
+      orderBy: {
+        createdAt: 'desc'
       }
     })
   })

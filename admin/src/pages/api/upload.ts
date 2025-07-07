@@ -47,7 +47,6 @@ export default async function handler(
         const uploaded = await supabaseClient.storage
           .from(env.SUPABASE_BUCKET)
           .upload(type + '/' + newFilename, await readFile(f.filepath))
-        console.log(uploaded)
         if (uploaded.data) {
           const a = await prisma.resource.create({
             data: {
@@ -56,7 +55,8 @@ export default async function handler(
                 .from(env.SUPABASE_BUCKET)
                 .getPublicUrl(uploaded.data.path).data.publicUrl,
               type,
-              path: uploaded.data.path
+              path: uploaded.data.path,
+              createdAt: new Date()
             }
           })
           createdAttachments.push(a)
