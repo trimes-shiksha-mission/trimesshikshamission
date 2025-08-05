@@ -62,8 +62,17 @@ export const navLinks: NavLink[] = [
     link: '/advertisements'
   },
   {
-    title: 'Matrimonial',
-    link: '/marriageProfile'
-  }
+  title: 'Matrimonial',
+  children: [
+    {
+      title: 'Register',
+      link: '/marriageProfile'
+    },
+    {
+      title: 'View Matrimonials',
+      link: '/viewMatrimonials'
+    }
+  ]
+}
 ]
 
