@@ -1,159 +1,133 @@
-import React, { useState, useEffect, useMemo } from 'react'
-import {
-  Search,
-  Filter,
-  ArrowUpDown,
-  ArrowUp,
-  ArrowDown,
-  Eye,
-  Edit,
-  Trash2
-} from 'lucide-react'
+import React from 'react'
+// import {
+  // Search,
+  // Filter,
+  // ArrowUpDown,
+  // ArrowUp,
+  // ArrowDown,
+  // Eye,
+  // Edit,
+  // Trash2
+// } from 'lucide-react'
 import { GetServerSideProps, NextPage } from 'next'
 import { api } from '~/utils/api'
 import { Layout } from '~/components/Layout'
 import { getServerAuthSession } from '~/server/auth'
 
 // Enums based on your Prisma schema
-enum BloodGroup {
-  A_POSITIVE = 'A_POSITIVE',
-  A_NEGATIVE = 'A_NEGATIVE',
-  B_POSITIVE = 'B_POSITIVE',
-  B_NEGATIVE = 'B_NEGATIVE',
-  AB_POSITIVE = 'AB_POSITIVE',
-  AB_NEGATIVE = 'AB_NEGATIVE',
-  O_POSITIVE = 'O_POSITIVE',
-  O_NEGATIVE = 'O_NEGATIVE'
-}
+// enum BloodGroup {
+//   A_POSITIVE = 'A_POSITIVE',
+//   A_NEGATIVE = 'A_NEGATIVE',
+//   B_POSITIVE = 'B_POSITIVE',
+//   B_NEGATIVE = 'B_NEGATIVE',
+//   AB_POSITIVE = 'AB_POSITIVE',
+//   AB_NEGATIVE = 'AB_NEGATIVE',
+//   O_POSITIVE = 'O_POSITIVE',
+//   O_NEGATIVE = 'O_NEGATIVE'
+// }
 
-enum Complexion {
-  FAIR = 'FAIR',
-  WHEATISH = 'WHEATISH',
-  DARK = 'DARK'
-}
+// enum Complexion {
+//   FAIR = 'FAIR',
+//   WHEATISH = 'WHEATISH',
+//   DARK = 'DARK'
+// }
 
-enum IncomeBracket {
-  BELOW_2_LAKHS = 'BELOW_2_LAKHS',
-  RANGE_2_5_LAKHS = 'RANGE_2_5_LAKHS',
-  RANGE_5_10_LAKHS = 'RANGE_5_10_LAKHS',
-  RANGE_10_15_LAKHS = 'RANGE_10_15_LAKHS',
-  RANGE_15_25_LAKHS = 'RANGE_15_25_LAKHS',
-  ABOVE_25_LAKHS = 'ABOVE_25_LAKHS'
-}
+// enum IncomeBracket {
+//   BELOW_2_LAKHS = 'BELOW_2_LAKHS',
+//   RANGE_2_5_LAKHS = 'RANGE_2_5_LAKHS',
+//   RANGE_5_10_LAKHS = 'RANGE_5_10_LAKHS',
+//   RANGE_10_15_LAKHS = 'RANGE_10_15_LAKHS',
+//   RANGE_15_25_LAKHS = 'RANGE_15_25_LAKHS',
+//   ABOVE_25_LAKHS = 'ABOVE_25_LAKHS'
+// }
 
-enum MaritalStatus {
-  SINGLE = 'SINGLE',
-  MARRIED = 'MARRIED',
-  DIVORCED = 'DIVORCED',
-  WIDOWED = 'WIDOWED'
-}
+// enum MaritalStatus {
+//   SINGLE = 'SINGLE',
+//   MARRIED = 'MARRIED',
+//   DIVORCED = 'DIVORCED',
+//   WIDOWED = 'WIDOWED'
+// }
 
-enum Gender {
-  MALE = 'MALE',
-  FEMALE = 'FEMALE',
-  OTHER = 'OTHER'
-}
+// enum Gender {
+//   MALE = 'MALE',
+//   FEMALE = 'FEMALE',
+//   OTHER = 'OTHER'
+// }
 
-// User interface based on your Prisma schema
-interface User {
-  id: string
-  name: string
-  nativePlace: string
-  currentCity: string
-  height: string
-  bloodGroup: BloodGroup
-  complexion: Complexion | null
-  dob: string
-  birthPlace: string
-  qualification: string
-  currentJobProfile: string | null
-  annualIncome: IncomeBracket
-  fatherName: string
-  fatherOccupation: string
-  motherName: string
-  motherOccupation: string
-  parentsContact: bigint
-  address: string
-  manglic: boolean
-  maritalStatus: MaritalStatus
-  gender: Gender
-  createdAt: string
-  updatedAt: string
-}
 
 // Column configuration types
-type ColumnType = 'text' | 'select' | 'date' | 'boolean' | 'number'
+// type ColumnType = 'text' | 'select' | 'date' | 'boolean' | 'number'
 
-interface Column {
-  key: keyof User
-  label: string
-  type: ColumnType
-  filterable: boolean
-  options?: string[]
-}
+// interface Column {
+//   key: keyof User
+//   label: string
+//   type: ColumnType
+//   filterable: boolean
+//   options?: string[]
+// }
 
-interface SortConfig {
-  key: keyof User | null
-  direction: 'asc' | 'desc'
-}
+// interface SortConfig {
+//   key: keyof User | null
+//   direction: 'asc' | 'desc'
+// }
 
-interface Filters {
-  [key: string]: string
-}
+// interface Filters {
+//   [key: string]: string
+// }
 
-// Mock data
-const mockData: User[] = [
-  {
-    id: '123e4567-e89b-12d3-a456-426614174000',
-    name: 'John Doe',
-    nativePlace: 'Mumbai',
-    currentCity: 'Delhi',
-    height: '5\'8"',
-    bloodGroup: BloodGroup.O_POSITIVE,
-    complexion: Complexion.FAIR,
-    dob: '1990-05-15T00:00:00Z',
-    birthPlace: 'Mumbai',
-    qualification: 'B.Tech Computer Science',
-    currentJobProfile: 'Software Engineer',
-    annualIncome: IncomeBracket.RANGE_5_10_LAKHS,
-    fatherName: 'Robert Doe',
-    fatherOccupation: 'Business',
-    motherName: 'Mary Doe',
-    motherOccupation: 'Teacher',
-    parentsContact: BigInt(9876543210),
-    address: '123 Main Street, Delhi',
-    manglic: false,
-    maritalStatus: MaritalStatus.SINGLE,
-    gender: Gender.MALE,
-    createdAt: '2024-01-15T10:30:00Z',
-    updatedAt: '2024-01-15T10:30:00Z'
-  },
-  {
-    id: '456e7890-e89b-12d3-a456-426614174001',
-    name: 'Jane Smith',
-    nativePlace: 'Pune',
-    currentCity: 'Bangalore',
-    height: '5\'4"',
-    bloodGroup: BloodGroup.A_POSITIVE,
-    complexion: Complexion.WHEATISH,
-    dob: '1992-08-22T00:00:00Z',
-    birthPlace: 'Pune',
-    qualification: 'MBA Finance',
-    currentJobProfile: 'Financial Analyst',
-    annualIncome: IncomeBracket.RANGE_10_15_LAKHS,
-    fatherName: 'David Smith',
-    fatherOccupation: 'Doctor',
-    motherName: 'Sarah Smith',
-    motherOccupation: 'Nurse',
-    parentsContact: BigInt(9876543211),
-    address: '456 Park Avenue, Bangalore',
-    manglic: true,
-    maritalStatus: MaritalStatus.SINGLE,
-    gender: Gender.FEMALE,
-    createdAt: '2024-01-16T09:15:00Z',
-    updatedAt: '2024-01-16T09:15:00Z'
-  }
-]
+// // Mock data
+// const mockData: User[] = [
+//   {
+//     id: '123e4567-e89b-12d3-a456-426614174000',
+//     name: 'John Doe',
+//     nativePlace: 'Mumbai',
+//     currentCity: 'Delhi',
+//     height: '5\'8"',
+//     bloodGroup: BloodGroup.O_POSITIVE,
+//     complexion: Complexion.FAIR,
+//     dob: '1990-05-15T00:00:00Z',
+//     birthPlace: 'Mumbai',
+//     qualification: 'B.Tech Computer Science',
+//     currentJobProfile: 'Software Engineer',
+//     annualIncome: IncomeBracket.RANGE_5_10_LAKHS,
+//     fatherName: 'Robert Doe',
+//     fatherOccupation: 'Business',
+//     motherName: 'Mary Doe',
+//     motherOccupation: 'Teacher',
+//     parentsContact: BigInt(9876543210),
+//     address: '123 Main Street, Delhi',
+//     manglic: false,
+//     maritalStatus: MaritalStatus.SINGLE,
+//     gender: Gender.MALE,
+//     createdAt: '2024-01-15T10:30:00Z',
+//     updatedAt: '2024-01-15T10:30:00Z'
+//   },
+//   {
+//     id: '456e7890-e89b-12d3-a456-426614174001',
+//     name: 'Jane Smith',
+//     nativePlace: 'Pune',
+//     currentCity: 'Bangalore',
+//     height: '5\'4"',
+//     bloodGroup: BloodGroup.A_POSITIVE,
+//     complexion: Complexion.WHEATISH,
+//     dob: '1992-08-22T00:00:00Z',
+//     birthPlace: 'Pune',
+//     qualification: 'MBA Finance',
+//     currentJobProfile: 'Financial Analyst',
+//     annualIncome: IncomeBracket.RANGE_10_15_LAKHS,
+//     fatherName: 'David Smith',
+//     fatherOccupation: 'Doctor',
+//     motherName: 'Sarah Smith',
+//     motherOccupation: 'Nurse',
+//     parentsContact: BigInt(9876543211),
+//     address: '456 Park Avenue, Bangalore',
+//     manglic: true,
+//     maritalStatus: MaritalStatus.SINGLE,
+//     gender: Gender.FEMALE,
+//     createdAt: '2024-01-16T09:15:00Z',
+//     updatedAt: '2024-01-16T09:15:00Z'
+//   }
+// ]
 
 export const getServerSideProps: GetServerSideProps = async ctx => {
   const session = await getServerAuthSession(ctx)
@@ -169,235 +143,231 @@ export const getServerSideProps: GetServerSideProps = async ctx => {
 }
 
 const ViewMatrimonials: NextPage = () => {
-  const [data, setData] = useState<User[]>(mockData)
-  const [filteredData, setFilteredData] = useState<User[]>(mockData)
-  const [searchTerm, setSearchTerm] = useState<string>('')
-  const [sortConfig, setSortConfig] = useState<SortConfig>({
-    key: null,
-    direction: 'asc'
-  })
-  const [filters, setFilters] = useState<Filters>({})
-  // const [showFilters, setShowFilters] = useState<boolean>(false)
-  const [currentPage, setCurrentPage] = useState<number>(1)
-  const itemsPerPage = 10
+  // const [data, setData] = useState<User[]>(mockData)
+  // const [filteredData, setFilteredData] = useState<User[]>(mockData)
+  // const [searchTerm, setSearchTerm] = useState<string>('')
+  // const [sortConfig, setSortConfig] = useState<SortConfig>({
+  //   key: null,
+  //   direction: 'asc'
+  // })
+  // const [filters, setFilters] = useState<Filters>({})
+  // // const [showFilters, setShowFilters] = useState<boolean>(false)
+  // const [currentPage, setCurrentPage] = useState<number>(1)
+  // const itemsPerPage = 10
 
-  // Column definitions with proper typing
-  const columns: Column[] = [
-    { key: 'name', label: 'Name', type: 'text', filterable: true },
-    {
-      key: 'nativePlace',
-      label: 'Native Place',
-      type: 'text',
-      filterable: true
-    },
-    {
-      key: 'currentCity',
-      label: 'Current City',
-      type: 'text',
-      filterable: true
-    },
-    { key: 'height', label: 'Height', type: 'text', filterable: false },
-    {
-      key: 'bloodGroup',
-      label: 'Blood Group',
-      type: 'select',
-      filterable: true,
-      options: Object.values(BloodGroup)
-    },
-    {
-      key: 'complexion',
-      label: 'Complexion',
-      type: 'select',
-      filterable: true,
-      options: Object.values(Complexion)
-    },
-    { key: 'dob', label: 'Date of Birth', type: 'date', filterable: true },
-    {
-      key: 'qualification',
-      label: 'Qualification',
-      type: 'text',
-      filterable: true
-    },
-    {
-      key: 'currentJobProfile',
-      label: 'Job Profile',
-      type: 'text',
-      filterable: true
-    },
-    {
-      key: 'annualIncome',
-      label: 'Annual Income',
-      type: 'select',
-      filterable: true,
-      options: Object.values(IncomeBracket)
-    },
-    { key: 'fatherName', label: 'Father Name', type: 'text', filterable: true },
-    { key: 'motherName', label: 'Mother Name', type: 'text', filterable: true },
-    {
-      key: 'maritalStatus',
-      label: 'Marital Status',
-      type: 'select',
-      filterable: true,
-      options: Object.values(MaritalStatus)
-    },
-    {
-      key: 'gender',
-      label: 'Gender',
-      type: 'select',
-      filterable: true,
-      options: Object.values(Gender)
-    },
-    { key: 'manglic', label: 'Manglic', type: 'boolean', filterable: true }
-  ]
+  // // Column definitions with proper typing
+  // const columns: Column[] = [
+  //   { key: 'name', label: 'Name', type: 'text', filterable: true },
+  //   {
+  //     key: 'nativePlace',
+  //     label: 'Native Place',
+  //     type: 'text',
+  //     filterable: true
+  //   },
+  //   {
+  //     key: 'currentCity',
+  //     label: 'Current City',
+  //     type: 'text',
+  //     filterable: true
+  //   },
+  //   { key: 'height', label: 'Height', type: 'text', filterable: false },
+  //   {
+  //     key: 'bloodGroup',
+  //     label: 'Blood Group',
+  //     type: 'select',
+  //     filterable: true,
+  //     options: Object.values(BloodGroup)
+  //   },
+  //   {
+  //     key: 'complexion',
+  //     label: 'Complexion',
+  //     type: 'select',
+  //     filterable: true,
+  //     options: Object.values(Complexion)
+  //   },
+  //   { key: 'dob', label: 'Date of Birth', type: 'date', filterable: true },
+  //   {
+  //     key: 'qualification',
+  //     label: 'Qualification',
+  //     type: 'text',
+  //     filterable: true
+  //   },
+  //   {
+  //     key: 'currentJobProfile',
+  //     label: 'Job Profile',
+  //     type: 'text',
+  //     filterable: true
+  //   },
+  //   {
+  //     key: 'annualIncome',
+  //     label: 'Annual Income',
+  //     type: 'select',
+  //     filterable: true,
+  //     options: Object.values(IncomeBracket)
+  //   },
+  //   { key: 'fatherName', label: 'Father Name', type: 'text', filterable: true },
+  //   { key: 'motherName', label: 'Mother Name', type: 'text', filterable: true },
+  //   {
+  //     key: 'maritalStatus',
+  //     label: 'Marital Status',
+  //     type: 'select',
+  //     filterable: true,
+  //     options: Object.values(MaritalStatus)
+  //   },
+  //   {
+  //     key: 'gender',
+  //     label: 'Gender',
+  //     type: 'select',
+  //     filterable: true,
+  //     options: Object.values(Gender)
+  //   },
+  //   { key: 'manglic', label: 'Manglic', type: 'boolean', filterable: true }
+  // ]
 
   // Apply filters and search
-  useEffect(() => {
-    let filtered = data.filter(item => {
-      // Search filter
-      const searchMatch = Object.values(item).some(value => {
-        if (typeof value === 'bigint') {
-          return value.toString().includes(searchTerm)
-        }
-        return value
-          ?.toString()
-          .toLowerCase()
-          .includes(searchTerm.toLowerCase())
-      })
+  // useEffect(() => {
+  //   let filtered = data.filter(item => {
+  //     // Search filter
+  //     const searchMatch = Object.values(item).some(value => {
+  //       if (typeof value === 'bigint') {
+  //         return value.toString().includes(searchTerm)
+  //       }
+  //       return value
+  //         ?.toString()
+  //         .toLowerCase()
+  //         .includes(searchTerm.toLowerCase())
+  //     })
 
-      // Column filters
-      const filterMatch = Object.entries(filters).every(
-        ([key, filterValue]) => {
-          if (!filterValue || filterValue === '') return true
+  //     // Column filters
+  //     const filterMatch = Object.entries(filters).every(
+  //       ([key, filterValue]) => {
+  //         if (!filterValue || filterValue === '') return true
 
-          const itemValue = item[key as keyof User]
+  //         const itemValue = item[key as keyof User]
 
-          if (typeof itemValue === 'boolean') {
-            return itemValue.toString() === filterValue
-          }
+  //         if (typeof itemValue === 'boolean') {
+  //           return itemValue.toString() === filterValue
+  //         }
 
-          if (typeof itemValue === 'bigint') {
-            return itemValue.toString().includes(filterValue)
-          }
+  //         if (typeof itemValue === 'bigint') {
+  //           return itemValue.toString().includes(filterValue)
+  //         }
 
-          if (key === 'dob') {
-            return new Date(itemValue as string)
-              .toDateString()
-              .includes(filterValue)
-          }
+  //         if (key === 'dob') {
+  //           return new Date(itemValue as string)
+  //             .toDateString()
+  //             .includes(filterValue)
+  //         }
 
-          return itemValue
-            ?.toString()
-            .toLowerCase()
-            .includes(filterValue.toLowerCase())
-        }
-      )
+  //         return itemValue
+  //           ?.toString()
+  //           .toLowerCase()
+  //           .includes(filterValue.toLowerCase())
+  //       }
+  //     )
 
-      return searchMatch && filterMatch
-    })
+  //     return searchMatch && filterMatch
+  //   })
 
-    // Apply sorting
-    if (sortConfig.key) {
-      filtered.sort((a, b) => {
-        const aValue = a[sortConfig.key!]
-        const bValue = b[sortConfig.key!]
+  //   // Apply sorting
+  //   if (sortConfig.key) {
+  //     filtered.sort((a, b) => {
+  //       const aValue = a[sortConfig.key!]
+  //       const bValue = b[sortConfig.key!]
 
-        // Handle different data types
-        if (typeof aValue === 'bigint' && typeof bValue === 'bigint') {
-          const diff = aValue < bValue ? -1 : aValue > bValue ? 1 : 0
-          return sortConfig.direction === 'asc' ? diff : -diff
-        }
+  //       // Handle different data types
+  //       if (typeof aValue === 'bigint' && typeof bValue === 'bigint') {
+  //         const diff = aValue < bValue ? -1 : aValue > bValue ? 1 : 0
+  //         return sortConfig.direction === 'asc' ? diff : -diff
+  //       }
 
-        if (typeof aValue === 'bigint' && typeof bValue === 'bigint') {
-          const diff = aValue < bValue ? -1 : aValue > bValue ? 1 : 0
-          return sortConfig.direction === 'asc' ? diff : -diff
-        }
+  //       if (typeof aValue === 'bigint' && typeof bValue === 'bigint') {
+  //         const diff = aValue < bValue ? -1 : aValue > bValue ? 1 : 0
+  //         return sortConfig.direction === 'asc' ? diff : -diff
+  //       }
 
-        const aStr = aValue?.toString() || ''
-        const bStr = bValue?.toString() || ''
+  //       const aStr = aValue?.toString() || ''
+  //       const bStr = bValue?.toString() || ''
 
-        if (aStr < bStr) return sortConfig.direction === 'asc' ? -1 : 1
-        if (aStr > bStr) return sortConfig.direction === 'asc' ? 1 : -1
-        return 0
-      })
-    }
+  //       if (aStr < bStr) return sortConfig.direction === 'asc' ? -1 : 1
+  //       if (aStr > bStr) return sortConfig.direction === 'asc' ? 1 : -1
+  //       return 0
+  //     })
+  //   }
 
-    setFilteredData(filtered)
-    setCurrentPage(1)
-  }, [data, searchTerm, filters, sortConfig])
+  //   setFilteredData(filtered)
+  //   setCurrentPage(1)
+  // }, [data, searchTerm, filters, sortConfig])
 
-  const handleSort = (key: keyof User): void => {
-    setSortConfig(prev => ({
-      key,
-      direction: prev.key === key && prev.direction === 'asc' ? 'desc' : 'asc'
-    }))
-  }
+  // const handleSort = (key: keyof User): void => {
+  //   setSortConfig(prev => ({
+  //     key,
+  //     direction: prev.key === key && prev.direction === 'asc' ? 'desc' : 'asc'
+  //   }))
+  // }
 
-  const handleFilterChange = (key: string, value: string): void => {
-    setFilters(prev => ({
-      ...prev,
-      [key]: value
-    }))
-  }
+  // const handleFilterChange = (key: string, value: string): void => {
+  //   setFilters(prev => ({
+  //     ...prev,
+  //     [key]: value
+  //   }))
+  // }
 
-  const clearFilters = (): void => {
-    setFilters({})
-    setSearchTerm('')
-  }
+  // const clearFilters = (): void => {
+  //   setFilters({})
+  //   setSearchTerm('')
+  // }
 
-  const formatValue = (value: any, type: ColumnType): string => {
-    if (value === null || value === undefined) return '-'
+  // const formatValue = (value: any, type: ColumnType): string => {
+  //   if (value === null || value === undefined) return '-'
 
-    switch (type) {
-      case 'date':
-        return new Date(value).toLocaleDateString('en-IN')
-      case 'boolean':
-        return value ? 'Yes' : 'No'
-      case 'number':
-        if (typeof value === 'bigint') {
-          return value.toString()
-        }
-        return value.toString()
-      default:
-        return value.toString().replace(/_/g, ' ')
-    }
-  }
+  //   switch (type) {
+  //     case 'date':
+  //       return new Date(value).toLocaleDateString('en-IN')
+  //     case 'boolean':
+  //       return value ? 'Yes' : 'No'
+  //     case 'number':
+  //       if (typeof value === 'bigint') {
+  //         return value.toString()
+  //       }
+  //       return value.toString()
+  //     default:
+  //       return value.toString().replace(/_/g, ' ')
+  //   }
+  // }
 
-  const getSortIcon = (key: keyof User): JSX.Element => {
-    if (sortConfig.key !== key) return <ArrowUpDown className="w-4 h-4" />
-    return sortConfig.direction === 'asc' ? (
-      <ArrowUp className="w-4 h-4" />
-    ) : (
-      <ArrowDown className="w-4 h-4" />
-    )
-  }
+  // const getSortIcon = (key: keyof User): JSX.Element => {
+  //   if (sortConfig.key !== key) return <ArrowUpDown className="w-4 h-4" />
+  //   return sortConfig.direction === 'asc' ? (
+  //     <ArrowUp className="w-4 h-4" />
+  //   ) : (
+  //     <ArrowDown className="w-4 h-4" />
+  //   )
+  // }
 
   // Pagination
-  const paginatedData = useMemo(() => {
-    const startIndex = (currentPage - 1) * itemsPerPage
-    return filteredData.slice(startIndex, startIndex + itemsPerPage)
-  }, [filteredData, currentPage])
+  // const paginatedData = useMemo(() => {
+  //   const startIndex = (currentPage - 1) * itemsPerPage
+  //   return filteredData.slice(startIndex, startIndex + itemsPerPage)
+  // }, [filteredData, currentPage])
 
-  const totalPages = Math.ceil(filteredData.length / itemsPerPage)
+  // const totalPages = Math.ceil(filteredData.length / itemsPerPage)
 
   // Action handlers
-  const handleView = (user: User): void => {
-    console.log('View user:', user)
-    // Implement view logic
-  }
+  // const handleView = (user: User): void => {
+  //   console.log('View user:', user)
+  //   // Implement view logic
+  // }
 
-  const handleEdit = (user: User): void => {
-    console.log('Edit user:', user)
-    // Implement edit logic
-  }
+  // const handleEdit = (user: User): void => {
+  //   console.log('Edit user:', user)
+  //   // Implement edit logic
+  // }
 
-  const handleDelete = (userId: string): void => {
-    console.log('Delete user:', userId)
-    // Implement delete logic
-  }
-
-  // useEffect(()={
-
-  // }, [])
+  // const handleDelete = (userId: string): void => {
+  //   console.log('Delete user:', userId)
+  //   // Implement delete logic
+  // }
 
   // ? Queries
   const { data: matrionials, isLoading: getMatrimonialsLoading } =
@@ -666,7 +636,7 @@ const ViewMatrimonials: NextPage = () => {
               </tr>
             </thead>
             <tbody>
-              {matrionials?.data.map((matrimonial, index) => (
+              {matrionials?.data.map((matrimonial) => (
                 <tr key={matrimonial.id}>
                   <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
                     {/* <p className="text-gray-900 whitespace-no-wrap">
