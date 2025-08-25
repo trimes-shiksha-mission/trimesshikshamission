@@ -67,7 +67,7 @@ export const marriageProfileRouter = createTRPCRouter({
   register: protectedProcedure
     .input(MarriageProfileInput)
     .mutation(async ({ input, ctx }) => {
-      return ctx.prisma.marriageProfile.create({
+      const profile = await ctx.prisma.marriageProfile.create({
         data: {
           ...input,
           siblings: input.siblings
@@ -77,6 +77,10 @@ export const marriageProfileRouter = createTRPCRouter({
             : undefined
         }
       })
+      return {
+        success: true,
+        profileId: profile.id
+      };
     }),
     
   getMarriageProfiles: protectedProcedure
@@ -217,7 +221,6 @@ export const marriageProfileRouter = createTRPCRouter({
         }
       })
     ]);
-    console.log(profiles)
     return {
       data: profiles,
       total,

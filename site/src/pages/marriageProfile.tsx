@@ -10,6 +10,7 @@ import {
   IncomeBracket,
   MaritalStatus
 } from '@prisma/client'
+import router from 'next/router'
 
 const MarriageProfileForm: NextPage = () => {
   // ? Interfaces
@@ -152,7 +153,7 @@ const MarriageProfileForm: NextPage = () => {
           e.preventDefault()
           console.log(formData, 'Eakansh')
           try {
-            await register({
+            const response = await register({
               name: formData.name,
               nativePlace: formData.nativePlace,
               currentCity: formData.currentCity,
@@ -175,6 +176,12 @@ const MarriageProfileForm: NextPage = () => {
               maritalStatus: formData.maritalStatus,
               gender: formData.gender
             })
+
+            if (response?.success) {
+              router.push('/viewMatrimonials')
+            } else {
+              console.error('Something went wrong. Please try again.')
+            }
           } catch (e) {
             console.log(e)
           }

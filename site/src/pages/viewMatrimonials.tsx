@@ -375,7 +375,6 @@ const ViewMatrimonials: NextPage = () => {
       page: 1,
       limit: 10
     })
-  console.log(matrionials)
 
   return (
     <Layout loading={getMatrimonialsLoading}>
