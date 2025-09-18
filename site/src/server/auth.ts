@@ -91,14 +91,16 @@ export const authOptions: NextAuthOptions = {
       },
       async authorize(credentials) {
         if (!credentials) return null
-
+        console.log({credentials})
         const user = await prisma.user.findFirst({
           where: {
             contact: credentials.username
           }
         })
+        console.log({user})
 
         if (user) {
+          console.log({"In User": user})
           if (
             user.password &&
             (await compare(credentials.password, user.password))
