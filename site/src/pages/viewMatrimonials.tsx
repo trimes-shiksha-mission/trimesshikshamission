@@ -1,13 +1,13 @@
 import React from 'react'
 // import {
-  // Search,
-  // Filter,
-  // ArrowUpDown,
-  // ArrowUp,
-  // ArrowDown,
-  // Eye,
-  // Edit,
-  // Trash2
+// Search,
+// Filter,
+// ArrowUpDown,
+// ArrowUp,
+// ArrowDown,
+// Eye,
+// Edit,
+// Trash2
 // } from 'lucide-react'
 import { GetServerSideProps, NextPage } from 'next'
 import { api } from '~/utils/api'
@@ -53,7 +53,6 @@ import { getServerAuthSession } from '~/server/auth'
 //   FEMALE = 'FEMALE',
 //   OTHER = 'OTHER'
 // }
-
 
 // Column configuration types
 // type ColumnType = 'text' | 'select' | 'date' | 'boolean' | 'number'
@@ -635,12 +634,12 @@ const ViewMatrimonials: NextPage = () => {
               </tr>
             </thead>
             <tbody>
-              {matrionials?.data.map((matrimonial) => (
+              {matrionials?.data.map((matrimonial, index) => (
                 <tr key={matrimonial.id}>
                   <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                    {/* <p className="text-gray-900 whitespace-no-wrap">
-                      {index + 1 + (variables.page - 1) * variables.limit}
-                    </p> */}
+                    <p className="text-gray-900 whitespace-no-wrap">
+                      {index + 1}
+                    </p>
                   </td>
                   <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
                     <p className="text-gray-900 whitespace-no-wrap">
@@ -684,7 +683,11 @@ const ViewMatrimonials: NextPage = () => {
                   </td>
                   <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
                     <p className="text-gray-900 whitespace-no-wrap">
-                      {matrimonial.dob.toISOString()}
+                      {new Date(matrimonial.dob).toLocaleDateString('en-IN', {
+                        day: '2-digit',
+                        month: '2-digit',
+                        year: 'numeric'
+                      })}
                     </p>
                   </td>
                   <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">

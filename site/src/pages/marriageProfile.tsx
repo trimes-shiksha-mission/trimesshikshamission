@@ -11,6 +11,7 @@ import {
   MaritalStatus
 } from '@prisma/client'
 import router from 'next/router'
+import { toast } from 'react-toastify'
 
 const MarriageProfileForm: NextPage = () => {
   // ? Interfaces
@@ -151,7 +152,6 @@ const MarriageProfileForm: NextPage = () => {
       <form
         onSubmit={async e => {
           e.preventDefault()
-          console.log(formData, 'Eakansh')
           try {
             const response = await register({
               name: formData.name,
@@ -178,6 +178,7 @@ const MarriageProfileForm: NextPage = () => {
             })
 
             if (response?.success) {
+              toast.success('Marriage Profile created Successfully!')
               router.push('/viewMatrimonials')
             } else {
               console.error('Something went wrong. Please try again.')
