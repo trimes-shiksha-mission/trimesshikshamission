@@ -1,132 +1,10 @@
-import React from 'react'
-// import {
-// Search,
-// Filter,
-// ArrowUpDown,
-// ArrowUp,
-// ArrowDown,
-// Eye,
-// Edit,
-// Trash2
-// } from 'lucide-react'
+import React, { useState, useMemo } from 'react'
 import { GetServerSideProps, NextPage } from 'next'
 import { api } from '~/utils/api'
 import { Layout } from '~/components/Layout'
 import { getServerAuthSession } from '~/server/auth'
-
-// Enums based on your Prisma schema
-// enum BloodGroup {
-//   A_POSITIVE = 'A_POSITIVE',
-//   A_NEGATIVE = 'A_NEGATIVE',
-//   B_POSITIVE = 'B_POSITIVE',
-//   B_NEGATIVE = 'B_NEGATIVE',
-//   AB_POSITIVE = 'AB_POSITIVE',
-//   AB_NEGATIVE = 'AB_NEGATIVE',
-//   O_POSITIVE = 'O_POSITIVE',
-//   O_NEGATIVE = 'O_NEGATIVE'
-// }
-
-// enum Complexion {
-//   FAIR = 'FAIR',
-//   WHEATISH = 'WHEATISH',
-//   DARK = 'DARK'
-// }
-
-// enum IncomeBracket {
-//   BELOW_2_LAKHS = 'BELOW_2_LAKHS',
-//   RANGE_2_5_LAKHS = 'RANGE_2_5_LAKHS',
-//   RANGE_5_10_LAKHS = 'RANGE_5_10_LAKHS',
-//   RANGE_10_15_LAKHS = 'RANGE_10_15_LAKHS',
-//   RANGE_15_25_LAKHS = 'RANGE_15_25_LAKHS',
-//   ABOVE_25_LAKHS = 'ABOVE_25_LAKHS'
-// }
-
-// enum MaritalStatus {
-//   SINGLE = 'SINGLE',
-//   MARRIED = 'MARRIED',
-//   DIVORCED = 'DIVORCED',
-//   WIDOWED = 'WIDOWED'
-// }
-
-// enum Gender {
-//   MALE = 'MALE',
-//   FEMALE = 'FEMALE',
-//   OTHER = 'OTHER'
-// }
-
-// Column configuration types
-// type ColumnType = 'text' | 'select' | 'date' | 'boolean' | 'number'
-
-// interface Column {
-//   key: keyof User
-//   label: string
-//   type: ColumnType
-//   filterable: boolean
-//   options?: string[]
-// }
-
-// interface SortConfig {
-//   key: keyof User | null
-//   direction: 'asc' | 'desc'
-// }
-
-// interface Filters {
-//   [key: string]: string
-// }
-
-// // Mock data
-// const mockData: User[] = [
-//   {
-//     id: '123e4567-e89b-12d3-a456-426614174000',
-//     name: 'John Doe',
-//     nativePlace: 'Mumbai',
-//     currentCity: 'Delhi',
-//     height: '5\'8"',
-//     bloodGroup: BloodGroup.O_POSITIVE,
-//     complexion: Complexion.FAIR,
-//     dob: '1990-05-15T00:00:00Z',
-//     birthPlace: 'Mumbai',
-//     qualification: 'B.Tech Computer Science',
-//     currentJobProfile: 'Software Engineer',
-//     annualIncome: IncomeBracket.RANGE_5_10_LAKHS,
-//     fatherName: 'Robert Doe',
-//     fatherOccupation: 'Business',
-//     motherName: 'Mary Doe',
-//     motherOccupation: 'Teacher',
-//     parentsContact: BigInt(9876543210),
-//     address: '123 Main Street, Delhi',
-//     manglic: false,
-//     maritalStatus: MaritalStatus.SINGLE,
-//     gender: Gender.MALE,
-//     createdAt: '2024-01-15T10:30:00Z',
-//     updatedAt: '2024-01-15T10:30:00Z'
-//   },
-//   {
-//     id: '456e7890-e89b-12d3-a456-426614174001',
-//     name: 'Jane Smith',
-//     nativePlace: 'Pune',
-//     currentCity: 'Bangalore',
-//     height: '5\'4"',
-//     bloodGroup: BloodGroup.A_POSITIVE,
-//     complexion: Complexion.WHEATISH,
-//     dob: '1992-08-22T00:00:00Z',
-//     birthPlace: 'Pune',
-//     qualification: 'MBA Finance',
-//     currentJobProfile: 'Financial Analyst',
-//     annualIncome: IncomeBracket.RANGE_10_15_LAKHS,
-//     fatherName: 'David Smith',
-//     fatherOccupation: 'Doctor',
-//     motherName: 'Sarah Smith',
-//     motherOccupation: 'Nurse',
-//     parentsContact: BigInt(9876543211),
-//     address: '456 Park Avenue, Bangalore',
-//     manglic: true,
-//     maritalStatus: MaritalStatus.SINGLE,
-//     gender: Gender.FEMALE,
-//     createdAt: '2024-01-16T09:15:00Z',
-//     updatedAt: '2024-01-16T09:15:00Z'
-//   }
-// ]
+import { FiEye, FiX, FiFilter } from 'react-icons/fi'
+import { MarriageProfile } from '@prisma/client'
 
 export const getServerSideProps: GetServerSideProps = async ctx => {
   const session = await getServerAuthSession(ctx)
@@ -141,591 +19,381 @@ export const getServerSideProps: GetServerSideProps = async ctx => {
   return { props: {} }
 }
 
+interface Filters {
+  name: string
+  parentsContact: string
+  dob: string
+  annualIncome: string
+  address: string
+}
+
 const ViewMatrimonials: NextPage = () => {
-  // const [data, setData] = useState<User[]>(mockData)
-  // const [filteredData, setFilteredData] = useState<User[]>(mockData)
-  // const [searchTerm, setSearchTerm] = useState<string>('')
-  // const [sortConfig, setSortConfig] = useState<SortConfig>({
-  //   key: null,
-  //   direction: 'asc'
-  // })
-  // const [filters, setFilters] = useState<Filters>({})
-  // // const [showFilters, setShowFilters] = useState<boolean>(false)
-  // const [currentPage, setCurrentPage] = useState<number>(1)
-  // const itemsPerPage = 10
+  const [selectedProfile, setSelectedProfile] = useState<MarriageProfile | null>(null)
+  const [showFilters, setShowFilters] = useState(false)
+  const [filters, setFilters] = useState<Filters>({
+    name: '',
+    parentsContact: '',
+    dob: '',
+    annualIncome: '',
+    address: ''
+  })
 
-  // // Column definitions with proper typing
-  // const columns: Column[] = [
-  //   { key: 'name', label: 'Name', type: 'text', filterable: true },
-  //   {
-  //     key: 'nativePlace',
-  //     label: 'Native Place',
-  //     type: 'text',
-  //     filterable: true
-  //   },
-  //   {
-  //     key: 'currentCity',
-  //     label: 'Current City',
-  //     type: 'text',
-  //     filterable: true
-  //   },
-  //   { key: 'height', label: 'Height', type: 'text', filterable: false },
-  //   {
-  //     key: 'bloodGroup',
-  //     label: 'Blood Group',
-  //     type: 'select',
-  //     filterable: true,
-  //     options: Object.values(BloodGroup)
-  //   },
-  //   {
-  //     key: 'complexion',
-  //     label: 'Complexion',
-  //     type: 'select',
-  //     filterable: true,
-  //     options: Object.values(Complexion)
-  //   },
-  //   { key: 'dob', label: 'Date of Birth', type: 'date', filterable: true },
-  //   {
-  //     key: 'qualification',
-  //     label: 'Qualification',
-  //     type: 'text',
-  //     filterable: true
-  //   },
-  //   {
-  //     key: 'currentJobProfile',
-  //     label: 'Job Profile',
-  //     type: 'text',
-  //     filterable: true
-  //   },
-  //   {
-  //     key: 'annualIncome',
-  //     label: 'Annual Income',
-  //     type: 'select',
-  //     filterable: true,
-  //     options: Object.values(IncomeBracket)
-  //   },
-  //   { key: 'fatherName', label: 'Father Name', type: 'text', filterable: true },
-  //   { key: 'motherName', label: 'Mother Name', type: 'text', filterable: true },
-  //   {
-  //     key: 'maritalStatus',
-  //     label: 'Marital Status',
-  //     type: 'select',
-  //     filterable: true,
-  //     options: Object.values(MaritalStatus)
-  //   },
-  //   {
-  //     key: 'gender',
-  //     label: 'Gender',
-  //     type: 'select',
-  //     filterable: true,
-  //     options: Object.values(Gender)
-  //   },
-  //   { key: 'manglic', label: 'Manglic', type: 'boolean', filterable: true }
-  // ]
-
-  // Apply filters and search
-  // useEffect(() => {
-  //   let filtered = data.filter(item => {
-  //     // Search filter
-  //     const searchMatch = Object.values(item).some(value => {
-  //       if (typeof value === 'bigint') {
-  //         return value.toString().includes(searchTerm)
-  //       }
-  //       return value
-  //         ?.toString()
-  //         .toLowerCase()
-  //         .includes(searchTerm.toLowerCase())
-  //     })
-
-  //     // Column filters
-  //     const filterMatch = Object.entries(filters).every(
-  //       ([key, filterValue]) => {
-  //         if (!filterValue || filterValue === '') return true
-
-  //         const itemValue = item[key as keyof User]
-
-  //         if (typeof itemValue === 'boolean') {
-  //           return itemValue.toString() === filterValue
-  //         }
-
-  //         if (typeof itemValue === 'bigint') {
-  //           return itemValue.toString().includes(filterValue)
-  //         }
-
-  //         if (key === 'dob') {
-  //           return new Date(itemValue as string)
-  //             .toDateString()
-  //             .includes(filterValue)
-  //         }
-
-  //         return itemValue
-  //           ?.toString()
-  //           .toLowerCase()
-  //           .includes(filterValue.toLowerCase())
-  //       }
-  //     )
-
-  //     return searchMatch && filterMatch
-  //   })
-
-  //   // Apply sorting
-  //   if (sortConfig.key) {
-  //     filtered.sort((a, b) => {
-  //       const aValue = a[sortConfig.key!]
-  //       const bValue = b[sortConfig.key!]
-
-  //       // Handle different data types
-  //       if (typeof aValue === 'bigint' && typeof bValue === 'bigint') {
-  //         const diff = aValue < bValue ? -1 : aValue > bValue ? 1 : 0
-  //         return sortConfig.direction === 'asc' ? diff : -diff
-  //       }
-
-  //       if (typeof aValue === 'bigint' && typeof bValue === 'bigint') {
-  //         const diff = aValue < bValue ? -1 : aValue > bValue ? 1 : 0
-  //         return sortConfig.direction === 'asc' ? diff : -diff
-  //       }
-
-  //       const aStr = aValue?.toString() || ''
-  //       const bStr = bValue?.toString() || ''
-
-  //       if (aStr < bStr) return sortConfig.direction === 'asc' ? -1 : 1
-  //       if (aStr > bStr) return sortConfig.direction === 'asc' ? 1 : -1
-  //       return 0
-  //     })
-  //   }
-
-  //   setFilteredData(filtered)
-  //   setCurrentPage(1)
-  // }, [data, searchTerm, filters, sortConfig])
-
-  // const handleSort = (key: keyof User): void => {
-  //   setSortConfig(prev => ({
-  //     key,
-  //     direction: prev.key === key && prev.direction === 'asc' ? 'desc' : 'asc'
-  //   }))
-  // }
-
-  // const handleFilterChange = (key: string, value: string): void => {
-  //   setFilters(prev => ({
-  //     ...prev,
-  //     [key]: value
-  //   }))
-  // }
-
-  // const clearFilters = (): void => {
-  //   setFilters({})
-  //   setSearchTerm('')
-  // }
-
-  // const formatValue = (value: any, type: ColumnType): string => {
-  //   if (value === null || value === undefined) return '-'
-
-  //   switch (type) {
-  //     case 'date':
-  //       return new Date(value).toLocaleDateString('en-IN')
-  //     case 'boolean':
-  //       return value ? 'Yes' : 'No'
-  //     case 'number':
-  //       if (typeof value === 'bigint') {
-  //         return value.toString()
-  //       }
-  //       return value.toString()
-  //     default:
-  //       return value.toString().replace(/_/g, ' ')
-  //   }
-  // }
-
-  // const getSortIcon = (key: keyof User): JSX.Element => {
-  //   if (sortConfig.key !== key) return <ArrowUpDown className="w-4 h-4" />
-  //   return sortConfig.direction === 'asc' ? (
-  //     <ArrowUp className="w-4 h-4" />
-  //   ) : (
-  //     <ArrowDown className="w-4 h-4" />
-  //   )
-  // }
-
-  // Pagination
-  // const paginatedData = useMemo(() => {
-  //   const startIndex = (currentPage - 1) * itemsPerPage
-  //   return filteredData.slice(startIndex, startIndex + itemsPerPage)
-  // }, [filteredData, currentPage])
-
-  // const totalPages = Math.ceil(filteredData.length / itemsPerPage)
-
-  // Action handlers
-  // const handleView = (user: User): void => {
-  //   console.log('View user:', user)
-  //   // Implement view logic
-  // }
-
-  // const handleEdit = (user: User): void => {
-  //   console.log('Edit user:', user)
-  //   // Implement edit logic
-  // }
-
-  // const handleDelete = (userId: string): void => {
-  //   console.log('Delete user:', userId)
-  //   // Implement delete logic
-  // }
-
-  // ? Queries
-  const { data: matrionials, isLoading: getMatrimonialsLoading } =
+  const { data: matrimonials, isLoading } =
     api.marriageProfile.getMarriageProfiles.useQuery({
       page: 1,
-      limit: 10
+      limit: 100
     })
 
-  return (
-    <Layout loading={getMatrimonialsLoading}>
-      {/*<div className="p-6 bg-white">
-        <div className="mb-6">
-          <h1 className="text-2xl font-bold text-gray-900 mb-4">
-            Matrimonial Profiles
-          </h1>
+  // Filter the data based on filter inputs
+  const filteredData = useMemo(() => {
+    if (!matrimonials?.data) return []
+    
+    return matrimonials.data.filter(profile => {
+      const nameMatch = profile.name.toLowerCase().includes(filters.name.toLowerCase())
+      const contactMatch = profile.parentsContact.toString().includes(filters.parentsContact)
+      const dobMatch = filters.dob ? new Date(profile.dob).toLocaleDateString('en-IN').includes(filters.dob) : true
+      const incomeMatch = profile.annualIncome.toLowerCase().includes(filters.annualIncome.toLowerCase())
+      const addressMatch = profile.address.toLowerCase().includes(filters.address.toLowerCase())
+      
+      return nameMatch && contactMatch && dobMatch && incomeMatch && addressMatch
+    })
+  }, [matrimonials?.data, filters])
 
-          <div className="flex flex-col sm:flex-row gap-4 mb-4">
-            <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-              <input
-                type="text"
-                placeholder="Search across all fields..."
-                value={searchTerm}
-                onChange={e => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              />
-            </div>
-            <button
-              onClick={() => setShowFilters(!showFilters)}
-              className="flex items-center gap-2 px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
-            >
-              <Filter className="w-4 h-4" />
-              Filters
-            </button>
-            <button
-              onClick={clearFilters}
-              className="px-4 py-2 bg-red-100 text-red-700 rounded-lg hover:bg-red-200 transition-colors"
-            >
-              Clear All
-            </button>
+  const handleFilterChange = (field: keyof Filters, value: string) => {
+    setFilters(prev => ({ ...prev, [field]: value }))
+  }
+
+  const clearFilters = () => {
+    setFilters({
+      name: '',
+      parentsContact: '',
+      dob: '',
+      annualIncome: '',
+      address: ''
+    })
+  }
+
+  const formatIncome = (income: string) => {
+    return income.replace(/_/g, ' ').replace(/TO/g, 'to')
+  }
+
+  return (
+    <Layout loading={isLoading}>
+      <div className="p-6 bg-gradient-to-br from-rose-50 to-pink-50 min-h-screen">
+        <div className="max-w-7xl mx-auto">
+          {/* Header */}
+          <div className="mb-6">
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">Matrimonial Profiles</h1>
+            <p className="text-gray-600">Browse and filter marriage profiles</p>
           </div>
 
+          {/* Filter Toggle Button */}
+          <div className="mb-4 flex justify-between items-center">
+            <button
+              onClick={() => setShowFilters(!showFilters)}
+              className="flex items-center gap-2 px-4 py-2 bg-rose-600 text-white rounded-lg hover:bg-rose-700 transition-colors shadow-md"
+            >
+              <FiFilter className="w-4 h-4" />
+              {showFilters ? 'Hide Filters' : 'Show Filters'}
+            </button>
+            {(filters.name || filters.parentsContact || filters.dob || filters.annualIncome || filters.address) && (
+              <button
+                onClick={clearFilters}
+                className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors"
+              >
+                Clear Filters
+              </button>
+            )}
+          </div>
+
+          {/* Filters Section */}
           {showFilters && (
-            <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4 p-4 bg-gray-50 rounded-lg mb-4">
-              {columns
-                .filter(col => col.filterable)
-                .map(column => (
-                  <div key={column.key} className="flex flex-col">
-                    <label className="text-sm font-medium text-gray-700 mb-1">
-                      {column.label}
-                    </label>
-                    {column.type === 'select' ? (
-                      <select
-                        value={filters[column.key] || ''}
-                        onChange={e =>
-                          handleFilterChange(column.key, e.target.value)
-                        }
-                        className="px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
-                      >
-                        <option value="">All</option>
-                        {column.options?.map(option => (
-                          <option key={option} value={option}>
-                            {option.replace(/_/g, ' ')}
-                          </option>
-                        ))}
-                      </select>
-                    ) : column.type === 'boolean' ? (
-                      <select
-                        value={filters[column.key] || ''}
-                        onChange={e =>
-                          handleFilterChange(column.key, e.target.value)
-                        }
-                        className="px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
-                      >
-                        <option value="">All</option>
-                        <option value="true">Yes</option>
-                        <option value="false">No</option>
-                      </select>
-                    ) : (
-                      <input
-                        type={column.type === 'date' ? 'date' : 'text'}
-                        value={filters[column.key] || ''}
-                        onChange={e =>
-                          handleFilterChange(column.key, e.target.value)
-                        }
-                        className="px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
-                        placeholder={`Filter by ${column.label.toLowerCase()}`}
-                      />
-                    )}
-                  </div>
-                ))}
+            <div className="bg-white rounded-lg shadow-md p-6 mb-6">
+              <h2 className="text-lg font-semibold text-gray-800 mb-4">Filters</h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Name</label>
+                  <input
+                    type="text"
+                    value={filters.name}
+                    onChange={(e) => handleFilterChange('name', e.target.value)}
+                    placeholder="Search by name..."
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-rose-500 focus:border-transparent"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Parent's Contact</label>
+                  <input
+                    type="text"
+                    value={filters.parentsContact}
+                    onChange={(e) => handleFilterChange('parentsContact', e.target.value)}
+                    placeholder="Search by contact..."
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-rose-500 focus:border-transparent"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Date of Birth</label>
+                  <input
+                    type="text"
+                    value={filters.dob}
+                    onChange={(e) => handleFilterChange('dob', e.target.value)}
+                    placeholder="DD/MM/YYYY"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-rose-500 focus:border-transparent"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Annual Income</label>
+                  <input
+                    type="text"
+                    value={filters.annualIncome}
+                    onChange={(e) => handleFilterChange('annualIncome', e.target.value)}
+                    placeholder="Search by income..."
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-rose-500 focus:border-transparent"
+                  />
+                </div>
+                <div className="md:col-span-2">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Address</label>
+                  <input
+                    type="text"
+                    value={filters.address}
+                    onChange={(e) => handleFilterChange('address', e.target.value)}
+                    placeholder="Search by address..."
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-rose-500 focus:border-transparent"
+                  />
+                </div>
+              </div>
             </div>
           )}
 
-          <div className="text-sm text-gray-600 mb-4">
-            Showing {paginatedData.length} of {filteredData.length} records
-            {filteredData.length !== data.length &&
-              ` (filtered from ${data.length} total)`}
+          {/* Results Count */}
+          <div className="mb-4 text-sm text-gray-600">
+            Showing {filteredData.length} of {matrimonials?.data.length || 0} profiles
           </div>
-        </div>
 
-        <div className="overflow-x-auto bg-white rounded-lg shadow">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
-              <tr>
-                {columns.map(column => (
-                  <th
-                    key={column.key}
-                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
-                    onClick={() => handleSort(column.key)}
-                  >
-                    <div className="flex items-center gap-2">
-                      {column.label}
-                      {getSortIcon(column.key)}
-                    </div>
-                  </th>
-                ))}
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Actions
-                </th>
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-              {paginatedData.map(row => (
-                <tr key={row.id} className="hover:bg-gray-50">
-                  {columns.map(column => (
-                    <td
-                      key={column.key}
-                      className="px-6 py-4 whitespace-nowrap text-sm text-gray-900"
-                    >
-                      {formatValue(row[column.key], column.type)}
-                    </td>
-                  ))}
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                    <div className="flex items-center gap-2">
-                      <button
-                        onClick={() => handleView(row)}
-                        className="p-1 text-blue-600 hover:text-blue-800"
-                        title="View"
-                      >
-                        <Eye className="w-4 h-4" />
-                      </button>
-                      <button
-                        onClick={() => handleEdit(row)}
-                        className="p-1 text-green-600 hover:text-green-800"
-                        title="Edit"
-                      >
-                        <Edit className="w-4 h-4" />
-                      </button>
-                      <button
-                        onClick={() => handleDelete(row.id)}
-                        className="p-1 text-red-600 hover:text-red-800"
-                        title="Delete"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-
-        {totalPages > 1 && (
-          <div className="flex items-center justify-between mt-6">
-            <div className="text-sm text-gray-700">
-              Page {currentPage} of {totalPages}
-            </div>
-            <div className="flex items-center gap-2">
-              <button
-                onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
-                disabled={currentPage === 1}
-                className="px-3 py-2 text-sm bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                Previous
-              </button>
-
-              {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
-                const pageNum = Math.max(1, currentPage - 2) + i
-                if (pageNum <= totalPages) {
-                  return (
-                    <button
-                      key={pageNum}
-                      onClick={() => setCurrentPage(pageNum)}
-                      className={`px-3 py-2 text-sm border rounded-md ${
-                        currentPage === pageNum
-                          ? 'bg-blue-600 text-white border-blue-600'
-                          : 'bg-white border-gray-300 hover:bg-gray-50'
-                      }`}
-                    >
-                      {pageNum}
-                    </button>
-                  )
-                }
-                return null
-              })}
-
-              <button
-                onClick={() =>
-                  setCurrentPage(prev => Math.min(prev + 1, totalPages))
-                }
-                disabled={currentPage === totalPages}
-                className="px-3 py-2 text-sm bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                Next
-              </button>
+          {/* Table */}
+          <div className="bg-white rounded-lg shadow-lg overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="min-w-full divide-y divide-gray-200">
+                <thead className="bg-gradient-to-r from-rose-500 to-pink-600">
+                  <tr>
+                    <th className="px-6 py-4 text-left text-xs font-semibold text-white uppercase tracking-wider">
+                      Sr. No.
+                    </th>
+                    <th className="px-6 py-4 text-left text-xs font-semibold text-white uppercase tracking-wider">
+                      Name
+                    </th>
+                    <th className="px-6 py-4 text-left text-xs font-semibold text-white uppercase tracking-wider">
+                      Parent's Contact
+                    </th>
+                    <th className="px-6 py-4 text-left text-xs font-semibold text-white uppercase tracking-wider">
+                      Date of Birth
+                    </th>
+                    <th className="px-6 py-4 text-left text-xs font-semibold text-white uppercase tracking-wider">
+                      Annual Income
+                    </th>
+                    <th className="px-6 py-4 text-left text-xs font-semibold text-white uppercase tracking-wider">
+                      Address
+                    </th>
+                    <th className="px-6 py-4 text-center text-xs font-semibold text-white uppercase tracking-wider">
+                      Actions
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200">
+                  {filteredData.length === 0 ? (
+                    <tr>
+                      <td colSpan={7} className="px-6 py-8 text-center text-gray-500">
+                        No profiles found matching your filters
+                      </td>
+                    </tr>
+                  ) : (
+                    filteredData.map((profile, index) => (
+                      <tr key={profile.id} className="hover:bg-rose-50 transition-colors">
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                          {index + 1}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                          {profile.name}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                          {profile.parentsContact.toString()}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                          {new Date(profile.dob).toLocaleDateString('en-IN', {
+                            day: '2-digit',
+                            month: '2-digit',
+                            year: 'numeric'
+                          })}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                          {formatIncome(profile.annualIncome)}
+                        </td>
+                        <td className="px-6 py-4 text-sm text-gray-900 max-w-xs truncate">
+                          {profile.address}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-center">
+                          <button
+                            onClick={() => setSelectedProfile(profile)}
+                            className="inline-flex items-center justify-center p-2 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-200 transition-colors"
+                            title="View Details"
+                          >
+                            <FiEye className="w-5 h-5" />
+                          </button>
+                        </td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
             </div>
           </div>
-        )}
-      </div>*/}
-      <div className="-mx-4 sm:-mx-8 px-4 sm:px-8 py-4 overflow-x-auto">
-        <div className="inline-block min-w-full shadow rounded-lg overflow-hidden">
-          <table className="min-w-full leading-normal">
-            <thead>
-              <tr>
-                <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-50 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                  Sr. No.
-                </th>
-                <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-50 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                  Name
-                </th>
-                <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-50 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                  Parents Contact
-                </th>
-                <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-50 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                  Native Place
-                </th>
-                <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-50 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                  Current City
-                </th>
-                <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-50 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                  Height
-                </th>
-                <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-50 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                  Blood Group
-                </th>
-                <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-50 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                  Complexion
-                </th>
-                <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-50 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                  Gender
-                </th>
-                <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-50 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                  Date of Birth
-                </th>
-                <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-50 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                  Qualification
-                </th>
-                <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-50 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                  Current Job Profile
-                </th>
-                <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-50 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                  Annual Income
-                </th>
-                <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-50 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                  Father Name
-                </th>
-                <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-50 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                  Father Occupation
-                </th>
-                <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-50 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                  Address
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {matrionials?.data.map((matrimonial, index) => (
-                <tr key={matrimonial.id}>
-                  <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                    <p className="text-gray-900 whitespace-no-wrap">
-                      {index + 1}
-                    </p>
-                  </td>
-                  <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                    <p className="text-gray-900 whitespace-no-wrap">
-                      {matrimonial.name}
-                    </p>
-                  </td>
-                  <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                    <p className="text-gray-900 whitespace-no-wrap">
-                      {matrimonial.parentsContact.toString()}
-                    </p>
-                  </td>
-                  <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                    <p className="text-gray-900 whitespace-no-wrap">
-                      {matrimonial.nativePlace}
-                    </p>
-                  </td>
-                  <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                    <p className="text-gray-900 whitespace-no-wrap">
-                      {matrimonial.currentCity}
-                    </p>
-                  </td>
-                  <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                    <p className="text-gray-900 whitespace-no-wrap">
-                      {matrimonial.height}
-                    </p>
-                  </td>
-                  <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                    <p className="text-gray-900 whitespace-no-wrap">
-                      {matrimonial.bloodGroup}
-                    </p>
-                  </td>
-                  <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                    <p className="text-gray-900 whitespace-no-wrap">
-                      {matrimonial.complexion}
-                    </p>
-                  </td>
-                  <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                    <p className="text-gray-900 whitespace-no-wrap">
-                      {matrimonial.gender}
-                    </p>
-                  </td>
-                  <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                    <p className="text-gray-900 whitespace-no-wrap">
-                      {new Date(matrimonial.dob).toLocaleDateString('en-IN', {
+        </div>
+      </div>
+
+      {/* Modal for Profile Details */}
+      {selectedProfile && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+            {/* Modal Header */}
+            <div className="sticky top-0 bg-gradient-to-r from-rose-500 to-pink-600 px-6 py-4 flex justify-between items-center rounded-t-2xl">
+              <h2 className="text-2xl font-bold text-white">Profile Details</h2>
+              <button
+                onClick={() => setSelectedProfile(null)}
+                className="p-2 hover:bg-white/20 rounded-lg transition-colors"
+              >
+                <FiX className="w-6 h-6 text-white" />
+              </button>
+            </div>
+
+            {/* Modal Content */}
+            <div className="p-6 space-y-6">
+              {/* Personal Information */}
+              <div className="border-l-4 border-rose-400 pl-4">
+                <h3 className="text-xl font-semibold text-gray-800 mb-4">Personal Information</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="text-sm font-medium text-gray-500">Name</label>
+                    <p className="text-gray-900 font-medium">{selectedProfile.name}</p>
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium text-gray-500">Gender</label>
+                    <p className="text-gray-900 font-medium capitalize">{selectedProfile.gender}</p>
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium text-gray-500">Date of Birth</label>
+                    <p className="text-gray-900 font-medium">
+                      {new Date(selectedProfile.dob).toLocaleDateString('en-IN', {
                         day: '2-digit',
-                        month: '2-digit',
+                        month: 'long',
                         year: 'numeric'
                       })}
                     </p>
-                  </td>
-                  <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                    <p className="text-gray-900 whitespace-no-wrap">
-                      {matrimonial.qualification}
-                    </p>
-                  </td>
-                  <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                    <p className="text-gray-900 whitespace-no-wrap">
-                      {matrimonial.currentJobProfile}
-                    </p>
-                  </td>
-                  <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                    <p className="text-gray-900 whitespace-no-wrap">
-                      {matrimonial.annualIncome}
-                    </p>
-                  </td>
-                  <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                    <p className="text-gray-900 whitespace-no-wrap">
-                      {matrimonial.fatherName}
-                    </p>
-                  </td>
-                  <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                    <p className="text-gray-900 whitespace-no-wrap">
-                      {matrimonial.fatherOccupation}
-                    </p>
-                  </td>
-                  <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                    <p className="text-gray-900 whitespace-no-wrap">
-                      {matrimonial.address}
-                    </p>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium text-gray-500">Birth Place</label>
+                    <p className="text-gray-900 font-medium">{selectedProfile.birthPlace}</p>
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium text-gray-500">Height</label>
+                    <p className="text-gray-900 font-medium">{selectedProfile.height}</p>
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium text-gray-500">Blood Group</label>
+                    <p className="text-gray-900 font-medium">{selectedProfile.bloodGroup.replace('_', ' ')}</p>
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium text-gray-500">Complexion</label>
+                    <p className="text-gray-900 font-medium">{selectedProfile.complexion || 'Not specified'}</p>
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium text-gray-500">Marital Status</label>
+                    <p className="text-gray-900 font-medium capitalize">{selectedProfile.maritalStatus}</p>
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium text-gray-500">Manglic</label>
+                    <p className="text-gray-900 font-medium">{selectedProfile.manglic ? 'Yes' : 'No'}</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Location Information */}
+              <div className="border-l-4 border-blue-400 pl-4">
+                <h3 className="text-xl font-semibold text-gray-800 mb-4">Location Details</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="text-sm font-medium text-gray-500">Native Place</label>
+                    <p className="text-gray-900 font-medium">{selectedProfile.nativePlace}</p>
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium text-gray-500">Current City</label>
+                    <p className="text-gray-900 font-medium">{selectedProfile.currentCity}</p>
+                  </div>
+                  <div className="md:col-span-2">
+                    <label className="text-sm font-medium text-gray-500">Address</label>
+                    <p className="text-gray-900 font-medium">{selectedProfile.address}</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Professional Information */}
+              <div className="border-l-4 border-green-400 pl-4">
+                <h3 className="text-xl font-semibold text-gray-800 mb-4">Professional Details</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="text-sm font-medium text-gray-500">Qualification</label>
+                    <p className="text-gray-900 font-medium">{selectedProfile.qualification}</p>
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium text-gray-500">Current Job Profile</label>
+                    <p className="text-gray-900 font-medium">{selectedProfile.currentJobProfile || 'Not specified'}</p>
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium text-gray-500">Annual Income</label>
+                    <p className="text-gray-900 font-medium">{formatIncome(selectedProfile.annualIncome)}</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Family Information */}
+              <div className="border-l-4 border-purple-400 pl-4">
+                <h3 className="text-xl font-semibold text-gray-800 mb-4">Family Details</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="text-sm font-medium text-gray-500">Father's Name</label>
+                    <p className="text-gray-900 font-medium">{selectedProfile.fatherName}</p>
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium text-gray-500">Father's Occupation</label>
+                    <p className="text-gray-900 font-medium">{selectedProfile.fatherOccupation}</p>
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium text-gray-500">Mother's Name</label>
+                    <p className="text-gray-900 font-medium">{selectedProfile.motherName}</p>
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium text-gray-500">Mother's Occupation</label>
+                    <p className="text-gray-900 font-medium">{selectedProfile.motherOccupation}</p>
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium text-gray-500">Parent's Contact</label>
+                    <p className="text-gray-900 font-medium">{selectedProfile.parentsContact.toString()}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Modal Footer */}
+            <div className="sticky bottom-0 bg-gray-50 px-6 py-4 flex justify-end rounded-b-2xl border-t">
+              <button
+                onClick={() => setSelectedProfile(null)}
+                className="px-6 py-2 bg-rose-600 text-white rounded-lg hover:bg-rose-700 transition-colors font-medium"
+              >
+                Close
+              </button>
+            </div>
+          </div>
         </div>
-      </div>
+      )}
     </Layout>
   )
 }
