@@ -69,7 +69,15 @@ const MarriageProfileForm: NextPage = () => {
   const maritalStatuses = ['unmarried', 'divorced', 'widowed', 'married']
   const genders = ['male', 'female', 'other']
 
+  // ? Mutations & Queries
+  const { mutateAsync: register } = api.marriageProfile.register.useMutation()
+  const { mutateAsync: update } = api.marriageProfile.update.useMutation()
+  const { data: myProfiles, refetch: refetchProfiles } = api.marriageProfile.getUserProfiles.useQuery()
+
   // ? useStates
+  const [showForm, setShowForm] = useState(false)
+  const [editId, setEditId] = useState<string | null>(null)
+  
   const [formData, setFormData] = useState<FormData>({
     name: '',
     nativePlace: '',
@@ -94,13 +102,6 @@ const MarriageProfileForm: NextPage = () => {
     gender: Gender.male
   })
 
-  // const [currentSibling, setCurrentSibling] = useState({
-  //   name: '',
-  //   age: '',
-  //   occupation: '',
-  //   maritalStatus: ''
-  // })
-
   // ? Handler Functions
   const handleInputChange = (e: any) => {
     const { name, value, type, checked } = e.target
@@ -110,42 +111,121 @@ const MarriageProfileForm: NextPage = () => {
     }))
   }
 
-  // const handleSiblingChange = (e: any) => {
-  //   const { name, value } = e.target
-  //   setCurrentSibling(prev => ({
-  //     ...prev,
-  //     [name]: value
-  //   }))
-  // }
+  const handleEdit = (profile: any) => {
+    setFormData({
+      name: profile.name,
+      nativePlace: profile.nativePlace,
+      currentCity: profile.currentCity,
+      height: profile.height,
+      bloodGroup: profile.bloodGroup,
+      complexion: profile.complexion || Complexion.Fair,
+      dob: new Date(profile.dob).toISOString().split('T')[0] ?? '',
+      birthPlace: profile.birthPlace,
+      qualification: profile.qualification,
+      currentJobProfile: profile.currentJobProfile || '',
+      annualIncome: profile.annualIncome,
+      fatherName: profile.fatherName,
+      fatherOccupation: profile.fatherOccupation,
+      motherName: profile.motherName,
+      motherOccupation: profile.motherOccupation,
+      siblings: profile.siblings || [],
+      parentsContact: profile.parentsContact.toString(),
+      address: profile.address,
+      manglic: profile.manglic,
+      maritalStatus: profile.maritalStatus,
+      gender: profile.gender
+    })
+    setEditId(profile.id)
+    setShowForm(true)
+  }
 
-  // const addSibling = () => {
-  //   if (currentSibling.name && currentSibling.age) {
-  //     setFormData(prev => ({
-  //       ...prev,
-  //       siblings: [
-  //         ...prev.siblings,
-  //         { ...currentSibling, age: parseInt(currentSibling.age) }
-  //       ]
-  //     }))
-  //     setCurrentSibling({
-  //       name: '',
-  //       age: '',
-  //       occupation: '',
-  //       maritalStatus: ''
-  //     })
-  //   }
-  // }
+  const handleAddNew = () => {
+    setFormData({
+      name: '',
+      nativePlace: '',
+      currentCity: '',
+      height: '',
+      bloodGroup: BloodGroup.AB_Negative,
+      complexion: Complexion.Fair,
+      dob: '',
+      birthPlace: '',
+      qualification: '',
+      currentJobProfile: '',
+      annualIncome: IncomeBracket.Three_TO_Five_LAKHS,
+      fatherName: '',
+      fatherOccupation: '',
+      motherName: '',
+      motherOccupation: '',
+      siblings: [],
+      parentsContact: '',
+      address: '',
+      manglic: false,
+      maritalStatus: MaritalStatus.unmarried,
+      gender: Gender.male
+    })
+    setEditId(null)
+    setShowForm(true)
+  }
 
-  // const removeSibling = (index: any) => {
-  //   setFormData(prev => ({
-  //     ...prev,
-  //     siblings: prev.siblings.filter((_, i) => i !== index)
-  //   }))
-  // }
+  // List View
+  if (!showForm && myProfiles && myProfiles.length > 0) {
+    return (
+      <Layout>
+        <div className="min-h-screen bg-gradient-to-br from-rose-50 to-pink-100 py-8 px-4">
+          <div className="max-w-4xl mx-auto">
+            <div className="flex justify-between items-center mb-8">
+              <h1 className="text-3xl font-bold text-gray-800">My Marriage Profiles</h1>
+              <button
+                onClick={handleAddNew}
+                className="px-6 py-3 bg-rose-600 text-white rounded-lg hover:bg-rose-700 transition-colors shadow-md"
+              >
+                Add New Profile
+              </button>
+            </div>
+            <div className="grid gap-6 md:grid-cols-2">
+              {myProfiles.map((profile) => (
+                <div key={profile.id} className="bg-white p-6 rounded-xl shadow-md border border-rose-100 hover:shadow-lg transition-shadow">
+                  <div className="flex items-start justify-between mb-4">
+                    <div>
+                      <h2 className="text-xl font-semibold text-gray-800">{profile.name}</h2>
+                      <p className="text-rose-500 text-sm font-medium">{profile.currentJobProfile}</p>
+                    </div>
+                    <span className={`px-3 py-1 rounded-full text-xs font-medium ${
+                      profile.gender === 'male' ? 'bg-blue-100 text-blue-700' : 'bg-pink-100 text-pink-700'
+                    }`}>
+                      {profile.gender}
+                    </span>
+                  </div>
+                  
+                  <div className="space-y-2 text-gray-600 text-sm mb-6">
+                    <div className="flex items-center gap-2">
+                      <FiUser className="w-4 h-4" />
+                      <span>{new Date().getFullYear() - new Date(profile.dob).getFullYear()} years old</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <FiMapPin className="w-4 h-4" />
+                      <span>{profile.currentCity}</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <FiHeart className="w-4 h-4" />
+                      <span>{profile.maritalStatus}</span>
+                    </div>
+                  </div>
 
-  // ? Mutations
-  // Add marriage profile mutation
-  const { mutateAsync: register } = api.marriageProfile.register.useMutation()
+                  <button
+                    onClick={() => handleEdit(profile)}
+                    className="w-full py-2 border-2 border-rose-500 text-rose-600 rounded-lg hover:bg-rose-50 transition-colors font-medium"
+                  >
+                    Edit Profile
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </Layout>
+    )
+  }
 
   return (
     <Layout>
@@ -153,7 +233,7 @@ const MarriageProfileForm: NextPage = () => {
         onSubmit={async e => {
           e.preventDefault()
           try {
-            const response = await register({
+            const payload = {
               name: formData.name,
               nativePlace: formData.nativePlace,
               currentCity: formData.currentCity,
@@ -175,29 +255,53 @@ const MarriageProfileForm: NextPage = () => {
               manglic: formData.manglic,
               maritalStatus: formData.maritalStatus,
               gender: formData.gender
-            })
+            }
+
+            let response;
+            if (editId) {
+              response = await update({
+                id: editId,
+                data: payload
+              })
+            } else {
+              response = await register(payload)
+            }
 
             if (response?.success) {
-              toast.success('Marriage Profile created Successfully!')
-              router.push('/viewMatrimonials')
+              toast.success(editId ? 'Profile updated successfully!' : 'Marriage Profile created Successfully!')
+              setShowForm(false)
+              refetchProfiles()
             } else {
               console.error('Something went wrong. Please try again.')
+              toast.error('Something went wrong. Please try again.')
             }
           } catch (e) {
             console.log(e)
+            toast.error('An error occurred. Please check your inputs.')
           }
         }}
       >
         <div className="min-h-screen bg-gradient-to-br from-rose-50 to-pink-100 py-8 px-4">
           <div className="max-w-4xl mx-auto">
+            {/* Back Button if in edit/add mode and profiles exist */}
+            {myProfiles && myProfiles.length > 0 && (
+              <button
+                type="button"
+                onClick={() => setShowForm(false)}
+                className="mb-4 text-rose-600 hover:text-rose-800 font-medium flex items-center gap-2 transition-colors"
+              >
+                ← Back to Profiles
+              </button>
+            )}
+            
             <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
               <div className="bg-gradient-to-r from-rose-500 to-pink-600 px-8 py-6">
                 <h1 className="text-3xl font-bold text-white flex items-center gap-3">
                   <FiHeart className="w-8 h-8" />
-                  Marriage Profile Registration
+                  {editId ? 'Edit Marriage Profile' : 'Marriage Profile Registration'}
                 </h1>
                 <p className="text-rose-100 mt-2">
-                  Create your detailed matrimonial profile
+                  {editId ? 'Update your matrimonial profile details' : 'Create your detailed matrimonial profile'}
                 </p>
               </div>
 
@@ -551,105 +655,6 @@ const MarriageProfileForm: NextPage = () => {
                       />
                     </div>
                   </div>
-                  {/* <div className="mt-8">
-                    <h3 className="text-lg font-semibold text-gray-800 mb-4">
-                      Siblings Information
-                    </h3>
-
-                    <div className="bg-gray-50 p-6 rounded-lg mb-4">
-                      <h4 className="font-medium text-gray-700 mb-4">
-                        Add Sibling
-                      </h4>
-                      <div className="grid md:grid-cols-2 gap-4">
-                        <input
-                          type="text"
-                          name="name"
-                          placeholder="Sibling Name"
-                          value={currentSibling.name}
-                          onChange={handleSiblingChange}
-                          className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                        />
-                        <input
-                          type="number"
-                          name="age"
-                          placeholder="Age"
-                          value={currentSibling.age}
-                          onChange={handleSiblingChange}
-                          className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                        />
-                        <input
-                          type="text"
-                          name="occupation"
-                          placeholder="Occupation"
-                          value={currentSibling.occupation}
-                          onChange={handleSiblingChange}
-                          className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                        />
-                        <select
-                          name="maritalStatus"
-                          value={currentSibling.maritalStatus}
-                          onChange={handleSiblingChange}
-                          className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                        >
-                         {maritalStatuses.map(status => (
-                          <option key={status} value={status}>
-                            {status.charAt(0) + status.slice(1).toLowerCase()}
-                          </option>
-                        ))}
-
-                        </select>
-                      </div>
-                      <button
-                        type="button"
-                        onClick={addSibling}
-                        className="mt-4 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
-                      >
-                        Add Sibling
-                      </button>
-                    </div>
-
-                    {formData.siblings.length > 0 && (
-                      <div className="space-y-3">
-                        <h4 className="font-medium text-gray-700">
-                          Added Siblings:
-                        </h4>
-                        {formData.siblings.map((sibling, index) => (
-                          <div
-                            key={index}
-                            className="flex items-center justify-between bg-white p-4 rounded-lg border"
-                          >
-                            <div>
-                              <span className="font-medium">
-                                {sibling.name}
-                              </span>{' '}
-                              -
-                              <span className="text-gray-600">
-                                {' '}
-                                Age: {sibling.age}
-                              </span>
-                              {sibling.occupation && (
-                                <span className="text-gray-600">
-                                  , {sibling.occupation}
-                                </span>
-                              )}
-                              {sibling.maritalStatus && (
-                                <span className="text-gray-600">
-                                  , {sibling.maritalStatus}
-                                </span>
-                              )}
-                            </div>
-                            <button
-                              type="button"
-                              onClick={() => removeSibling(index)}
-                              className="text-red-600 hover:text-red-800 font-medium"
-                            >
-                              Remove
-                            </button>
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                  </div> */}
                 </div>
               </div>
 
@@ -659,7 +664,7 @@ const MarriageProfileForm: NextPage = () => {
                   type="submit"
                   className="px-8 py-4 bg-gradient-to-r from-rose-500 to-pink-600 text-white font-semibold rounded-lg hover:from-rose-600 hover:to-pink-700 transform hover:scale-105 transition-all duration-200 shadow-lg"
                 >
-                  Create Marriage Profile
+                  {editId ? 'Update Marriage Profile' : 'Create Marriage Profile'}
                 </button>
               </div>
             </div>

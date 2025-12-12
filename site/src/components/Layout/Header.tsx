@@ -43,7 +43,7 @@ export const Header: FC = () => {
           pauseOnHover
           className="pl-[50%] bg-primary font-bold"
         > 
-          <pre>             युवाओं के लिए रोजगार उत्पन्न करने,उन्हें स्वरोजगार हेतु प्रोत्साहित करने के उद्देश्य से निर्मित संस्था &quot;Trimes Vidhya Pracharini Sansthan (TVS)&quot; से आप अवश्य जुड़ें। आर्थिक सहयोग, संस्था के SBI बैंक खाता संख्या 41003430718 (IFSC कोड SBIN0062266) में ही जमा कराएं।                       </pre>
+          <pre>             3-E (Education, Employment & Environment) पर कार्य करने को उद्धृत संस्था &quot;Trimes Vidhya Pracharini Sansthan (TVS)&quot; से आप अवश्य जुड़ें। आर्थिक सहयोग, संस्था के SBI बैंक खाता संख्या 41003430718 (IFSC कोड SBIN0062266) में ही जमा कराएं।                       </pre>
              
         </Marquee>
         <div className="sm:px-8">

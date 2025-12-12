@@ -514,9 +514,6 @@ const Profile: NextPage = () => {
                       Marital Status
                     </th>
                     <th scope="col" className="py-3 px-6">
-                      Show in Matrimony
-                    </th>
-                    <th scope="col" className="py-3 px-6">
                       Action
                     </th>
                   </tr>
@@ -550,9 +547,6 @@ const Profile: NextPage = () => {
                       <td className="py-4 px-6">{member.occupation}</td>
                       <td className="py-4 px-6">{member.qualification}</td>
                       <td className="py-4 px-6">{member.maritalStatus}</td>
-                      <td className="py-4 px-6">
-                        {member.showInMatrimony ? 'Yes' : 'No'}
-                      </td>
                       <td className="py-4 px-6 flex gap-2">
                         <button
                           className="rounded-md text-gray-600 flex items-center"

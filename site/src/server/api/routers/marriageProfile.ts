@@ -60,19 +60,25 @@ export const MarriageProfileInput = z.object({
   address: z.string(),
   manglic: z.boolean(),
   maritalStatus: MaritalStatusEnum,
-  gender: GenderEnum
+  gender: GenderEnum,
 })
 
 export const marriageProfileRouter = createTRPCRouter({
   register: protectedProcedure
     .input(MarriageProfileInput)
     .mutation(async ({ input, ctx }) => {
+      const { siblings, ...rest } = input
       const profile = await ctx.prisma.marriageProfile.create({
         data: {
-          ...input,
-          siblings: input.siblings
+          ...rest,
+          user: {
+            connect: {
+              id: ctx.session.user.id
+            }
+          },
+          siblings: siblings
             ? {
-                create: input.siblings
+                create: siblings
               }
             : undefined
         }
@@ -80,8 +86,54 @@ export const marriageProfileRouter = createTRPCRouter({
       return {
         success: true,
         profileId: profile.id
-      };
+      }
     }),
+
+  update: protectedProcedure
+    .input(
+      z.object({
+        id: z.string().uuid(),
+        data: MarriageProfileInput
+      })
+    )
+    .mutation(async ({ input, ctx }) => {
+      const { siblings, ...data } = input.data
+      const profile = await ctx.prisma.marriageProfile.update({
+        where: {
+          id: input.id,
+          userId: ctx.session.user.id // Ensure ownership
+        },
+        data: {
+          ...data,
+          siblings: siblings
+            ? {
+                upsert: {
+                  create: siblings,
+                  update: siblings
+                }
+              }
+            : undefined
+        }
+      })
+      return {
+        success: true,
+        profileId: profile.id
+      }
+    }),
+
+  getUserProfiles: protectedProcedure.query(async ({ ctx }) => {
+    return ctx.prisma.marriageProfile.findMany({
+      where: {
+        userId: ctx.session.user.id
+      },
+      include: {
+        siblings: true
+      },
+      orderBy: {
+        createdAt: 'desc'
+      }
+    })
+  }),
     
   getMarriageProfiles: protectedProcedure
   .input(
