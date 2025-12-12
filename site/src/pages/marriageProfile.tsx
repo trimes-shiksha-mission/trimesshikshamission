@@ -10,7 +10,6 @@ import {
   IncomeBracket,
   MaritalStatus
 } from '@prisma/client'
-import router from 'next/router'
 import { toast } from 'react-toastify'
 
 const MarriageProfileForm: NextPage = () => {
