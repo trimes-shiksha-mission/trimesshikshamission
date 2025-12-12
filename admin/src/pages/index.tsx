@@ -16,6 +16,9 @@ export const getServerSideProps: GetServerSideProps = async ctx => {
 
 const Home: NextPage = () => {
   return <Layout breadcrumbs={[{ label: 'Welcome to Trimes Shiksha Mission Admin Panel' }]}>
+    <div className="p-6">
+      <h1 className="text-2xl font-bold">Welcome to Trimes Shiksha Mission Admin Panel</h1>
+    </div>
   </Layout>
 }
 
