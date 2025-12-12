@@ -122,7 +122,7 @@ const ViewMatrimonials: NextPage = () => {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Parent's Contact</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Parent&apos;s Contact</label>
                   <input
                     type="text"
                     value={filters.parentsContact}
@@ -183,7 +183,7 @@ const ViewMatrimonials: NextPage = () => {
                       Name
                     </th>
                     <th className="px-6 py-4 text-left text-xs font-semibold text-white uppercase tracking-wider">
-                      Parent's Contact
+                      Parent&apos;s Contact
                     </th>
                     <th className="px-6 py-4 text-left text-xs font-semibold text-white uppercase tracking-wider">
                       Date of Birth
@@ -359,23 +359,23 @@ const ViewMatrimonials: NextPage = () => {
                 <h3 className="text-xl font-semibold text-gray-800 mb-4">Family Details</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <label className="text-sm font-medium text-gray-500">Father's Name</label>
+                    <label className="text-sm font-medium text-gray-500">Father&apos;s Name</label>
                     <p className="text-gray-900 font-medium">{selectedProfile.fatherName}</p>
                   </div>
                   <div>
-                    <label className="text-sm font-medium text-gray-500">Father's Occupation</label>
+                    <label className="text-sm font-medium text-gray-500">Father&apos;s Occupation</label>
                     <p className="text-gray-900 font-medium">{selectedProfile.fatherOccupation}</p>
                   </div>
                   <div>
-                    <label className="text-sm font-medium text-gray-500">Mother's Name</label>
+                    <label className="text-sm font-medium text-gray-500">Mother&apos;s Name</label>
                     <p className="text-gray-900 font-medium">{selectedProfile.motherName}</p>
                   </div>
                   <div>
-                    <label className="text-sm font-medium text-gray-500">Mother's Occupation</label>
+                    <label className="text-sm font-medium text-gray-500">Mother&apos;s Occupation</label>
                     <p className="text-gray-900 font-medium">{selectedProfile.motherOccupation}</p>
                   </div>
                   <div>
-                    <label className="text-sm font-medium text-gray-500">Parent's Contact</label>
+                    <label className="text-sm font-medium text-gray-500">Parent&apos;s Contact</label>
                     <p className="text-gray-900 font-medium">{selectedProfile.parentsContact.toString()}</p>
                   </div>
                 </div>
