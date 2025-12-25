@@ -342,7 +342,7 @@ export const userRouter = createTRPCRouter({
     )
     .mutation(async ({ ctx: { prisma }, input }) => {
       const { email } = input
-      const user = await prisma.user.findUnique({
+      const user = await prisma.user.findFirst({
         where: {
           email,
           headId: null
@@ -359,7 +359,6 @@ export const userRouter = createTRPCRouter({
       const token = await prisma.forgotPasswordToken.create({
         data: { userId: user.id }
       })
-
       await sendMail({
         to: user.email,
         subject: 'Reset Trimes Password',
@@ -368,6 +367,9 @@ export const userRouter = createTRPCRouter({
             <p>Hi ${user.name},</p>
             <p>Click on the below link to reset your password</p>
             <a href="${env.NEXTAUTH_URL}/reset-password/${token.id}">Reset Password</a>
+          </div>
+          <div>
+            <p>Thank you for being a part of Trimes Shiksha Mission</p>
           </div>
           `
       })
