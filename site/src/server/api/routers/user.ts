@@ -283,12 +283,7 @@ export const userRouter = createTRPCRouter({
             members: true
           }
         }),
-        prisma.user.count({
-          where: {
-            ...filters,
-            isVerified: true
-          }
-        }),
+        prisma.user.count(),
         prisma.user.count({
           where:{
             ...filters,

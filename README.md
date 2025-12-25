@@ -17,5 +17,9 @@
 2. Add Anil Uncle name in the bottom footer (Done)
 3. Remove Show in Matrimony option from Profile (Done)
 
+#25/12/25
+1. Total Verified Members and Total Verified Head Members (Done)
+2. Name Correction (Done)
+
 
 

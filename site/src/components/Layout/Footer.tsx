@@ -63,9 +63,9 @@ export const Footer: FC = () => {
             </div>
             <hr />
             <div className="text-base flex flex-col gap-2 mt-2 items-center">
-              <div>परिकल्पना एवं सूत्रधार: अनिल वासुदेवजी त्रिवेदी</div>
-              <div>संयोजक: Mehul Bharat Ji Joshi</div>
+              <div>परिकल्पना एवं सूत्रधार: अनिल वासुदेवजी त्रिवेदी (ईन्टाली)</div>
               <div>सहसंयोजक: Eakansh Virendra Ji Jain</div>
+              <div>संयोजक: Mehul Bharat Ji Joshi</div>
               <div>सहसंयोजक: Jayesh Prabhulal Ji Kugsiya</div>
             </div>
           </div>
