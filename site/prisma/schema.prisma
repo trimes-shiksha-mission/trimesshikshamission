@@ -204,6 +204,8 @@ model MarriageProfile {
   manglic           Boolean
   maritalStatus     MaritalStatus
   gender            Gender
+  profilePhoto      String?
+  themeColor        String?       @default("rose")
   userId            String?       @db.Uuid
   user              User?         @relation(fields: [userId], references: [id])
   createdAt         DateTime      @default(now()) @db.Timestamptz()

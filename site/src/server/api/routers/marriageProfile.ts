@@ -61,6 +61,8 @@ export const MarriageProfileInput = z.object({
   manglic: z.boolean(),
   maritalStatus: MaritalStatusEnum,
   gender: GenderEnum,
+  profilePhoto: z.string().optional(),
+  themeColor: z.string().optional(),
 })
 
 export const marriageProfileRouter = createTRPCRouter({

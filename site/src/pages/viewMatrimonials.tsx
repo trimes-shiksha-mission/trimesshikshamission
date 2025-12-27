@@ -27,6 +27,36 @@ interface Filters {
   address: string
 }
 
+const themeConfig = {
+  rose: {
+    gradient: 'from-rose-500 to-pink-600',
+    border: 'border-rose-400',
+    text: 'text-rose-500',
+    bg: 'bg-rose-50',
+    iconColor: 'text-rose-500',
+    button: 'bg-rose-600 hover:bg-rose-700',
+    lightBg: 'bg-rose-100' // For gender/status tags if needed
+  },
+  purple: {
+    gradient: 'from-purple-500 to-indigo-600',
+    border: 'border-purple-400',
+    text: 'text-purple-500',
+    bg: 'bg-purple-50',
+    iconColor: 'text-purple-500',
+    button: 'bg-purple-600 hover:bg-purple-700',
+    lightBg: 'bg-purple-100'
+  },
+  blue: {
+    gradient: 'from-blue-500 to-cyan-600',
+    border: 'border-blue-400',
+    text: 'text-blue-500',
+    bg: 'bg-blue-50',
+    iconColor: 'text-blue-500',
+    button: 'bg-blue-600 hover:bg-blue-700',
+    lightBg: 'bg-blue-100'
+  }
+}
+
 const ViewMatrimonials: NextPage = () => {
   const [selectedProfile, setSelectedProfile] = useState<MarriageProfile | null>(null)
   const [showFilters, setShowFilters] = useState(false)
@@ -254,143 +284,165 @@ const ViewMatrimonials: NextPage = () => {
       {selectedProfile && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
           <div className="bg-white rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
-            {/* Modal Header */}
-            <div className="sticky top-0 bg-gradient-to-r from-rose-500 to-pink-600 px-6 py-4 flex justify-between items-center rounded-t-2xl">
-              <h2 className="text-2xl font-bold text-white">Profile Details</h2>
-              <button
-                onClick={() => setSelectedProfile(null)}
-                className="p-2 hover:bg-white/20 rounded-lg transition-colors"
-              >
-                <FiX className="w-6 h-6 text-white" />
-              </button>
-            </div>
+            {(() => {
+              if (!selectedProfile) return null
+              const color = ((selectedProfile as any).themeColor || 'rose') as keyof typeof themeConfig
+              const theme = themeConfig[color] || themeConfig.rose
+              return (
+                <>
+                  {/* Modal Header */}
+                  <div className={`sticky top-0 bg-gradient-to-r ${theme.gradient} px-6 py-4 flex justify-between items-center rounded-t-2xl`}>
+                    <h2 className="text-2xl font-bold text-white">Profile Details</h2>
+                    <button
+                      onClick={() => setSelectedProfile(null)}
+                      className="p-2 hover:bg-white/20 rounded-lg transition-colors"
+                    >
+                      <FiX className="w-6 h-6 text-white" />
+                    </button>
+                  </div>
 
-            {/* Modal Content */}
-            <div className="p-6 space-y-6">
-              {/* Personal Information */}
-              <div className="border-l-4 border-rose-400 pl-4">
-                <h3 className="text-xl font-semibold text-gray-800 mb-4">Personal Information</h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <label className="text-sm font-medium text-gray-500">Name</label>
-                    <p className="text-gray-900 font-medium">{selectedProfile.name}</p>
-                  </div>
-                  <div>
-                    <label className="text-sm font-medium text-gray-500">Gender</label>
-                    <p className="text-gray-900 font-medium capitalize">{selectedProfile.gender}</p>
-                  </div>
-                  <div>
-                    <label className="text-sm font-medium text-gray-500">Date of Birth</label>
-                    <p className="text-gray-900 font-medium">
-                      {new Date(selectedProfile.dob).toLocaleDateString('en-IN', {
-                        day: '2-digit',
-                        month: 'long',
-                        year: 'numeric'
-                      })}
-                    </p>
-                  </div>
-                  <div>
-                    <label className="text-sm font-medium text-gray-500">Birth Place</label>
-                    <p className="text-gray-900 font-medium">{selectedProfile.birthPlace}</p>
-                  </div>
-                  <div>
-                    <label className="text-sm font-medium text-gray-500">Height</label>
-                    <p className="text-gray-900 font-medium">{selectedProfile.height}</p>
-                  </div>
-                  <div>
-                    <label className="text-sm font-medium text-gray-500">Blood Group</label>
-                    <p className="text-gray-900 font-medium">{selectedProfile.bloodGroup.replace('_', ' ')}</p>
-                  </div>
-                  <div>
-                    <label className="text-sm font-medium text-gray-500">Complexion</label>
-                    <p className="text-gray-900 font-medium">{selectedProfile.complexion || 'Not specified'}</p>
-                  </div>
-                  <div>
-                    <label className="text-sm font-medium text-gray-500">Marital Status</label>
-                    <p className="text-gray-900 font-medium capitalize">{selectedProfile.maritalStatus}</p>
-                  </div>
-                  <div>
-                    <label className="text-sm font-medium text-gray-500">Manglic</label>
-                    <p className="text-gray-900 font-medium">{selectedProfile.manglic ? 'Yes' : 'No'}</p>
-                  </div>
-                </div>
-              </div>
+                  {/* Modal Content */}
+                  <div className="p-6 space-y-6">
+                    {/* Profile Photo Section */}
+                    {selectedProfile.profilePhoto && (
+                      <div className="flex justify-center mb-6">
+                        <div className="relative">
+                          <img
+                            src={selectedProfile.profilePhoto}
+                            alt={`${selectedProfile.name}'s profile`}
+                            className={`w-48 h-48 rounded-full object-cover border-4 ${theme.border} shadow-lg`}
+                          />
+                        </div>
+                      </div>
+                    )}
 
-              {/* Location Information */}
-              <div className="border-l-4 border-blue-400 pl-4">
-                <h3 className="text-xl font-semibold text-gray-800 mb-4">Location Details</h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <label className="text-sm font-medium text-gray-500">Native Place</label>
-                    <p className="text-gray-900 font-medium">{selectedProfile.nativePlace}</p>
-                  </div>
-                  <div>
-                    <label className="text-sm font-medium text-gray-500">Current City</label>
-                    <p className="text-gray-900 font-medium">{selectedProfile.currentCity}</p>
-                  </div>
-                  <div className="md:col-span-2">
-                    <label className="text-sm font-medium text-gray-500">Address</label>
-                    <p className="text-gray-900 font-medium">{selectedProfile.address}</p>
-                  </div>
-                </div>
-              </div>
+                    {/* Personal Information */}
+                    <div className={`border-l-4 ${theme.border} pl-4`}>
+                      <h3 className="text-xl font-semibold text-gray-800 mb-4">Personal Information</h3>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                          <label className="text-sm font-medium text-gray-500">Name</label>
+                          <p className="text-gray-900 font-medium">{selectedProfile.name}</p>
+                        </div>
+                        <div>
+                          <label className="text-sm font-medium text-gray-500">Gender</label>
+                          <p className="text-gray-900 font-medium capitalize">{selectedProfile.gender}</p>
+                        </div>
+                        <div>
+                          <label className="text-sm font-medium text-gray-500">Date of Birth</label>
+                          <p className="text-gray-900 font-medium">
+                            {new Date(selectedProfile.dob).toLocaleDateString('en-IN', {
+                              day: '2-digit',
+                              month: 'long',
+                              year: 'numeric'
+                            })}
+                          </p>
+                        </div>
+                        <div>
+                          <label className="text-sm font-medium text-gray-500">Birth Place</label>
+                          <p className="text-gray-900 font-medium">{selectedProfile.birthPlace}</p>
+                        </div>
+                        <div>
+                          <label className="text-sm font-medium text-gray-500">Height</label>
+                          <p className="text-gray-900 font-medium">{selectedProfile.height}</p>
+                        </div>
+                        <div>
+                          <label className="text-sm font-medium text-gray-500">Blood Group</label>
+                          <p className="text-gray-900 font-medium">{selectedProfile.bloodGroup.replace('_', ' ')}</p>
+                        </div>
+                        <div>
+                          <label className="text-sm font-medium text-gray-500">Complexion</label>
+                          <p className="text-gray-900 font-medium">{selectedProfile.complexion || 'Not specified'}</p>
+                        </div>
+                        <div>
+                          <label className="text-sm font-medium text-gray-500">Marital Status</label>
+                          <p className="text-gray-900 font-medium capitalize">{selectedProfile.maritalStatus}</p>
+                        </div>
+                        <div>
+                          <label className="text-sm font-medium text-gray-500">Manglic</label>
+                          <p className="text-gray-900 font-medium">{selectedProfile.manglic ? 'Yes' : 'No'}</p>
+                        </div>
+                      </div>
+                    </div>
 
-              {/* Professional Information */}
-              <div className="border-l-4 border-green-400 pl-4">
-                <h3 className="text-xl font-semibold text-gray-800 mb-4">Professional Details</h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <label className="text-sm font-medium text-gray-500">Qualification</label>
-                    <p className="text-gray-900 font-medium">{selectedProfile.qualification}</p>
-                  </div>
-                  <div>
-                    <label className="text-sm font-medium text-gray-500">Current Job Profile</label>
-                    <p className="text-gray-900 font-medium">{selectedProfile.currentJobProfile || 'Not specified'}</p>
-                  </div>
-                  <div>
-                    <label className="text-sm font-medium text-gray-500">Annual Income</label>
-                    <p className="text-gray-900 font-medium">{formatIncome(selectedProfile.annualIncome)}</p>
-                  </div>
-                </div>
-              </div>
+                    {/* Location Information */}
+                    <div className={`border-l-4 ${theme.border} pl-4`}>
+                      <h3 className="text-xl font-semibold text-gray-800 mb-4">Location Details</h3>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                          <label className="text-sm font-medium text-gray-500">Native Place</label>
+                          <p className="text-gray-900 font-medium">{selectedProfile.nativePlace}</p>
+                        </div>
+                        <div>
+                          <label className="text-sm font-medium text-gray-500">Current City</label>
+                          <p className="text-gray-900 font-medium">{selectedProfile.currentCity}</p>
+                        </div>
+                        <div className="md:col-span-2">
+                          <label className="text-sm font-medium text-gray-500">Address</label>
+                          <p className="text-gray-900 font-medium">{selectedProfile.address}</p>
+                        </div>
+                      </div>
+                    </div>
 
-              {/* Family Information */}
-              <div className="border-l-4 border-purple-400 pl-4">
-                <h3 className="text-xl font-semibold text-gray-800 mb-4">Family Details</h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <label className="text-sm font-medium text-gray-500">Father&apos;s Name</label>
-                    <p className="text-gray-900 font-medium">{selectedProfile.fatherName}</p>
-                  </div>
-                  <div>
-                    <label className="text-sm font-medium text-gray-500">Father&apos;s Occupation</label>
-                    <p className="text-gray-900 font-medium">{selectedProfile.fatherOccupation}</p>
-                  </div>
-                  <div>
-                    <label className="text-sm font-medium text-gray-500">Mother&apos;s Name</label>
-                    <p className="text-gray-900 font-medium">{selectedProfile.motherName}</p>
-                  </div>
-                  <div>
-                    <label className="text-sm font-medium text-gray-500">Mother&apos;s Occupation</label>
-                    <p className="text-gray-900 font-medium">{selectedProfile.motherOccupation}</p>
-                  </div>
-                  <div>
-                    <label className="text-sm font-medium text-gray-500">Parent&apos;s Contact</label>
-                    <p className="text-gray-900 font-medium">{selectedProfile.parentsContact.toString()}</p>
-                  </div>
-                </div>
-              </div>
-            </div>
+                    {/* Professional Information */}
+                    <div className={`border-l-4 ${theme.border} pl-4`}>
+                      <h3 className="text-xl font-semibold text-gray-800 mb-4">Professional Details</h3>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                          <label className="text-sm font-medium text-gray-500">Qualification</label>
+                          <p className="text-gray-900 font-medium">{selectedProfile.qualification}</p>
+                        </div>
+                        <div>
+                          <label className="text-sm font-medium text-gray-500">Current Job Profile</label>
+                          <p className="text-gray-900 font-medium">{selectedProfile.currentJobProfile || 'Not specified'}</p>
+                        </div>
+                        <div>
+                          <label className="text-sm font-medium text-gray-500">Annual Income</label>
+                          <p className="text-gray-900 font-medium">{formatIncome(selectedProfile.annualIncome)}</p>
+                        </div>
+                      </div>
+                    </div>
 
-            {/* Modal Footer */}
-            <div className="sticky bottom-0 bg-gray-50 px-6 py-4 flex justify-end rounded-b-2xl border-t">
-              <button
-                onClick={() => setSelectedProfile(null)}
-                className="px-6 py-2 bg-rose-600 text-white rounded-lg hover:bg-rose-700 transition-colors font-medium"
-              >
-                Close
-              </button>
-            </div>
+                    {/* Family Information */}
+                    <div className={`border-l-4 ${theme.border} pl-4`}>
+                      <h3 className="text-xl font-semibold text-gray-800 mb-4">Family Details</h3>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                          <label className="text-sm font-medium text-gray-500">Father&apos;s Name</label>
+                          <p className="text-gray-900 font-medium">{selectedProfile.fatherName}</p>
+                        </div>
+                        <div>
+                          <label className="text-sm font-medium text-gray-500">Father&apos;s Occupation</label>
+                          <p className="text-gray-900 font-medium">{selectedProfile.fatherOccupation}</p>
+                        </div>
+                        <div>
+                          <label className="text-sm font-medium text-gray-500">Mother&apos;s Name</label>
+                          <p className="text-gray-900 font-medium">{selectedProfile.motherName}</p>
+                        </div>
+                        <div>
+                          <label className="text-sm font-medium text-gray-500">Mother&apos;s Occupation</label>
+                          <p className="text-gray-900 font-medium">{selectedProfile.motherOccupation}</p>
+                        </div>
+                        <div>
+                          <label className="text-sm font-medium text-gray-500">Parent&apos;s Contact</label>
+                          <p className="text-gray-900 font-medium">{selectedProfile.parentsContact.toString()}</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Modal Footer */}
+                  <div className="sticky bottom-0 bg-gray-50 px-6 py-4 flex justify-end rounded-b-2xl border-t">
+                    <button
+                      onClick={() => setSelectedProfile(null)}
+                      className={`px-6 py-2 ${theme.button} text-white rounded-lg transition-colors font-medium`}
+                    >
+                      Close
+                    </button>
+                  </div>
+                </>
+              )
+            })()}
           </div>
         </div>
       )}

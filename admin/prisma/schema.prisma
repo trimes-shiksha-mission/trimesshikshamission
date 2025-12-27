@@ -90,6 +90,7 @@ model User {
 
   // forgotPasswordToken join
   forgotPasswordToken forgotPasswordToken? @relation("userForgotPasswordToken")
+  marriageProfiles    MarriageProfile[]
 }
 
 model Admin {
@@ -203,6 +204,10 @@ model MarriageProfile {
   manglic           Boolean
   maritalStatus     MaritalStatus
   gender            Gender
+  profilePhoto      String?
+  themeColor        String?       @default("rose")
+  userId            String?       @db.Uuid
+  user              User?         @relation(fields: [userId], references: [id])
   createdAt         DateTime      @default(now()) @db.Timestamptz()
   updatedAt         DateTime      @default(now()) @updatedAt @db.Timestamptz()
 }

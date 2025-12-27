@@ -1,5 +1,5 @@
-import React, { useState } from 'react'
-import { FiUser, FiMapPin, FiBriefcase, FiHeart } from 'react-icons/fi'
+import React, { useState, useRef } from 'react'
+import { FiUser, FiMapPin, FiBriefcase, FiHeart, FiCamera, FiX } from 'react-icons/fi'
 import { Layout } from '~/components/Layout'
 import { NextPage } from 'next'
 import { api } from '~/utils/api'
@@ -43,6 +43,8 @@ const MarriageProfileForm: NextPage = () => {
     manglic: boolean
     maritalStatus: MaritalStatus
     gender: Gender
+    profilePhoto: string
+    themeColor: string
   }
 
   // ? Predefined Arrays
@@ -57,6 +59,11 @@ const MarriageProfileForm: NextPage = () => {
     'O_Negative'
   ]
   const complexions = ['Fair', 'Dark', 'Wheatish']
+  const themeColors = [
+    { value: 'rose', label: 'Rose', preview: 'from-rose-500 to-pink-600' },
+    { value: 'purple', label: 'Purple', preview: 'from-purple-500 to-indigo-600' },
+    { value: 'blue', label: 'Blue', preview: 'from-blue-500 to-cyan-600' }
+  ]
   const incomeBrackets = [
     'BELOW_3_LAKHS',
     'Three_TO_Five_LAKHS',
@@ -76,6 +83,10 @@ const MarriageProfileForm: NextPage = () => {
   // ? useStates
   const [showForm, setShowForm] = useState(false)
   const [editId, setEditId] = useState<string | null>(null)
+  const [photoPreview, setPhotoPreview] = useState<string | null>(null)
+  const [photoFile, setPhotoFile] = useState<File | null>(null)
+  const [uploadingPhoto, setUploadingPhoto] = useState(false)
+  const fileInputRef = useRef<HTMLInputElement>(null)
   
   const [formData, setFormData] = useState<FormData>({
     name: '',
@@ -98,7 +109,9 @@ const MarriageProfileForm: NextPage = () => {
     address: '',
     manglic: false,
     maritalStatus: MaritalStatus.unmarried,
-    gender: Gender.male
+    gender: Gender.male,
+    profilePhoto: '',
+    themeColor: 'rose'
   })
 
   // ? Handler Functions
@@ -108,6 +121,67 @@ const MarriageProfileForm: NextPage = () => {
       ...prev,
       [name]: type === 'checkbox' ? checked : value
     }))
+  }
+
+  const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+
+    // Validate file size (512KB = 524288 bytes)
+    if (file.size > 524288) {
+      toast.error('Photo size must be 512KB or less')
+      return
+    }
+
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+      toast.error('Please select an image file')
+      return
+    }
+
+    setPhotoFile(file)
+    const reader = new FileReader()
+    reader.onloadend = () => {
+      setPhotoPreview(reader.result as string)
+    }
+    reader.readAsDataURL(file)
+  }
+
+  const handleRemovePhoto = () => {
+    setPhotoFile(null)
+    setPhotoPreview(null)
+    if (fileInputRef.current) {
+      fileInputRef.current.value = ''
+    }
+  }
+
+  const uploadPhoto = async (): Promise<string | null> => {
+    if (!photoFile) return formData.profilePhoto || null
+
+    setUploadingPhoto(true)
+    try {
+      const formDataToUpload = new FormData()
+      formDataToUpload.append('file', photoFile)
+      formDataToUpload.append('type', 'marriage-profiles')
+
+      const response = await fetch('/api/upload', {
+        method: 'POST',
+        body: formDataToUpload
+      })
+
+      if (!response.ok) {
+        const error = await response.json()
+        throw new Error(error.message || 'Upload failed')
+      }
+
+      const data = await response.json()
+      return data.attachments?.[0]?.url || null
+    } catch (error: any) {
+      toast.error(error.message || 'Failed to upload photo')
+      return null
+    } finally {
+      setUploadingPhoto(false)
+    }
   }
 
   const handleEdit = (profile: any) => {
@@ -132,8 +206,12 @@ const MarriageProfileForm: NextPage = () => {
       address: profile.address,
       manglic: profile.manglic,
       maritalStatus: profile.maritalStatus,
-      gender: profile.gender
+      gender: profile.gender,
+      profilePhoto: profile.profilePhoto || '',
+      themeColor: profile.themeColor || 'rose'
     })
+    setPhotoPreview(profile.profilePhoto || null)
+    setPhotoFile(null)
     setEditId(profile.id)
     setShowForm(true)
   }
@@ -160,8 +238,12 @@ const MarriageProfileForm: NextPage = () => {
       address: '',
       manglic: false,
       maritalStatus: MaritalStatus.unmarried,
-      gender: Gender.male
+      gender: Gender.male,
+      profilePhoto: '',
+      themeColor: 'rose'
     })
+    setPhotoPreview(null)
+    setPhotoFile(null)
     setEditId(null)
     setShowForm(true)
   }
@@ -232,6 +314,9 @@ const MarriageProfileForm: NextPage = () => {
         onSubmit={async e => {
           e.preventDefault()
           try {
+            // Upload photo first if there's a new one
+            const photoUrl = await uploadPhoto()
+            
             const payload = {
               name: formData.name,
               nativePlace: formData.nativePlace,
@@ -253,7 +338,9 @@ const MarriageProfileForm: NextPage = () => {
               address: formData.address,
               manglic: formData.manglic,
               maritalStatus: formData.maritalStatus,
-              gender: formData.gender
+              gender: formData.gender,
+              profilePhoto: photoUrl || undefined,
+              themeColor: formData.themeColor
             }
 
             let response;
@@ -465,6 +552,63 @@ const MarriageProfileForm: NextPage = () => {
                   </div>
                 </div>
 
+                {/* Profile Photo Section */}
+                <div className="border-l-4 border-pink-400 pl-6">
+                  <h2 className="text-2xl font-semibold text-gray-800 mb-6 flex items-center gap-2">
+                    <FiCamera className="w-6 h-6 text-pink-500" />
+                    Profile Photo
+                  </h2>
+
+                  <div className="space-y-4">
+                    <p className="text-sm text-gray-600">
+                      Upload a profile photo (Maximum size: 512KB)
+                    </p>
+
+                    {photoPreview ? (
+                      <div className="relative inline-block">
+                        <img
+                          src={photoPreview}
+                          alt="Profile preview"
+                          className="w-40 h-40 object-cover rounded-lg border-2 border-pink-200 shadow-md"
+                        />
+                        <button
+                          type="button"
+                          onClick={handleRemovePhoto}
+                          className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-2 hover:bg-red-600 transition-colors shadow-lg"
+                        >
+                          <FiX className="w-4 h-4" />
+                        </button>
+                      </div>
+                    ) : (
+                      <div className="flex items-center justify-center w-40 h-40 border-2 border-dashed border-pink-300 rounded-lg bg-pink-50">
+                        <FiCamera className="w-12 h-12 text-pink-300" />
+                      </div>
+                    )}
+
+                    <div>
+                      <input
+                        ref={fileInputRef}
+                        type="file"
+                        accept="image/*"
+                        onChange={handlePhotoChange}
+                        className="hidden"
+                        id="profile-photo-input"
+                      />
+                      <label
+                        htmlFor="profile-photo-input"
+                        className="inline-block px-6 py-3 bg-pink-500 text-white rounded-lg hover:bg-pink-600 transition-colors cursor-pointer shadow-md"
+                      >
+                        {photoPreview ? 'Change Photo' : 'Upload Photo'}
+                      </label>
+                      {uploadingPhoto && (
+                        <span className="ml-3 text-sm text-pink-600">
+                          Uploading...
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                </div>
+
                 {/* Location Information */}
                 <div className="border-l-4 border-blue-400 pl-6">
                   <h2 className="text-2xl font-semibold text-gray-800 mb-6 flex items-center gap-2">
@@ -654,6 +798,48 @@ const MarriageProfileForm: NextPage = () => {
                       />
                     </div>
                   </div>
+                </div>
+              </div>
+
+              {/* Theme Selection */}
+              <div className="border-l-4 border-indigo-400 pl-6 mt-8">
+                <h2 className="text-2xl font-semibold text-gray-800 mb-6 flex items-center gap-2">
+                  <FiHeart className="w-6 h-6 text-indigo-500" />
+                  Profile Theme
+                </h2>
+                <p className="text-gray-600 mb-4 text-sm">
+                  Choose a color theme for your public profile card.
+                </p>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  {themeColors.map(theme => (
+                    <label
+                      key={theme.value}
+                      className={`relative cursor-pointer rounded-xl p-4 border-2 transition-all duration-200 ${
+                        formData.themeColor === theme.value
+                          ? 'border-indigo-500 bg-indigo-50 shadow-md transform scale-105'
+                          : 'border-gray-200 hover:border-indigo-300'
+                      }`}
+                    >
+                      <div className="flex flex-col items-center gap-3">
+                        <div
+                          className={`h-16 w-full rounded-lg bg-gradient-to-r ${theme.preview} shadow-sm`}
+                        />
+                        <div className="flex items-center justify-between w-full px-2">
+                          <span className="font-semibold text-gray-700">
+                            {theme.label}
+                          </span>
+                          <input
+                            type="radio"
+                            name="themeColor"
+                            value={theme.value}
+                            checked={formData.themeColor === theme.value}
+                            onChange={handleInputChange}
+                            className="w-5 h-5 text-indigo-600 border-gray-300 focus:ring-indigo-500"
+                          />
+                        </div>
+                      </div>
+                    </label>
+                  ))}
                 </div>
               </div>
 
