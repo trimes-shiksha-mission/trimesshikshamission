@@ -1,5 +1,7 @@
 import { createTRPCRouter, protectedProcedure } from '../trpc'
 import { z } from 'zod'
+import { supabaseAdmin } from '~/lib/supabase'
+import { env } from '~/env.mjs'
 
 // Enums
 const BloodGroupEnum = z.enum([
@@ -121,6 +123,43 @@ export const marriageProfileRouter = createTRPCRouter({
         success: true,
         profileId: profile.id
       }
+    }),
+
+  delete: protectedProcedure
+    .input(z.object({ id: z.string().uuid() }))
+    .mutation(async ({ input, ctx }) => {
+      const profile = await ctx.prisma.marriageProfile.findUnique({
+        where: {
+          id: input.id,
+          userId: ctx.session.user.id
+        }
+      })
+
+      if (!profile) {
+        throw new Error('Profile not found')
+      }
+
+      if (profile.profilePhoto) {
+        try {
+          // Extract path from URL
+          const parts = profile.profilePhoto.split(`/${env.SUPABASE_BUCKET}/`)
+          const path = parts[1]
+          if (path) {
+            await supabaseAdmin.storage
+              .from(env.SUPABASE_BUCKET)
+              .remove([path])
+          }
+        } catch (error) {
+          console.error('Failed to delete image from Supabase:', error)
+        }
+      }
+
+      await ctx.prisma.marriageProfile.delete({
+        where: {
+          id: input.id
+        }
+      })
+      return { success: true }
     }),
 
   getUserProfiles: protectedProcedure.query(async ({ ctx }) => {

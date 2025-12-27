@@ -1,4 +1,4 @@
-import { DeleteOutlined, EyeOutlined, FileAddOutlined } from '@ant-design/icons'
+import { DeleteOutlined, EditOutlined, EyeOutlined, FileAddOutlined } from '@ant-design/icons'
 import { Button, Form, Input, Modal, Space, Table } from 'antd'
 import dynamic from 'next/dynamic'
 import { FC, useState } from 'react'
@@ -13,6 +13,9 @@ export const Blog: FC<{ type: string }> = ({ type }) => {
   const messageApi = useMessageApi()
   const [addBlogModal, setAddBlogModal] = useState(false)
   const [previewModal, setPreviewModal] = useState<
+    RouterOutputs['blogs']['getAll']['blogs'][0] | null
+  >(null)
+  const [editBlogModal, setEditBlogModal] = useState<
     RouterOutputs['blogs']['getAll']['blogs'][0] | null
   >(null)
   const [variables, setVariables] = useState({
@@ -33,6 +36,8 @@ export const Blog: FC<{ type: string }> = ({ type }) => {
     api.blogs.createOne.useMutation()
   const { mutateAsync: deleteBlog, isLoading: deleteBlogLoading } =
     api.blogs.deleteOne.useMutation()
+  const { mutateAsync: updateBlog, isLoading: updateBlogLoading } =
+    api.blogs.updateOne.useMutation()
 
   return (
     <div>
@@ -80,6 +85,11 @@ export const Blog: FC<{ type: string }> = ({ type }) => {
                 <Button
                   onClick={() => setPreviewModal(record)}
                   icon={<EyeOutlined />}
+                />
+                <Button
+                  type="primary"
+                  icon={<EditOutlined />}
+                  onClick={() => setEditBlogModal(record)}
                 />
                 <Button
                   danger
@@ -144,6 +154,53 @@ export const Blog: FC<{ type: string }> = ({ type }) => {
       >
         <h1>{previewModal?.title}</h1>
         <div dangerouslySetInnerHTML={{ __html: previewModal?.body || '' }} />
+      </Modal>
+
+      <Modal
+        open={!!editBlogModal}
+        maskClosable={false}
+        title="Edit Blog"
+        onCancel={() => setEditBlogModal(null)}
+        footer={null}
+        destroyOnClose
+      >
+        <Form
+          layout="vertical"
+          initialValues={{
+            title: editBlogModal?.title,
+            body: editBlogModal?.body
+          }}
+          onFinish={async values => {
+            if (!values.body || !values.title || !editBlogModal) {
+              return messageApi.error('Please fill all the fields')
+            }
+            await updateBlog({
+              id: editBlogModal.id,
+              type,
+              body: values.body,
+              title: values.title
+            })
+            setEditBlogModal(null)
+            messageApi.success(`${type} updated successfully`)
+            return await refetch()
+          }}
+        >
+          <Form.Item label="Title" name="title" rules={[{ required: true }]}>
+            <Input type="text" />
+          </Form.Item>
+          <Form.Item label="Content" name="body" rules={[{ required: true }]}>
+            <Editor type={type} placeholder={'Write something...'} />
+          </Form.Item>
+          <Form.Item>
+            <Button
+              type="primary"
+              htmlType="submit"
+              loading={updateBlogLoading}
+            >
+              Update
+            </Button>
+          </Form.Item>
+        </Form>
       </Modal>
     </div>
   )

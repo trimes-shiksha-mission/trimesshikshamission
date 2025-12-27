@@ -120,6 +120,53 @@ export const blogsRouter = createTRPCRouter({
           id: input
         }
       })
-      return true
-    })
+    }),
+
+  updateOne: protectedProcedure
+    .input(
+      z.object({
+        id: z.string().uuid(),
+        title: z.string().min(1),
+        body: z.string().min(1),
+        type: z.string()
+      })
+    )
+    .mutation(
+      async ({
+        ctx: { prisma, session },
+        input: { id, title, body }
+      }) => {
+        const blog = await prisma.blog.findFirst({
+          where: {
+            id
+          }
+        })
+        if (!blog) throw new Error('Blog not found')
+
+        if (session.user.role === 'EDITOR') {
+          if (!blog.type.includes('area'))
+            throw new Error('You are not authorized for this action!')
+          const [_, areaName] = blog.type.split('/')
+          await prisma.admin.findFirstOrThrow({
+            where: {
+              id: session.user.id,
+              area: {
+                name: areaName
+              }
+            }
+          })
+        }
+
+        await prisma.blog.update({
+          where: {
+            id
+          },
+          data: {
+            body,
+            title
+          }
+        })
+        return true
+      }
+    )
 })

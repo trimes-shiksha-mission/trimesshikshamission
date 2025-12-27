@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react'
-import { FiUser, FiMapPin, FiBriefcase, FiHeart, FiCamera, FiX } from 'react-icons/fi'
+import { FiUser, FiMapPin, FiBriefcase, FiHeart, FiCamera, FiX, FiTrash } from 'react-icons/fi'
 import { Layout } from '~/components/Layout'
 import { NextPage } from 'next'
 import { api } from '~/utils/api'
@@ -78,6 +78,7 @@ const MarriageProfileForm: NextPage = () => {
   // ? Mutations & Queries
   const { mutateAsync: register } = api.marriageProfile.register.useMutation()
   const { mutateAsync: update } = api.marriageProfile.update.useMutation()
+  const { mutateAsync: deleteProfile } = api.marriageProfile.delete.useMutation()
   const { data: myProfiles, refetch: refetchProfiles } = api.marriageProfile.getUserProfiles.useQuery()
 
   // ? useStates
@@ -152,6 +153,19 @@ const MarriageProfileForm: NextPage = () => {
     setPhotoPreview(null)
     if (fileInputRef.current) {
       fileInputRef.current.value = ''
+    }
+  }
+
+  const handleDelete = async (id: string) => {
+    if (confirm('Are you sure you want to delete this profile? This action cannot be undone.')) {
+      try {
+        await deleteProfile({ id })
+        toast.success('Profile deleted successfully')
+        refetchProfiles()
+      } catch (error) {
+        toast.error('Failed to delete profile')
+        console.error(error)
+      }
     }
   }
 
@@ -293,12 +307,21 @@ const MarriageProfileForm: NextPage = () => {
                     </div>
                   </div>
 
-                  <button
-                    onClick={() => handleEdit(profile)}
-                    className="w-full py-2 border-2 border-rose-500 text-rose-600 rounded-lg hover:bg-rose-50 transition-colors font-medium"
-                  >
-                    Edit Profile
-                  </button>
+                  <div className="flex gap-4">
+                    <button
+                      onClick={() => handleEdit(profile)}
+                      className="flex-1 py-2 border-2 border-rose-500 text-rose-600 rounded-lg hover:bg-rose-50 transition-colors font-medium"
+                    >
+                      Edit Profile
+                    </button>
+                    <button
+                      onClick={() => handleDelete(profile.id)}
+                      className="px-4 py-2 border-2 border-red-500 text-red-600 rounded-lg hover:bg-red-50 transition-colors"
+                      title="Delete Profile"
+                    >
+                      <FiTrash className="w-5 h-5" />
+                    </button>
+                  </div>
                 </div>
               ))}
             </div>
